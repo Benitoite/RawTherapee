@@ -162,7 +162,6 @@ Locallab::Locallab ():
 
 
     realnbspot = options.rtSettings.nspot;
-
     nbspot = Gtk::manage (new Adjuster (M ("TP_LOCALLAB_NBSPOT"), 1, realnbspot, 1, 1));
 
     if (options.rtSettings.locdelay) {
@@ -1120,7 +1119,7 @@ void Locallab::writeOptions (std::vector<int> &tpOpen)
 
 void Locallab::updateToolState (std::vector<int> &tpOpen)
 {
-    if (tpOpen.size() == 10) {
+    if (tpOpen.size() >= 10) {
         expsettings->set_expanded (tpOpen.at (0));
         expcolor->set_expanded (tpOpen.at (1));
         expexpose->set_expanded (tpOpen.at (2));

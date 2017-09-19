@@ -122,9 +122,9 @@ class Preferences : public Gtk::Dialog, public ProfileStoreListener
     Gtk::SpinButton*  panFactor;
     Gtk::CheckButton* rememberZoomPanCheckbutton;
 
-    Gtk::ComboBoxText* view;
-    Gtk::ComboBoxText* grey;
-    Gtk::ComboBoxText* greySc;
+//   Gtk::ComboBoxText* view;
+//    Gtk::ComboBoxText* grey;
+//    Gtk::ComboBoxText* greySc;
     Gtk::ComboBoxText* dnv;
     Gtk::ComboBoxText* dnti;
     Gtk::ComboBoxText* dnaut;
@@ -204,6 +204,9 @@ class Preferences : public Gtk::Dialog, public ProfileStoreListener
     Gtk::CheckButton* ckbShowdelimspot;
     Gtk::CheckButton* ckbHideTPVScrollbar;
     Gtk::CheckButton* ckbUseIconNoText;
+
+    Gtk::CheckButton* ckbAutoSaveTpOpen;
+    Gtk::Button* btnSaveTpOpenNow;
 
     DynamicProfilePanel *dynProfilePanel;
 

@@ -460,7 +460,7 @@ void Crop::update (int todo)
 
                 for (int wcr = 0; wcr <= 2; wcr++) {
                     for (int hcr = 0; hcr <= 2; hcr++) {
-                        PreviewProps ppP (coordW[wcr] , coordH[hcr], crW, crH, 1);
+                        PreviewProps ppP (coordW[wcr], coordH[hcr], crW, crH, 1);
                         parent->imgsrc->getImage (parent->currWB, tr, origCropPart, ppP, params.toneCurve, params.icm, params.raw );
 
                         // we only need image reduced to 1/4 here
@@ -708,9 +708,7 @@ void Crop::update (int todo)
 
         if (needstransform)
             parent->ipf.transform (baseCrop, transCrop, cropx / skip, cropy / skip, trafx / skip, trafy / skip, skips (parent->fw, skip), skips (parent->fh, skip), parent->getFullWidth(), parent->getFullHeight(),
-                                   parent->imgsrc->getMetaData()->getFocalLen(), parent->imgsrc->getMetaData()->getFocalLen35mm(),
-                                   parent->imgsrc->getMetaData()->getFocusDist(),
-                                   parent->imgsrc->getMetaData()->getFNumber(),
+                                   parent->imgsrc->getMetaData(),
                                    parent->imgsrc->getRotateDegree(), false);
         else {
             baseCrop->copyData (transCrop);
@@ -779,7 +777,7 @@ void Crop::update (int todo)
 
         LUTu histToneCurve;
         parent->ipf.rgbProc (baseCrop, laboCrop, this, parent->hltonecurve, parent->shtonecurve, parent->tonecurve, cshmap,
-                             params.toneCurve.saturation, parent->rCurve, parent->gCurve, parent->bCurve, parent->colourToningSatLimit , parent->colourToningSatLimitOpacity, parent->ctColorCurve, parent->ctOpacityCurve, parent->opautili, parent->clToningcurve, parent->cl2Toningcurve,
+                             params.toneCurve.saturation, parent->rCurve, parent->gCurve, parent->bCurve, parent->colourToningSatLimit, parent->colourToningSatLimitOpacity, parent->ctColorCurve, parent->ctOpacityCurve, parent->opautili, parent->clToningcurve, parent->cl2Toningcurve,
                              parent->customToneCurve1, parent->customToneCurve2, parent->beforeToneCurveBW, parent->afterToneCurveBW, rrm, ggm, bbm,
                              parent->bwAutoR, parent->bwAutoG, parent->bwAutoB, dcpProf, as, histToneCurve);
     }
@@ -1111,17 +1109,16 @@ void Crop::update (int todo)
                         double shcompr = params.locallab.shcompr;
 
                         CurveFactory::complexCurvelocal (ecomp, black / 65535., hlcompr, hlcomprthresh, shcompr, br, contr,
-                                                         parent->lhist16, hltonecurveloc2 , shtonecurveloc2, tonecurveloc2,
+                                                         parent->lhist16, hltonecurveloc2, shtonecurveloc2, tonecurveloc2,
                                                          sca);
 
                         params.locallab.hueref = (parent->huerefs[sp]) / 100.f;
                         params.locallab.chromaref = parent->chromarefs[sp];
                         params.locallab.lumaref = parent->lumarefs[sp];
 
-                        // printf ("dcr1 sp=%i huer=%f \n", sp, parent->huerefs[sp] / 100.f );
 
                         parent->ipf.Lab_Local (1, sp, (float**)shbuffer, labnCrop, labnCrop, trafx / skip, trafy / skip, cropx / skip, cropy / skip, skips (parent->fw, skip), skips (parent->fh, skip), parent->fw, parent->fh, locutili, skip,  locRETgainCurve, locallutili, lllocalcurve2,
-                                               loclhCurve, lochhCurve, LHutili, HHutili, cclocalcurve2, localskutili, sklocalcurve2, localexutili, exlocalcurve2, hltonecurveloc2 , shtonecurveloc2, tonecurveloc2, params.locallab.hueref, params.locallab.chromaref, params.locallab.lumaref);
+                                               loclhCurve, lochhCurve, LHutili, HHutili, cclocalcurve2, localskutili, sklocalcurve2, localexutili, exlocalcurve2, hltonecurveloc2, shtonecurveloc2, tonecurveloc2, params.locallab.hueref, params.locallab.chromaref, params.locallab.lumaref);
                         lllocalcurve2.clear();
                         cclocalcurve2.clear();
                         sklocalcurve2.clear();
@@ -1137,7 +1134,6 @@ void Crop::update (int todo)
 
                 int sp ;
                 sp = realspot;
-                //  bool locutili2 = parent->locutili;
                 locallutili = false;
 
                 parent->sps[sp] = sp;
@@ -1427,7 +1423,6 @@ void Crop::update (int todo)
                 params.locallab.getCurves (locRETgainCurve, locRETgainCurverab, loclhCurve, lochhCurve, LHutili, HHutili);
                 locallutili = false;
                 localcutili = false;
-                //localskutili = false;
 
                 CurveFactory::curveLocal (locallutili, params.locallab.llcurve, lllocalcurve2, sca);
                 CurveFactory::curveCCLocal (localcutili, params.locallab.cccurve, cclocalcurve2, sca);
@@ -1443,15 +1438,14 @@ void Crop::update (int todo)
                 double shcompr = params.locallab.shcompr;
 
                 CurveFactory::complexCurvelocal (ecomp, black / 65535., hlcompr, hlcomprthresh, shcompr, br, contr,
-                                                 parent->lhist16, hltonecurveloc2 , shtonecurveloc2, tonecurveloc2,
+                                                 parent->lhist16, hltonecurveloc2, shtonecurveloc2, tonecurveloc2,
                                                  sca);
 
                 params.locallab.hueref = (parent->huerefs[sp]) / 100.f;
                 params.locallab.chromaref = parent->chromarefs[sp];
                 params.locallab.lumaref = parent->lumarefs[sp];
-                // printf ("dcr2   = sp=%i huer=%f \n", sp, parent->huerefs[sp] / 100.f);
                 parent->ipf.Lab_Local (1, sp, (float**)shbuffer, labnCrop, labnCrop, trafx / skip, trafy / skip, cropx / skip, cropy / skip, skips (parent->fw, skip), skips (parent->fh, skip), parent->fw, parent->fh, locutili, skip,  locRETgainCurve, locallutili, lllocalcurve2, loclhCurve, lochhCurve,
-                                       LHutili, HHutili, cclocalcurve2, localskutili, sklocalcurve2, localexutili, exlocalcurve2, hltonecurveloc2 , shtonecurveloc2, tonecurveloc2, params.locallab.hueref, params.locallab.chromaref, params.locallab.lumaref);
+                                       LHutili, HHutili, cclocalcurve2, localskutili, sklocalcurve2, localexutili, exlocalcurve2, hltonecurveloc2, shtonecurveloc2, tonecurveloc2, params.locallab.hueref, params.locallab.chromaref, params.locallab.lumaref);
 
                 lllocalcurve2.clear();
                 cclocalcurve2.clear();
@@ -1616,14 +1610,14 @@ void Crop::update (int todo)
             }
 
             if (settings->ciecamfloat) {
-                float d; // not used after this block
+                float d, dj, yb; // not used after this block
                 parent->ipf.ciecam_02float (cieCrop, float (adap), begh, endh, 1, 2, labnCrop, &params, parent->customColCurve1, parent->customColCurve2, parent->customColCurve3,
-                                            dummy, dummy, parent->CAMBrightCurveJ, parent->CAMBrightCurveQ, parent->CAMMean, 5, 1, execsharp, d, skip, 1);
+                                            dummy, dummy, parent->CAMBrightCurveJ, parent->CAMBrightCurveQ, parent->CAMMean, 5, skip, execsharp, d, dj, yb, 1);
             } else {
-                double dd; // not used after this block
+                double dd, dj, yb; // not used after this block
 
                 parent->ipf.ciecam_02 (cieCrop, adap, begh, endh, 1, 2, labnCrop, &params, parent->customColCurve1, parent->customColCurve2, parent->customColCurve3,
-                                       dummy, dummy, parent->CAMBrightCurveJ, parent->CAMBrightCurveQ, parent->CAMMean, 5, 1, execsharp, dd, skip, 1);
+                                       dummy, dummy, parent->CAMBrightCurveJ, parent->CAMBrightCurveQ, parent->CAMMean, 5, skip, execsharp, dd, dj, yb, 1);
             }
         } else {
             // CIECAM is disbaled, we free up its image buffer to save some space
@@ -1754,8 +1748,7 @@ bool check_need_larger_crop_for_lcp_distortion (int fw, int fh, int x, int y, in
         return false;
     }
 
-    return (params.lensProf.lcpFile.length() > 0 &&
-            params.lensProf.useDist);
+    return (params.lensProf.useDist && (params.lensProf.useLensfun() || params.lensProf.useLcp()));
 }
 
 } // namespace
