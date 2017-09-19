@@ -592,6 +592,8 @@ public:
     bool          enabled;
     int           degree;
     bool          autodegree;
+    int           degreeout;
+    bool          autodegreeout;
     std::vector<double> curve;
     std::vector<double> curve2;
     std::vector<double> curve3;
@@ -600,8 +602,11 @@ public:
     eCTCModeId    curveMode3;
 
     Glib::ustring surround;
+    Glib::ustring surrsrc;
     double        adapscen;
     bool          autoadapscen;
+    int        ybscen;
+    bool          autoybscen;
 
     double        adaplum;
     int           badpixsl;
@@ -621,6 +626,12 @@ public:
     //      bool          badpix;
     bool          datacie;
     bool          tonecie;
+    int tempout;
+    int ybout;
+    double greenout;
+    int tempsc;
+    double greensc;
+
     //      bool          sharpcie;
 };
 
@@ -825,15 +836,63 @@ class LensProfParams
 {
 
 public:
+    enum class LcMode {
+        NONE,               // No lens correction
+        LENSFUNAUTOMATCH,   // Lens correction using auto matched lensfun database entry
+        LENSFUNMANUAL,      // Lens correction using manually selected lensfun database entry
+        LCP                 // Lens correction using lcp file
+    };
+
+    static const char *methodstring[static_cast<size_t>(LcMode::LCP) + 1u];
+    LcMode lcMode;
     Glib::ustring lcpFile;
     bool useDist, useVign, useCA;
+    Glib::ustring lfCameraMake;
+    Glib::ustring lfCameraModel;
+    Glib::ustring lfLens;
 
     LensProfParams()
     {
         setDefaults();
     }
     void setDefaults();
+
+    bool useLensfun() const
+    {
+        return lcMode == LcMode::LENSFUNAUTOMATCH || lcMode == LcMode::LENSFUNMANUAL;
+    }
+
+    bool lfAutoMatch() const
+    {
+        return lcMode == LcMode::LENSFUNAUTOMATCH;
+    }
+
+    bool useLcp() const
+    {
+        return lcMode == LcMode::LCP && lcpFile.length() > 0;
+    }
+
+    bool lfManual() const
+    {
+        return lcMode == LcMode::LENSFUNMANUAL;
+    }
+
+    Glib::ustring getMethodString(LcMode mode) const
+    {
+        return methodstring[static_cast<size_t>(mode)];
+    }
+
+    LcMode getMethodNumber(const Glib::ustring &mode) const
+    {
+        for(size_t i = 0; i <= static_cast<size_t>(LcMode::LCP); ++i) {
+            if(methodstring[i] == mode) {
+                return static_cast<LcMode>(i);
+            }
+        }
+        return LcMode::NONE;
+    }
 };
+
 
 /**
   * Parameters of the perspective correction
@@ -1166,7 +1225,7 @@ public:
 
     WaveletParams ();
     void setDefaults();
-    void getCurves (WavCurve &cCurve, WavretiCurve &cTCurve, WavretigainCurve &cTgainCurve, WavmergCurve &cmergCurve, Wavmerg2Curve &cmerg2Curve, WavstyCurve &cstyCurve, Wavsty2Curve &csty2Curve, WavOpacityCurveRG &opacityCurveLUTRG , WavOpacityCurveBY &opacityCurveLUTBY, WavOpacityCurveW &opacityCurveLUTW, WavOpacityCurveWL &opacityCurveLUTWL) const;
+    void getCurves (WavCurve &cCurve, WavretiCurve &cTCurve, WavretigainCurve &cTgainCurve, WavmergCurve &cmergCurve, Wavmerg2Curve &cmerg2Curve, WavstyCurve &cstyCurve, Wavsty2Curve &csty2Curve, WavOpacityCurveRG &opacityCurveLUTRG, WavOpacityCurveBY &opacityCurveLUTBY, WavOpacityCurveW &opacityCurveLUTW, WavOpacityCurveWL &opacityCurveLUTWL) const;
     static void getDefaultCCWCurve (std::vector<double> &curve);
     static void getDefaultCCWCurveT (std::vector<double> &curve);
     static void getDefaultCCWgainCurveT (std::vector<double> &curve);

@@ -54,9 +54,13 @@ class ImProcFunctions
 
     void calcVignettingParams (int oW, int oH, const VignettingParams& vignetting, double &w2, double &h2, double& maxRadius, double &v, double &b, double &mul);
 
-    void transformPreview       (Imagefloat* original, Imagefloat* transformed, int cx, int cy, int sx, int sy, int oW, int oH, int fW, int fH, const LCPMapper *pLCPMap);
+    enum TransformMode {
+        TRANSFORM_PREVIEW,
+        TRANSFORM_HIGH_QUALITY,
+        TRANSFORM_HIGH_QUALITY_FULLIMAGE
+    };
     void transformLuminanceOnly (Imagefloat* original, Imagefloat* transformed, int cx, int cy, int oW, int oH, int fW, int fH);
-    void transformHighQuality   (Imagefloat* original, Imagefloat* transformed, int cx, int cy, int sx, int sy, int oW, int oH, int fW, int fH, const LCPMapper *pLCPMap, bool fullImage);
+    void transformGeneral(TransformMode mode, Imagefloat *original, Imagefloat *transformed, int cx, int cy, int sx, int sy, int oW, int oH, int fW, int fH, const LensCorrection *pLCPMap);
 
     void sharpenHaloCtrl    (float** luminance, float** blurmap, float** base, int W, int H, const SharpeningParams &sharpenParam);
     void sharpenHaloCtrl    (LabImage* lab, float** blurmap, float** base, int W, int H, SharpeningParams &sharpenParam);
@@ -70,6 +74,7 @@ class ImProcFunctions
     bool needsGradient      ();
     bool needsVignetting    ();
     bool needsLCP           ();
+    bool needsLensfun();
 //   static cmsUInt8Number* Mempro = NULL;
 
     inline void interpolateTransformCubic (Imagefloat* src, int xs, int ys, double Dx, double Dy, float *r, float *g, float *b, double mul)
@@ -198,7 +203,7 @@ public:
     ImProcFunctions       (const ProcParams* iparams, bool imultiThread = true)
         : monitorTransform (nullptr), lab2outputTransform (nullptr), output2monitorTransform (nullptr), params (iparams), scale (1), multiThread (imultiThread), lumimul{} {}
     ~ImProcFunctions      ();
-
+    bool needsLuminanceOnly() { return !(needsCA() || needsDistortion() || needsRotation() || needsPerspective() || needsLCP() || needsLensfun()) && (needsVignetting() || needsPCVignetting() || needsGradient());}
     void setScale         (double iscale);
 
     bool needsTransform   ();
@@ -207,10 +212,10 @@ public:
     void firstAnalysis    (const Imagefloat* const working, const ProcParams &params, LUTu & vhist16);
     void updateColorProfiles (const Glib::ustring& monitorProfile, RenderingIntent monitorIntent, bool softProof, bool gamutCheck);
     void rgbProc          (Imagefloat* working, LabImage* lab, PipetteBuffer *pipetteBuffer, LUTf & hltonecurve, LUTf & shtonecurve, LUTf & tonecurve,
-                           SHMap* shmap, int sat, LUTf & rCurve, LUTf & gCurve, LUTf & bCurve, float satLimit , float satLimitOpacity, const ColorGradientCurve & ctColorCurve, const OpacityCurve & ctOpacityCurve, bool opautili, LUTf & clcurve, LUTf & cl2curve, const ToneCurve & customToneCurve1, const ToneCurve & customToneCurve2,
+                           SHMap* shmap, int sat, LUTf & rCurve, LUTf & gCurve, LUTf & bCurve, float satLimit, float satLimitOpacity, const ColorGradientCurve & ctColorCurve, const OpacityCurve & ctOpacityCurve, bool opautili, LUTf & clcurve, LUTf & cl2curve, const ToneCurve & customToneCurve1, const ToneCurve & customToneCurve2,
                            const ToneCurve & customToneCurvebw1, const ToneCurve & customToneCurvebw2, double &rrm, double &ggm, double &bbm, float &autor, float &autog, float &autob, DCPProfile *dcpProf, const DCPProfile::ApplyState &asIn, LUTu &histToneCurve );
     void rgbProc          (Imagefloat* working, LabImage* lab, PipetteBuffer *pipetteBuffer, LUTf & hltonecurve, LUTf & shtonecurve, LUTf & tonecurve,
-                           SHMap* shmap, int sat, LUTf & rCurve, LUTf & gCurve, LUTf & bCurve, float satLimit , float satLimitOpacity, const ColorGradientCurve & ctColorCurve, const OpacityCurve & ctOpacityCurve, bool opautili, LUTf & clcurve, LUTf & cl2curve, const ToneCurve & customToneCurve1, const ToneCurve & customToneCurve2,
+                           SHMap* shmap, int sat, LUTf & rCurve, LUTf & gCurve, LUTf & bCurve, float satLimit, float satLimitOpacity, const ColorGradientCurve & ctColorCurve, const OpacityCurve & ctOpacityCurve, bool opautili, LUTf & clcurve, LUTf & cl2curve, const ToneCurve & customToneCurve1, const ToneCurve & customToneCurve2,
                            const ToneCurve & customToneCurvebw1, const ToneCurve & customToneCurvebw2, double &rrm, double &ggm, double &bbm, float &autor, float &autog, float &autob,
                            double expcomp, int hlcompr, int hlcomprthresh, DCPProfile *dcpProf, const DCPProfile::ApplyState &asIn, LUTu &histToneCurve);
     void labtoning (float r, float g, float b, float &ro, float &go, float &bo, int algm, int metchrom, int twoc, float satLimit, float satLimitOpacity, const ColorGradientCurve & ctColorCurve, const OpacityCurve & ctOpacityCurve, LUTf & clToningcurve, LUTf & cl2Toningcurve, float iplow, float iphigh, double wp[3][3], double wip[3][3]  );
@@ -226,17 +231,16 @@ public:
     void luminanceCurve   (LabImage* lold, LabImage* lnew, LUTf &curve);
     void ciecam_02float   (CieImage* ncie, float adap, int begh, int endh,  int pW, int pwb, LabImage* lab, const ProcParams* params,
                            const ColorAppearance & customColCurve1, const ColorAppearance & customColCurve, const ColorAppearance & customColCurve3,
-                           LUTu &histLCAM, LUTu &histCCAM, LUTf & CAMBrightCurveJ, LUTf & CAMBrightCurveQ, float &mean, int Iterates, int scale, bool execsharp, float &d, int scalecd, int rtt);
+                           LUTu &histLCAM, LUTu &histCCAM, LUTf & CAMBrightCurveJ, LUTf & CAMBrightCurveQ, float &mean, int Iterates, int scale, bool execsharp, float &d, float &dj, float &yb, int rtt);
     void ciecam_02        (CieImage* ncie, double adap, int begh, int endh,  int pW, int pwb, LabImage* lab, const ProcParams* params,
                            const ColorAppearance & customColCurve1, const ColorAppearance & customColCurve, const ColorAppearance & customColCurve3,
-                           LUTu &histLCAM, LUTu &histCCAM, LUTf & CAMBrightCurveJ, LUTf & CAMBrightCurveQ, float &mean, int Iterates, int scale, bool execsharp, double &d, int scalecd, int rtt);
+                           LUTu &histLCAM, LUTu &histCCAM, LUTf & CAMBrightCurveJ, LUTf & CAMBrightCurveQ, float &mean, int Iterates, int scale, bool execsharp, double &d, double &dj, double &yb, int rtt);
     void chromiLuminanceCurve (PipetteBuffer *pipetteBuffer, int pW, LabImage* lold, LabImage* lnew, LUTf &acurve, LUTf &bcurve, LUTf & satcurve, LUTf & satclcurve, LUTf &clcurve, LUTf &curve, bool utili, bool autili, bool butili, bool ccutili, bool cclutili, bool clcutili, LUTu &histCCurve, LUTu &histLurve);
     void vibrance         (LabImage* lab);//Jacques' vibrance
     void colorCurve       (LabImage* lold, LabImage* lnew);
     void sharpening       (LabImage* lab, float** buffer, SharpeningParams &sharpenParam);
     void sharpeningcam    (CieImage* ncie, float** buffer);
-    void transform        (Imagefloat* original, Imagefloat* transformed, int cx, int cy, int sx, int sy, int oW, int oH, int fW, int fH,
-                           double focalLen, double focalLen35mm, float focusDist, double fNumber, int rawRotationDeg, bool fullImage);
+    void transform        (Imagefloat* original, Imagefloat* transformed, int cx, int cy, int sx, int sy, int oW, int oH, int fW, int fH, const ImageMetaData *metadata, int rawRotationDeg, bool fullImage);
     float resizeScale     (const ProcParams* params, int fw, int fh, int &imw, int &imh);
     void lab2monitorRgb   (LabImage* lab, Image8* image);
     void resize           (Image16* src, Image16* dst, float dScale);
@@ -393,11 +397,11 @@ public:
     Image16*    lab2rgb16 (LabImage* lab, int cx, int cy, int cw, int ch, const procparams::ColorManagementParams &icm, bool bw, GammaValues *ga = nullptr);
     // CieImage *ciec;
 
-    bool transCoord       (int W, int H, int x, int y, int w, int h, int& xv, int& yv, int& wv, int& hv, double ascaleDef = -1, const LCPMapper *pLCPMap = nullptr);
-    bool transCoord       (int W, int H, const std::vector<Coord2D> &src, std::vector<Coord2D> &red,  std::vector<Coord2D> &green, std::vector<Coord2D> &blue, double ascaleDef = -1, const LCPMapper *pLCPMap = nullptr);
+    bool transCoord       (int W, int H, int x, int y, int w, int h, int& xv, int& yv, int& wv, int& hv, double ascaleDef = -1, const LensCorrection *pLCPMap = nullptr);
+    bool transCoord       (int W, int H, const std::vector<Coord2D> &src, std::vector<Coord2D> &red,  std::vector<Coord2D> &green, std::vector<Coord2D> &blue, double ascaleDef = -1, const LensCorrection *pLCPMap = nullptr);
     static void getAutoExp       (const LUTu & histogram, int histcompr, double defgain, double clip, double& expcomp, int& bright, int& contr, int& black, int& hlcompr, int& hlcomprthresh);
     static double getAutoDistor  (const Glib::ustring& fname, int thumb_size);
-    double getTransformAutoFill (int oW, int oH, const LCPMapper *pLCPMap = nullptr);
+    double getTransformAutoFill (int oW, int oH, const LensCorrection *pLCPMap = nullptr);
     void rgb2lab (const Imagefloat &src, LabImage &dst, const Glib::ustring &workingSpace);
     void lab2rgb (const LabImage &src, Imagefloat &dst, const Glib::ustring &workingSpace);
 };
