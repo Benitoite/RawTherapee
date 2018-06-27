@@ -203,8 +203,8 @@ private:
         if (pl) {
             pl->setProgress (0.20);
         }
-
-        imgsrc->demosaic ( params.raw);
+        double contrastThresholdDummy;
+        imgsrc->demosaic (params.raw, false, contrastThresholdDummy);
 
         if (pl) {
             pl->setProgress (0.30);
@@ -386,7 +386,7 @@ private:
                             }
 
                             if (!imgsrc->isRAW()) {
-                                multip = 2.f;    //take into account gamma for TIF / JPG approximate value...not good fot gamma=1
+                                multip = 2.f;    //take into account gamma for TIF / JPG approximate value...not good for gamma=1
                             }
 
                             float maxmax = max (maxredaut, maxblueaut);
@@ -537,7 +537,7 @@ private:
                 float gam, gamthresh, gamslope;
                 ipf.RGB_denoise_infoGamCurve (params.dirpyrDenoise, imgsrc->isRAW(), gamcurve, gam, gamthresh, gamslope);
                 int Nb[9];
-                int  coordW[3];//coordonate of part of image to mesure noise
+                int  coordW[3];//coordinate of part of image to measure noise
                 int  coordH[3];
                 int begW = 50;
                 int begH = 50;
@@ -629,7 +629,7 @@ private:
                 }
 
                 if (!imgsrc->isRAW()) {
-                    multip = 2.f;    //take into account gamma for TIF / JPG approximate value...not good fot gamma=1
+                    multip = 2.f;    //take into account gamma for TIF / JPG approximate value...not good for gamma=1
                 }
 
                 float delta[9];
@@ -881,21 +881,6 @@ private:
             ipf.lab2rgb (labcbdl, *baseImg, params.icm.working);
         }
 
-        // update blurmap
-        SHMap* shmap = nullptr;
-
-        if (params.sh.enabled) {
-            shmap = new SHMap (fw, fh, true);
-            double radius = sqrt (double (fw * fw + fh * fh)) / 2.0;
-            double shradius = params.sh.radius;
-
-            if (!params.sh.hq) {
-                shradius *= radius / 1800.0;
-            }
-
-            shmap->update (baseImg, shradius, ipf.lumimul, params.sh.hq, 1);
-        }
-
         // RGB processing
 
         curve1 (65536);
@@ -969,7 +954,7 @@ private:
 
         LUTu histToneCurve;
 
-        ipf.rgbProc (baseImg, labView, nullptr, curve1, curve2, curve, shmap, params.toneCurve.saturation, rCurve, gCurve, bCurve, satLimit, satLimitOpacity, ctColorCurve, ctOpacityCurve, opautili, clToningcurve, cl2Toningcurve, customToneCurve1, customToneCurve2, customToneCurvebw1, customToneCurvebw2, rrm, ggm, bbm, autor, autog, autob, expcomp, hlcompr, hlcomprthresh, dcpProf, as, histToneCurve);
+        ipf.rgbProc (baseImg, labView, nullptr, curve1, curve2, curve, params.toneCurve.saturation, rCurve, gCurve, bCurve, satLimit, satLimitOpacity, ctColorCurve, ctOpacityCurve, opautili, clToningcurve, cl2Toningcurve, customToneCurve1, customToneCurve2, customToneCurvebw1, customToneCurvebw2, rrm, ggm, bbm, autor, autog, autob, expcomp, hlcompr, hlcomprthresh, dcpProf, as, histToneCurve);
 
         if (settings->verbose) {
             printf ("Output image / Auto B&W coefs:   R=%.2f   G=%.2f   B=%.2f\n", autor, autog, autob);
@@ -993,12 +978,6 @@ private:
         // Freeing baseImg because not used anymore
         delete baseImg;
         baseImg = nullptr;
-
-        if (shmap) {
-            delete shmap;
-        }
-
-        shmap = nullptr;
 
         if (pl) {
             pl->setProgress (0.55);
@@ -1074,20 +1053,8 @@ private:
         }
 
         if (((params.colorappearance.enabled && !settings->autocielab) || (!params.colorappearance.enabled)) && params.sharpening.enabled) {
+            ipf.sharpening (labView, params.sharpening);
 
-            float **buffer = new float*[fh];
-
-            for (int i = 0; i < fh; i++) {
-                buffer[i] = new float[fw];
-            }
-
-            ipf.sharpening (labView, (float**)buffer, params.sharpening);
-
-            for (int i = 0; i < fh; i++) {
-                delete [] buffer[i];
-            }
-
-            delete [] buffer;
         }
 
         WaveletParams WaveParams = params.wavelet;
@@ -1166,23 +1133,8 @@ private:
             LUTf CAMBrightCurveQ;
             float CAMMean = NAN;
 
-            if (params.sharpening.enabled) {
-                if (settings->ciecamfloat) {
-                    float d, dj, yb;
-                    ipf.ciecam_02float (cieView, float (adap), 1, 2, labView, &params, customColCurve1, customColCurve2, customColCurve3, dummy, dummy, CAMBrightCurveJ, CAMBrightCurveQ, CAMMean, 5, 1, true, d, dj, yb, 1);
-                } else {
-                    double dd, dj;
-                    ipf.ciecam_02 (cieView, adap, 1, 2, labView, &params, customColCurve1, customColCurve2, customColCurve3, dummy, dummy, CAMBrightCurveJ, CAMBrightCurveQ, CAMMean, 5, 1, true, dd, dj, 1);
-                }
-            } else {
-                if (settings->ciecamfloat) {
-                    float d, dj, yb;
-                    ipf.ciecam_02float (cieView, float (adap), 1, 2, labView, &params, customColCurve1, customColCurve2, customColCurve3, dummy, dummy, CAMBrightCurveJ, CAMBrightCurveQ, CAMMean, 5, 1, true, d, dj, yb, 1);
-                } else {
-                    double dd, dj;
-                    ipf.ciecam_02 (cieView, adap, 1, 2, labView, &params, customColCurve1, customColCurve2, customColCurve3, dummy, dummy, CAMBrightCurveJ, CAMBrightCurveQ, CAMMean, 5, 1, true, dd, dj, 1);
-                }
-            }
+            float d, dj, yb;
+            ipf.ciecam_02float (cieView, float (adap), 1, 2, labView, &params, customColCurve1, customColCurve2, customColCurve3, dummy, dummy, CAMBrightCurveJ, CAMBrightCurveQ, CAMMean, 5, 1, true, d, dj, yb, 1);
         }
 
         delete cieView;
@@ -1201,7 +1153,7 @@ private:
 
         int imw, imh;
         double tmpScale = ipf.resizeScale (&params, fw, fh, imw, imh);
-        bool labResize = params.resize.enabled && params.resize.method != "Nearest" && tmpScale != 1.0;
+        bool labResize = params.resize.enabled && params.resize.method != "Nearest" && (tmpScale != 1.0 || params.prsharpening.enabled);
         LabImage *tmplab;
 
         // crop and convert to rgb16
@@ -1232,33 +1184,23 @@ private:
         }
 
         if (labResize) { // resize lab data
-            // resize image
-            tmplab = new LabImage (imw, imh);
-            ipf.Lanczos (labView, tmplab, tmpScale);
-            delete labView;
-            labView = tmplab;
+            if(labView->W != imw || labView->H != imh) {
+                // resize image
+                tmplab = new LabImage (imw, imh);
+                ipf.Lanczos (labView, tmplab, tmpScale);
+                delete labView;
+                labView = tmplab;
+            }
             cw = labView->W;
             ch = labView->H;
 
             if (params.prsharpening.enabled) {
-                for (int i = 0; i < ch; i++)
+                for (int i = 0; i < ch; i++) {
                     for (int j = 0; j < cw; j++) {
                         labView->L[i][j] = labView->L[i][j] < 0.f ? 0.f : labView->L[i][j];
                     }
-
-                float **buffer = new float*[ch];
-
-                for (int i = 0; i < ch; i++) {
-                    buffer[i] = new float[cw];
                 }
-
-                ipf.sharpening (labView, (float**)buffer, params.prsharpening);
-
-                for (int i = 0; i < ch; i++) {
-                    delete [] buffer[i];
-                }
-
-                delete [] buffer;
+                ipf.sharpening (labView, params.prsharpening);
             }
         }
 
@@ -1461,6 +1403,7 @@ private:
             params.sharpening = params.prsharpening;
         } else {
             params.sharpening.radius *= scale_factor;
+            params.sharpening.deconvradius *= scale_factor;
         }
 
         params.impulseDenoise.thresh *= scale_factor;
@@ -1470,12 +1413,13 @@ private:
         }
 
         params.wavelet.strength *= scale_factor;
-        params.dirpyrDenoise.luma *= scale_factor * scale_factor;
+        double noise_factor = (1.0 - scale_factor);
+        params.dirpyrDenoise.luma *= noise_factor; // * scale_factor;
         //params.dirpyrDenoise.Ldetail += (100 - params.dirpyrDenoise.Ldetail) * scale_factor;
         auto &lcurve = params.dirpyrDenoise.lcurve;
 
         for (size_t i = 2; i < lcurve.size(); i += 4) {
-            lcurve[i] *= min (scale_factor * scale_factor, 1.0);
+            lcurve[i] *= min(noise_factor /* * scale_factor*/, 1.0);
         }
 
         noiseLCurve.Set (lcurve);
@@ -1521,7 +1465,12 @@ private:
         }
 
         if (params.raw.bayersensor.method == procparams::RAWParams::BayerSensor::getMethodString(procparams::RAWParams::BayerSensor::Method::PIXELSHIFT)) {
-            params.raw.bayersensor.method = procparams::RAWParams::BayerSensor::getMethodString(params.raw.bayersensor.pixelShiftLmmse ? procparams::RAWParams::BayerSensor::Method::LMMSE : procparams::RAWParams::BayerSensor::Method::AMAZE);
+            params.raw.bayersensor.method = procparams::RAWParams::BayerSensor::getMethodString(procparams::RAWParams::BayerSensor::Method::RCD);
+        }
+
+        // Use Rcd instead of Amaze for fast export
+        if (params.raw.bayersensor.method == procparams::RAWParams::BayerSensor::getMethodString(procparams::RAWParams::BayerSensor::Method::AMAZE)) {
+            params.raw.bayersensor.method = procparams::RAWParams::BayerSensor::getMethodString(procparams::RAWParams::BayerSensor::Method::RCD);
         }
     }
 

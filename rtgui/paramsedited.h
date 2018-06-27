@@ -54,6 +54,7 @@ public:
     bool hrenabled;
     bool method;
     bool histmatching;
+    bool clampOOG;
 };
 
 class RetinexParamsEdited
@@ -193,6 +194,7 @@ public :
     bool enabled;
     bool matrix;
     bool amount;
+    bool contrast;
     bool uniformity;
 
 };
@@ -202,6 +204,7 @@ class SharpeningParamsEdited
 
 public:
     bool enabled;
+    bool contrast;
     bool radius;
     bool amount;
     bool threshold;
@@ -728,41 +731,27 @@ public:
         bool dcbIterations;
         bool dcbEnhance;
         bool lmmseIterations;
-        bool pixelShiftMotion;
-        bool pixelShiftMotionCorrection;
+        bool dualDemosaicContrast;
         bool pixelShiftMotionCorrectionMethod;
-        bool pixelShiftStddevFactorGreen;
-        bool pixelShiftStddevFactorRed;
-        bool pixelShiftStddevFactorBlue;
         bool pixelShiftEperIso;
-        bool pixelShiftNreadIso;
-        bool pixelShiftPrnu;
         bool pixelShiftSigma;
-        bool pixelShiftSum;
-        bool pixelShiftRedBlueWeight;
         bool pixelShiftShowMotion;
         bool pixelShiftShowMotionMaskOnly;
-        bool pixelShiftAutomatic;
-        bool pixelShiftNonGreenHorizontal;
-        bool pixelShiftNonGreenVertical;
         bool pixelShiftHoleFill;
         bool pixelShiftMedian;
-        bool pixelShiftMedian3;
         bool pixelShiftGreen;
         bool pixelShiftBlur;
         bool pixelShiftSmooth;
-        bool pixelShiftExp0;
-        bool pixelShiftLmmse;
-        bool pixelShiftOneGreen;
         bool pixelShiftEqualBright;
         bool pixelShiftEqualBrightChannel;
         bool pixelShiftNonGreenCross;
-        bool pixelShiftNonGreenCross2;
-        bool pixelShiftNonGreenAmaze;
+        bool pixelShiftDemosaicMethod;
 
         //bool allEnhance;
         bool greenEq;
         bool linenoise;
+        bool linenoiseDirection;
+        bool pdafLinesFilter;
 
         bool isUnchanged() const;
     };
@@ -772,6 +761,7 @@ public:
 
     public:
         bool method;
+        bool dualDemosaicContrast;
         bool ccSteps;
         bool exBlackRed;
         bool exBlackGreen;

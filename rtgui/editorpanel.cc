@@ -1023,6 +1023,7 @@ void EditorPanel::open (Thumbnail* tmb, rtengine::InitialImage* isrc)
     ipc->setPreviewScale (10);  // Important
     tpc->initImage (ipc, tmb->getType() == FT_Raw);
     ipc->setHistogramListener (this);
+    iareapanel->imageArea->indClippedPanel->silentlyDisableSharpMask();
 
 //    iarea->fitZoom ();   // tell to the editorPanel that the next image has to be fitted to the screen
     iareapanel->imageArea->setPreviewHandler (previewHandler);
@@ -1053,13 +1054,6 @@ void EditorPanel::open (Thumbnail* tmb, rtengine::InitialImage* isrc)
     // since there was no resize event
     if (iareapanel->imageArea->mainCropWindow) {
         iareapanel->imageArea->mainCropWindow->cropHandler.newImage (ipc, false);
-
-        // In single tab mode, the image is not always updated between switches
-        // normal redraw don't work, so this is the hard way
-        // Disabled this with Issue 2435 because it seems to work fine now
-//        if (!options.tabbedUI && iareapanel->imageArea->mainCropWindow->getZoomFitVal() == 1.0) {
-        iareapanel->imageArea->mainCropWindow->cropHandler.update();
-//        }
     } else {
         Gtk::Allocation alloc;
         iareapanel->imageArea->on_resized (alloc);
@@ -1978,6 +1972,7 @@ bool EditorPanel::saveImmediately (const Glib::ustring &filename, const SaveForm
 {
     rtengine::procparams::ProcParams pparams;
     ipc->getParams (&pparams);
+
     rtengine::ProcessingJob *job = rtengine::ProcessingJob::create (ipc->getInitialImage(), pparams);
 
     // save immediately
@@ -1985,7 +1980,9 @@ bool EditorPanel::saveImmediately (const Glib::ustring &filename, const SaveForm
 
     int err = 0;
 
-    if (sf.format == "tif") {
+    if (gimpPlugin) {
+        err = img->saveAsTIFF (filename, 32, true);
+    } else if (sf.format == "tif") {
         err = img->saveAsTIFF (filename, sf.tiffBits, sf.tiffUncompressed);
     } else if (sf.format == "png") {
         err = img->saveAsPNG (filename, sf.pngBits);
@@ -2202,7 +2199,7 @@ void EditorPanel::beforeAfterToggled ()
         rtengine::RenderingIntent intent;
         ipc->getMonitorProfile(monitorProfile, intent);
         beforeIpc->setMonitorProfile(monitorProfile, intent);
-        
+
         beforeIarea->imageArea->setPreviewHandler (beforePreviewHandler);
         beforeIarea->imageArea->setImProcCoordinator (beforeIpc);
 

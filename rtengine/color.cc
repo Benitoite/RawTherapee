@@ -719,7 +719,7 @@ void Color::rgb2hsv(float r, float g, float b, float &h, float &s, float &v)
     if (del_Max < 0.00001 && del_Max > -0.00001) { // no fabs, slow!
         s = 0.f;
     } else {
-        s = del_Max / var_Max;
+        s = del_Max / (var_Max == 0.0 ? 1.0 : var_Max);
 
         if (var_R == var_Max) {
             h = (var_G - var_B) / del_Max;
@@ -1747,15 +1747,41 @@ void Color::Lab2XYZ(vfloat L, vfloat a, vfloat b, vfloat &x, vfloat &y, vfloat &
 }
 #endif // __SSE2__
 
+inline float Color::computeXYZ2Lab(float f)
+{
+    if (f < 0.f) {
+        return 327.68 * ((kappa * f / MAXVALF + 16.0) / 116.0);
+    } else if (f > 65535.f) {
+        return (327.68f * xcbrtf(f / MAXVALF));
+    } else {
+        return cachef[f];
+    }
+}
+
+
+inline float Color::computeXYZ2LabY(float f)
+{
+    if (f < 0.f) {
+        return 327.68 * (kappa * f / MAXVALF);
+    } else if (f > 65535.f) {
+        return 327.68f * (116.f * xcbrtf(f / MAXVALF) - 16.f);
+    } else {
+        return cachefy[f];
+    }
+}
+
+
 void Color::RGB2Lab(float *R, float *G, float *B, float *L, float *a, float *b, const float wp[3][3], int width)
 {
 
 #ifdef __SSE2__
+    vfloat minvalfv = F2V(0.f);
     vfloat maxvalfv = F2V(MAXVALF);
     vfloat c500v = F2V(500.f);
     vfloat c200v = F2V(200.f);
 #endif
     int i = 0;
+    
 #ifdef __SSE2__
     for(;i < width - 3; i+=4) {
         const vfloat rv = LVFU(R[i]);
@@ -1766,17 +1792,18 @@ void Color::RGB2Lab(float *R, float *G, float *B, float *L, float *a, float *b, 
         const vfloat zv = F2V(wp[2][0]) * rv + F2V(wp[2][1]) * gv + F2V(wp[2][2]) * bv;
 
         vmask maxMask = vmaskf_gt(vmaxf(xv, vmaxf(yv, zv)), maxvalfv);
-        if (_mm_movemask_ps((vfloat)maxMask)) {
+        vmask minMask = vmaskf_lt(vminf(xv, vminf(yv, zv)), minvalfv);
+        if (_mm_movemask_ps((vfloat)maxMask) || _mm_movemask_ps((vfloat)minMask)) {
             // take slower code path for all 4 pixels if one of the values is > MAXVALF. Still faster than non SSE2 version
             for(int k = 0; k < 4; ++k) {
                 float x = xv[k];
                 float y = yv[k];
                 float z = zv[k];
-                float fx = (x <= 65535.f ? cachef[x] : (327.68f * xcbrtf(x / MAXVALF)));
-                float fy = (y <= 65535.f ? cachef[y] : (327.68f * xcbrtf(y / MAXVALF)));
-                float fz = (z <= 65535.f ? cachef[z] : (327.68f * xcbrtf(z / MAXVALF)));
+                float fx = computeXYZ2Lab(x);
+                float fy = computeXYZ2Lab(y);
+                float fz = computeXYZ2Lab(z);
 
-                L[i + k] = (y <= 65535.0f ? cachefy[y] : 327.68f * (116.f * xcbrtf(y / MAXVALF) - 16.f));
+                L[i + k] = computeXYZ2LabY(y);
                 a[i + k] = (500.f * (fx - fy) );
                 b[i + k] = (200.f * (fy - fz) );
             }
@@ -1800,13 +1827,52 @@ void Color::RGB2Lab(float *R, float *G, float *B, float *L, float *a, float *b, 
         float z = wp[2][0] * rv + wp[2][1] * gv + wp[2][2] * bv;
         float fx, fy, fz;
 
-        fx = (x <= 65535.0f ? cachef[x] : (327.68f * xcbrtf(x / MAXVALF)));
-        fy = (y <= 65535.0f ? cachef[y] : (327.68f * xcbrtf(y / MAXVALF)));
-        fz = (z <= 65535.0f ? cachef[z] : (327.68f * xcbrtf(z / MAXVALF)));
+        fx = computeXYZ2Lab(x);
+        fy = computeXYZ2Lab(y);
+        fz = computeXYZ2Lab(z);
 
-        L[i] = (y <= 65535.0f ? cachefy[y] : 327.68f * (116.f * xcbrtf(y / MAXVALF) - 16.f));
+        L[i] = computeXYZ2LabY(y);
         a[i] = 500.0f * (fx - fy);
         b[i] = 200.0f * (fy - fz);
+    }
+}
+
+void Color::RGB2L(float *R, float *G, float *B, float *L, const float wp[3][3], int width)
+{
+
+#ifdef __SSE2__
+    vfloat minvalfv = F2V(0.f);
+    vfloat maxvalfv = F2V(MAXVALF);
+#endif
+    int i = 0;
+    
+#ifdef __SSE2__
+    for(;i < width - 3; i+=4) {
+        const vfloat rv = LVFU(R[i]);
+        const vfloat gv = LVFU(G[i]);
+        const vfloat bv = LVFU(B[i]);
+        const vfloat yv = F2V(wp[1][0]) * rv + F2V(wp[1][1]) * gv + F2V(wp[1][2]) * bv;
+
+        vmask maxMask = vmaskf_gt(yv, maxvalfv);
+        vmask minMask = vmaskf_lt(yv, minvalfv);
+        if (_mm_movemask_ps((vfloat)vorm(maxMask, minMask))) {
+            // take slower code path for all 4 pixels if one of the values is > MAXVALF. Still faster than non SSE2 version
+            for(int k = 0; k < 4; ++k) {
+                float y = yv[k];
+                L[i + k] = computeXYZ2LabY(y);
+            }
+        } else {
+            STVFU(L[i], cachefy[yv]);
+        }
+    }
+#endif
+    for(;i < width; ++i) {
+        const float rv = R[i];
+        const float gv = G[i];
+        const float bv = B[i];
+        float y = wp[1][0] * rv + wp[1][1] * gv + wp[1][2] * bv;
+
+        L[i] = computeXYZ2LabY(y);
     }
 }
 
@@ -1818,11 +1884,11 @@ void Color::XYZ2Lab(float X, float Y, float Z, float &L, float &a, float &b)
     float y = Y;
     float fx, fy, fz;
 
-    fx = (x <= 65535.0f ? cachef[x] : (327.68f * xcbrtf(x / MAXVALF)));
-    fy = (y <= 65535.0f ? cachef[y] : (327.68f * xcbrtf(y / MAXVALF)));
-    fz = (z <= 65535.0f ? cachef[z] : (327.68f * xcbrtf(z / MAXVALF)));
+    fx = computeXYZ2Lab(x);
+    fy = computeXYZ2Lab(y);
+    fz = computeXYZ2Lab(z);
 
-    L = (y <= 65535.0f ? cachefy[y] : 327.68f * (116.f * xcbrtf(y / MAXVALF) - 16.f));
+    L = computeXYZ2LabY(y);
     a = (500.0f * (fx - fy) );
     b = (200.0f * (fy - fz) );
 }
@@ -1854,11 +1920,11 @@ void Color::Yuv2Lab(float Yin, float u, float v, float &L, float &a, float &b, c
 
     gamutmap(X, Y, Z, wp);
 
-    float fx = (X <= 65535.0 ? cachef[X] : (327.68 * std::cbrt(X / MAXVALF)));
-    float fy = (Y <= 65535.0 ? cachef[Y] : (327.68 * std::cbrt(Y / MAXVALF)));
-    float fz = (Z <= 65535.0 ? cachef[Z] : (327.68 * std::cbrt(Z / MAXVALF)));
+    float fx = computeXYZ2Lab(X);
+    float fy = computeXYZ2Lab(Y);
+    float fz = computeXYZ2Lab(Z);
 
-    L = (Y <= 65535.0f ? cachefy[Y] : 327.68f * (116.f * xcbrtf(Y / MAXVALF) - 16.f));
+    L = computeXYZ2LabY(Y);
     a = (500.0 * (fx - fy) );
     b = (200.0 * (fy - fz) );
 }
@@ -2291,6 +2357,46 @@ void Color::AllMunsellLch(bool lumaMuns, float Lprov1, float Loldd, float HH, fl
 }
 
 /*
+ * AllMunsellLch correction
+ * Copyright (c) 2012  Jacques Desmis <jdesmis@gmail.com>
+ *
+ * This function corrects the color (hue) for changes in chromaticity and luminance
+ * to use in a "for" or "do while" statement
+ *
+ * Parameters:
+ *    float Lprov1: luminance
+ *    float HH: hue before
+ *    float Chprov1, CC : chroma after and before
+ *    float coorectionHuechroma : correction Hue for chromaticity (saturation)
+ */
+void Color::AllMunsellLch(float Lprov1, float HH, float Chprov1, float CC, float &correctionHuechroma)
+{
+
+    float correctionHue = 0.f, correctionHueLum = 0.f;
+    bool correctL;
+
+    if(CC >= 6.f && CC < 140.f) {          //if C > 140 we say C=140 (only in Prophoto ...with very large saturation)
+        static const float huelimit[8] = { -2.48f, -0.55f, 0.44f, 1.52f, 1.87f, 3.09f, -0.27f, 0.44f}; //limits hue of blue-purple, red-yellow, green-yellow, red-purple
+
+        if (Chprov1 > 140.f) {
+            Chprov1 = 139.f;    //limits of LUTf
+        }
+
+        Chprov1 = rtengine::max(Chprov1, 6.f);
+
+        for(int zo = 1; zo <= 4; zo++) {
+            if(HH > huelimit[2 * zo - 2] && HH < huelimit[2 * zo - 1]) {
+                //zone=zo;
+                correctL = false;
+                MunsellLch (Lprov1, HH, Chprov1, CC, correctionHue, zo, correctionHueLum, correctL);       //munsell chroma correction
+                correctionHuechroma = correctionHue;  //preserve
+                break;
+            }
+        }
+    }
+}
+
+/*
  * GamutLchonly correction
  * Copyright (c)2012  Jacques Desmis <jdesmis@gmail.com> and Jean-Christophe Frisch <natureh@free.fr>
  *
@@ -2386,7 +2492,7 @@ void Color::gamutLchonly (float HH, float &Lprov1, float &Chprov1, float &R, flo
             }
 
             inGamut = false;
-        } else if (!isHLEnabled && (R > ClipLevel || G > ClipLevel || B > ClipLevel)) {
+        } else if (!isHLEnabled && rtengine::max(R, G, B) > ClipLevel && rtengine::min(R, G, B) <= ClipLevel) {
 
             // if "highlight reconstruction" is enabled or the point is completely white (clipped, no color), don't control Gamut
 #ifdef _DEBUG
@@ -2511,7 +2617,7 @@ void Color::gamutLchonly (float HH, float2 sincosval, float &Lprov1, float &Chpr
             }
 
             inGamut = false;
-        } else if (!isHLEnabled && (R > ClipLevel || G > ClipLevel || B > ClipLevel)) {
+        } else if (!isHLEnabled && rtengine::max(R, G, B) > ClipLevel && rtengine::min(R, G, B) <= ClipLevel) {
 
             // if "highlight reconstruction" is enabled or the point is completely white (clipped, no color), don't control Gamut
 #ifdef _DEBUG
@@ -2532,6 +2638,109 @@ void Color::gamutLchonly (float HH, float2 sincosval, float &Lprov1, float &Chpr
         }
     } while (!inGamut);
 
+    //end first gamut control
+}
+
+/*
+ * GamutLchonly correction
+ * Copyright (c)2012  Jacques Desmis <jdesmis@gmail.com> and Jean-Christophe Frisch <natureh@free.fr>
+ *
+ * This function puts the data (Lab) in the gamut of "working profile":
+ * it returns the corrected values of the chromaticity and luminance
+ *
+ * float HH : hue
+ * float2 sincosval : sin and cos of HH
+ * float Lprov1 : input luminance value, sent back corrected
+ * float Chprov1: input chroma value, sent back corrected
+ * float wip : working profile
+ * bool isHLEnabled : if "highlight reconstruction " is enabled
+ * float coef : a float number between [0.95 ; 1.0[... the nearest it is from 1.0, the more precise it will be... and the longer too as more iteration will be necessary)
+ */
+void Color::gamutLchonly (float HH, float2 sincosval, float &Lprov1, float &Chprov1, float &saturation, const float wip[3][3], const bool isHLEnabled, const float lowerCoef, const float higherCoef)
+{
+    constexpr float ClipLevel = 1.f;
+    bool inGamut;
+    float R, G, B;
+
+    do {
+        inGamut = true;
+
+        float aprov1 = Chprov1 * sincosval.y;
+        float bprov1 = Chprov1 * sincosval.x;
+
+        //conversion Lab RGB to limit Lab values - this conversion is useful before Munsell correction
+        float fy = c1By116 * Lprov1 + c16By116;
+        float fx = 0.002f * aprov1 + fy;
+        float fz = fy - 0.005f * bprov1;
+
+        float x_ = f2xyz(fx) * D50x;
+        float z_ = f2xyz(fz) * D50z;
+        float y_ = (Lprov1 > epskap) ? fy * fy * fy : Lprov1 / kappaf;
+
+        xyz2rgb(x_, y_, z_, R, G, B, wip);
+
+        // gamut control before saturation to put Lab values in future gamut, but not RGB
+        if (rtengine::min(R, G, B) < 0.f) {
+
+            Lprov1 = rtengine::max(Lprov1, 0.1f);
+
+            //gamut for L with ultra blue : we can improve the algorithm ... thinner, and other color ???
+            if(HH < -0.9f && HH > -1.55f ) {//ultra blue
+                if(Chprov1 > 160.f) if (Lprov1 < 5.f) {
+                        Lprov1 = 5.f;    //very very very very high chroma
+                    }
+
+                if(Chprov1 > 140.f) if (Lprov1 < 3.5f) {
+                        Lprov1 = 3.5f;
+                    }
+
+                if(Chprov1 > 120.f) if (Lprov1 < 2.f) {
+                        Lprov1 = 2.f;
+                    }
+
+                if(Chprov1 > 105.f) if (Lprov1 < 1.f) {
+                        Lprov1 = 1.f;
+                    }
+
+                if(Chprov1 > 90.f) if (Lprov1 < 0.7f) {
+                        Lprov1 = 0.7f;
+                    }
+
+                if(Chprov1 > 50.f) if (Lprov1 < 0.5f) {
+                        Lprov1 = 0.5f;
+                    }
+
+                if(Chprov1 > 20.f) if (Lprov1 < 0.4f) {
+                        Lprov1 = 0.4f;
+                    }
+            }
+
+            Chprov1 *= higherCoef; // decrease the chromaticity value
+
+            if (Chprov1 <= 3.f) {
+                Lprov1 += lowerCoef;
+            }
+
+            inGamut = false;
+        } else if (!isHLEnabled && rtengine::max(R, G, B) > ClipLevel && rtengine::min(R, G, B) <= ClipLevel) {
+
+            // if "highlight reconstruction" is enabled or the point is completely white (clipped, no color), don't control Gamut
+
+            if (Lprov1 > 99.999f) {
+                Lprov1 = 99.98f;
+            }
+
+            Chprov1 *= higherCoef;
+
+            if (Chprov1 <= 3.f) {
+                Lprov1 -= lowerCoef;
+            }
+
+            inGamut = false;
+        }
+    } while (!inGamut);
+
+    saturation = 1.f - (rtengine::min(R, G, B) / rtengine::max(R, G, B));
     //end first gamut control
 }
 
@@ -2585,7 +2794,7 @@ void Color::gamutLchonly (float2 sincosval, float &Lprov1, float &Chprov1, const
             }
 
             inGamut = false;
-        } else if (!isHLEnabled && (R > ClipLevel || G > ClipLevel || B > ClipLevel)) {
+        } else if (!isHLEnabled && rtengine::max(R, G, B) > ClipLevel && rtengine::min(R, G, B) <= ClipLevel) {
 
             // if "highlight reconstruction" is enabled or the point is completely white (clipped, no color), don't control Gamut
 #ifdef _DEBUG
@@ -4160,12 +4369,12 @@ void Color::SkinSat (float lum, float hue, float chrom, float &satreduc)
 {
 
     // to be adapted...by tests
-    float reduction = 0.3f;         // use "reduction" for  "real" skin color : take into account a slightly usage of contrast and saturation in RT if option "skin" = 1
-    float extendedreduction = 0.4f; // use "extendedreduction" for wide area skin color, useful if not accurate colorimetry or if the user has changed hue and saturation
-    float extendedreduction2 = 0.6f; // use "extendedreduction2" for wide area for transition
+    constexpr float reduction = 0.3f;         // use "reduction" for  "real" skin color : take into account a slightly usage of contrast and saturation in RT if option "skin" = 1
+    constexpr float extendedreduction = 0.4f; // use "extendedreduction" for wide area skin color, useful if not accurate colorimetry or if the user has changed hue and saturation
+    constexpr float extendedreduction2 = 0.6f; // use "extendedreduction2" for wide area for transition
 
-    float C9 = 8.0, C8 = 15.0, C7 = 12.0, C4 = 7.0, C3 = 5.0, C2 = 5.0, C1 = 5.0;
-    float H9 = 0.05, H8 = 0.25, H7 = 0.1, H4 = 0.02, H3 = 0.02, H2 = 0.1, H1 = 0.1, H10 = -0.2, H11 = -0.2; //H10 and H11 are curious...H11=-0.8 ??
+    constexpr float C9 = 8.f, C8 = 15.f, C7 = 12.f, C4 = 7.f, C3 = 5.f, C2 = 5.f, C1 = 5.f;
+    constexpr float H9 = 0.05f, H8 = 0.25f, H7 = 0.1f, H4 = 0.02f, H3 = 0.02f, H2 = 0.1f, H1 = 0.1f, H10 = -0.2f, H11 = -0.2f; //H10 and H11 are curious...H11=-0.8 ??
 
     if (lum >= 85.f) {
         if((hue > (0.78f - H9) && hue < (1.18f + H9)) && (chrom > 8.f && chrom < (14.f + C9))) {

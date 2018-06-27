@@ -564,21 +564,31 @@ std::vector<Glib::ustring> FileCatalog::getFileList ()
 
         auto enumerator = dir->enumerate_children ("standard::name");
 
-        while (auto file = enumerator->next_file ()) {
+        while (true) {
+            try {
+                auto file = enumerator->next_file ();
+                if (!file) {
+                    break;
+                }
 
-            const Glib::ustring fname = file->get_name ();
+                const Glib::ustring fname = file->get_name ();
 
-            auto lastdot = fname.find_last_of ('.');
-            if (lastdot >= fname.length () - 1) {
-                continue;
+                auto lastdot = fname.find_last_of ('.');
+                if (lastdot >= fname.length () - 1) {
+                    continue;
+                }
+
+                const auto fext = fname.substr (lastdot + 1).lowercase ();
+                if (extensions.count (fext) == 0) {
+                    continue;
+                }
+
+                names.emplace_back (Glib::build_filename (selectedDirectory, fname));
+            } catch (Glib::Exception& exception) {
+                if (options.rtSettings.verbose) {
+                    std::cerr << exception.what () << std::endl;
+                }
             }
-
-            const auto fext = fname.substr (lastdot + 1).lowercase ();
-            if (extensions.count (fext) == 0) {
-                continue;
-            }
-
-            names.emplace_back (Glib::build_filename (selectedDirectory, fname));
         }
 
     } catch (Glib::Exception& exception) {
@@ -674,7 +684,7 @@ void FileCatalog::_refreshProgressBar ()
     // Also mention that this progress bar only measures the FIRST pass (quick thumbnails)
     // The second, usually longer pass is done multithreaded down in the single entries and is NOT measured by this
     if (!inTabMode) {
-        GThreadLock lock; // All GUI acces from idle_add callbacks or separate thread HAVE to be protected
+        GThreadLock lock; // All GUI access from idle_add callbacks or separate thread HAVE to be protected
 
         Gtk::Notebook *nb = (Gtk::Notebook *)(filepanel->get_parent());
         Gtk::Grid* grid = Gtk::manage (new Gtk::Grid ());
@@ -790,7 +800,7 @@ void FileCatalog::previewsFinishedUI ()
 {
 
     {
-        GThreadLock lock; // All GUI acces from idle_add callbacks or separate thread HAVE to be protected
+        GThreadLock lock; // All GUI access from idle_add callbacks or separate thread HAVE to be protected
         redrawAll ();
         previewsToLoad = 0;
 
@@ -872,7 +882,7 @@ void FileCatalog::refreshHeight ()
 {
     int newHeight = fileBrowser->getEffectiveHeight();
 
-    if (newHeight < 5) {  // This may occure if there's no thumbnail.
+    if (newHeight < 5) {  // This may occur if there's no thumbnail.
         int w, h;
         get_size_request(w, h);
         newHeight = h;
@@ -942,9 +952,8 @@ void FileCatalog::deleteRequested  (std::vector<FileBrowserEntry*> tbe, bool inc
         return;
     }
 
-    Gtk::MessageDialog msd (M("FILEBROWSER_DELETEDLGLABEL"), true, Gtk::MESSAGE_QUESTION, Gtk::BUTTONS_YES_NO, true);
+    Gtk::MessageDialog msd (getToplevelWindow(this), M("FILEBROWSER_DELETEDLGLABEL"), true, Gtk::MESSAGE_QUESTION, Gtk::BUTTONS_YES_NO, true);
     msd.set_secondary_text(Glib::ustring::compose ( inclBatchProcessed ? M("FILEBROWSER_DELETEDLGMSGINCLPROC") : M("FILEBROWSER_DELETEDLGMSG"), tbe.size()), true);
-
     if (msd.run() == Gtk::RESPONSE_YES) {
         for (unsigned int i = 0; i < tbe.size(); i++) {
             const auto fname = tbe[i]->filename;
@@ -1128,10 +1137,6 @@ void FileCatalog::developRequested (std::vector<FileBrowserEntry*> tbe, bool fas
 
                     if (options.fastexport_bypass_dirpyrDenoise) {
                         params.dirpyrDenoise.enabled = false;
-                    }
-
-                    if (options.fastexport_bypass_sh_hq) {
-                        params.sh.hq = false;
                     }
 
                     if (options.fastexport_bypass_dirpyrequalizer) {

@@ -261,7 +261,7 @@ ToolPanelCoordinator::~ToolPanelCoordinator ()
     delete toolBar;
 }
 
-void ToolPanelCoordinator::imageTypeChanged (bool isRaw, bool isBayer, bool isXtrans)
+void ToolPanelCoordinator::imageTypeChanged (bool isRaw, bool isBayer, bool isXtrans, bool isMono)
 {
     if (isRaw) {
         if (isBayer) {
@@ -292,7 +292,20 @@ void ToolPanelCoordinator::imageTypeChanged (bool isRaw, bool isBayer, bool isXt
             };
             idle_register.add(func, this);
         }
-        else {
+        else if (isMono) {
+            const auto func = [](gpointer data) -> gboolean {
+                ToolPanelCoordinator* const self = static_cast<ToolPanelCoordinator*>(data);
+
+                self->rawPanelSW->set_sensitive (true);
+                self->sensorbayer->FoldableToolPanel::hide();
+                self->sensorxtrans->FoldableToolPanel::hide();
+                self->preprocess->FoldableToolPanel::hide();
+                self->flatfield->FoldableToolPanel::show();
+
+                return FALSE;
+            };
+            idle_register.add(func, this);
+        } else {
             const auto func = [](gpointer data) -> gboolean {
                 ToolPanelCoordinator* const self = static_cast<ToolPanelCoordinator*>(data);
 
@@ -565,7 +578,6 @@ void ToolPanelCoordinator::updateToolState()
         }
 
         wavelet->updateToolState (temp);
-        wavelet->setExpanded (true);
         retinex->updateToolState (temp);
     }
 }
@@ -644,6 +656,16 @@ void ToolPanelCoordinator::spotWBselected (int x, int y, Thumbnail* thm)
     }
 }
 
+void ToolPanelCoordinator::sharpMaskSelected(bool sharpMask)
+{
+
+    if (!ipc) {
+        return;
+    }
+    ipc->beginUpdateParams ();
+    ipc->setSharpMask(sharpMask);
+    ipc->endUpdateParams (rtengine::EvShrEnabled);
+}
 
 
 
@@ -845,7 +867,7 @@ bool ToolPanelCoordinator::handleShortcutKey (GdkEventKey* event)
 
 void ToolPanelCoordinator::updateVScrollbars (bool hide)
 {
-    GThreadLock lock; // All GUI acces from idle_add callbacks or separate thread HAVE to be protected
+    GThreadLock lock; // All GUI access from idle_add callbacks or separate thread HAVE to be protected
     Gtk::PolicyType policy = hide ? Gtk::POLICY_NEVER : Gtk::POLICY_AUTOMATIC;
     exposurePanelSW->set_policy     (Gtk::POLICY_AUTOMATIC, policy);
     detailsPanelSW->set_policy      (Gtk::POLICY_AUTOMATIC, policy);
@@ -861,7 +883,7 @@ void ToolPanelCoordinator::updateVScrollbars (bool hide)
 
 void ToolPanelCoordinator::updateTabsHeader (bool useIcons)
 {
-    GThreadLock lock; // All GUI acces from idle_add callbacks or separate thread HAVE to be protected
+    GThreadLock lock; // All GUI access from idle_add callbacks or separate thread HAVE to be protected
     TOITypes type = useIcons ? TOI_ICON : TOI_TEXT;
 
     toiE->switchTo (type);
@@ -887,7 +909,7 @@ void ToolPanelCoordinator::updateTabsUsesIcons (bool useIcons)
 
 void ToolPanelCoordinator::toolSelected (ToolMode tool)
 {
-    GThreadLock lock; // All GUI acces from idle_add callbacks or separate thread HAVE to be protected
+    GThreadLock lock; // All GUI access from idle_add callbacks or separate thread HAVE to be protected
 
     switch (tool) {
         case TMCropSelect:

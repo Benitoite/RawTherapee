@@ -114,7 +114,6 @@ class Preferences : public Gtk::Dialog, public ProfileStoreListener
     Gtk::CheckButton* monBPC;
     Gtk::CheckButton* cbAutoMonProfile;
     //Gtk::CheckButton* cbAutocielab;
-    Gtk::CheckButton* cbciecamfloat;
     Gtk::CheckButton* cbdaubech;
     Gtk::SpinButton*  hlThresh;
     Gtk::SpinButton*  shThresh;
@@ -166,6 +165,7 @@ class Preferences : public Gtk::Dialog, public ProfileStoreListener
     Gtk::SpinButton*  rgbDenoiseTreadLimitSB;
     Gtk::SpinButton*  clutCacheSizeSB;
     Gtk::SpinButton*  maxInspectorBuffersSB;
+    Gtk::ComboBoxText *thumbnailInspectorMode;
 
     Gtk::CheckButton* ckbmenuGroupRank;
     Gtk::CheckButton* ckbmenuGroupLabel;

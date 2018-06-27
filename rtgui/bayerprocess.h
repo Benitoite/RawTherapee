@@ -39,9 +39,10 @@ protected:
     CheckBox* dcbEnhance;
     Gtk::VBox *lmmseOptions;
     Adjuster* lmmseIterations;
-    Gtk::VBox *pixelShiftFrame;
+    Gtk::Frame *pixelShiftFrame;
     Gtk::VBox *pixelShiftOptions;
     MyComboBoxText* pixelShiftMotionMethod;
+    MyComboBoxText* pixelShiftDemosaicMethod;
     CheckBox* pixelShiftShowMotion;
     CheckBox* pixelShiftShowMotionMaskOnly;
     CheckBox* pixelShiftNonGreenCross;
@@ -49,52 +50,36 @@ protected:
     CheckBox* pixelShiftBlur;
     CheckBox* pixelShiftHoleFill;
     CheckBox* pixelShiftMedian;
-//    CheckBox* pixelShiftOneGreen;
-    CheckBox* pixelShiftLmmse;
     CheckBox* pixelShiftEqualBright;
     CheckBox* pixelShiftEqualBrightChannel;
     Adjuster* pixelShiftSmooth;
     Adjuster* pixelShiftEperIso;
     Adjuster* pixelShiftSigma;
-#ifdef PIXELSHIFTDEV
-    Adjuster* pixelShiftSum;
-    Adjuster* pixelShiftMotion;
-    MyComboBoxText* pixelShiftMotionCorrection;
-    CheckBox* pixelShiftAutomatic;
-    CheckBox* pixelShiftNonGreenHorizontal;
-    CheckBox* pixelShiftNonGreenVertical;
-    CheckBox* pixelShiftNonGreenCross2;
-    CheckBox* pixelShiftNonGreenAmaze;
-    CheckBox* pixelShiftExp0;
-    CheckBox* pixelShiftMedian3;
-    Adjuster* pixelShiftStddevFactorGreen;
-    Adjuster* pixelShiftStddevFactorRed;
-    Adjuster* pixelShiftStddevFactorBlue;
-    Adjuster* pixelShiftNreadIso;
-    Adjuster* pixelShiftPrnu;
-    Adjuster* pixelShiftRedBlueWeight;
-#endif
+    Gtk::VBox *dualDemosaicOptions;
+    Adjuster* dualDemosaicContrast;
     int oldMethod;
 
     IdleRegister idle_register;
+    rtengine::ProcEvent EvDemosaicContrast;
+    rtengine::ProcEvent EvDemosaicPixelshiftDemosaicMethod;
 public:
 
     BayerProcess ();
 
-    void read           (const rtengine::procparams::ProcParams* pp, const ParamsEdited* pedited = nullptr);
-    void write          (rtengine::procparams::ProcParams* pp, ParamsEdited* pedited = nullptr);
-    void setBatchMode   (bool batchMode);
-    void setDefaults    (const rtengine::procparams::ProcParams* defParams, const ParamsEdited* pedited = nullptr);
+    void read(const rtengine::procparams::ProcParams* pp, const ParamsEdited* pedited = nullptr);
+    void write(rtengine::procparams::ProcParams* pp, ParamsEdited* pedited = nullptr);
+    void setAdjusterBehavior(bool falsecoloradd, bool iteradd, bool dualdemozecontrastadd, bool pssigmaadd, bool pssmoothadd, bool pseperisoadd);
+    void trimValues(rtengine::procparams::ProcParams* pp);
+    void setBatchMode(bool batchMode);
+    void setDefaults(const rtengine::procparams::ProcParams* defParams, const ParamsEdited* pedited = nullptr);
 
-    void methodChanged ();
-    void imageNumberChanged ();
-    void adjusterChanged (Adjuster* a, double newval);
-    void checkBoxToggled (CheckBox* c, CheckValue newval);
+    void methodChanged();
+    void imageNumberChanged();
+    void adjusterChanged(Adjuster* a, double newval);
+    void checkBoxToggled(CheckBox* c, CheckValue newval);
     void pixelShiftMotionMethodChanged();
+    void pixelShiftDemosaicMethodChanged();
     void FrameCountChanged(int n, int frameNum);
-#ifdef PIXELSHIFTDEV
-    void psMotionCorrectionChanged ();
-#endif
 };
 
 #endif

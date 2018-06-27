@@ -160,7 +160,7 @@ ICMPanel::ICMPanel () : FoldableToolPanel(this, "icm", M("TP_ICM_LABEL")), iunch
     wnames = Gtk::manage (new MyComboBoxText ());
     wVBox->pack_start (*wnames, Gtk::PACK_SHRINK);
 
-    std::vector<Glib::ustring> wpnames = rtengine::ICCStore::getWorkingProfiles();
+    std::vector<Glib::ustring> wpnames = rtengine::ICCStore::getInstance()->getWorkingProfiles();
 
     for (size_t i = 0; i < wpnames.size(); i++) {
         wnames->append (wpnames[i]);
@@ -297,6 +297,10 @@ ICMPanel::ICMPanel () : FoldableToolPanel(this, "icm", M("TP_ICM_LABEL")), iunch
     ipDialog->add_filter (filter_icc);
     ipDialog->add_filter (filter_iccdng);
     ipDialog->add_filter (filter_any);
+#ifdef WIN32
+    ipDialog->set_show_hidden(true);  // ProgramData is hidden on Windows
+#endif
+
 
     oldip = "";
 

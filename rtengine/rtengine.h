@@ -120,9 +120,12 @@ public:
     virtual std::string getOrientation (unsigned int frame = 0) const = 0;
 
     /** @return true if the file is a PixelShift shot (Pentax and Sony bodies) */
-    virtual bool getPixelShift (unsigned int frame = 0) const = 0;
+    virtual bool getPixelShift () const = 0;
     /** @return false: not an HDR file ; true: single or multi-frame HDR file (e.g. Pentax HDR raw file or 32 bit float DNG file or Log compressed) */
     virtual bool getHDR (unsigned int frame = 0) const = 0;
+
+    /** @return false: not an HDR file ; true: single or multi-frame HDR file (e.g. Pentax HDR raw file or 32 bit float DNG file or Log compressed) */
+    virtual std::string getImageType (unsigned int frame) const = 0;
     /** @return the sample format based on MetaData */
     virtual IIOSampleFormat getSampleFormat (unsigned int frame = 0) const = 0;
 
@@ -359,7 +362,7 @@ class ImageTypeListener
 {
 public :
     virtual ~ImageTypeListener() = default;
-    virtual void imageTypeChanged (bool isRaw, bool isBayer, bool isXtrans) = 0;
+    virtual void imageTypeChanged (bool isRaw, bool isBayer, bool isXtrans, bool is_Mono = false) = 0;
 };
 
 class WaveletListener
@@ -399,8 +402,8 @@ class StagedImageProcessor
 {
 
 public:
-    /** Returns the inital image corresponding to the image processor.
-      * @return the inital image corresponding to the image processor */
+    /** Returns the initial image corresponding to the image processor.
+      * @return the initial image corresponding to the image processor */
     virtual InitialImage* getInitialImage () = 0;
     /** Returns the current processing parameters.
       * @param dst is the location where the image processing parameters are copied (it is assumed that the memory is allocated by the caller) */
@@ -479,6 +482,7 @@ public:
     virtual void        getMonitorProfile       (Glib::ustring& monitorProfile, RenderingIntent& intent) const = 0;
     virtual void        setSoftProofing         (bool softProof, bool gamutCheck) = 0;
     virtual void        getSoftProofing         (bool &softProof, bool &gamutCheck) = 0;
+    virtual void        setSharpMask            (bool sharpMask) = 0;
 
     virtual ~StagedImageProcessor () {}
 
@@ -501,7 +505,7 @@ int init (const Settings* s, Glib::ustring baseDir, Glib::ustring userSettingsDi
 /** Cleanup the RT engine (static variables) */
 void cleanup ();
 
-/** This class  holds all the necessary informations to accomplish the full processing of the image */
+/** This class  holds all the necessary information to accomplish the full processing of the image */
 class ProcessingJob
 {
 
@@ -526,7 +530,7 @@ public:
     static ProcessingJob* create (InitialImage* initialImage, const procparams::ProcParams& pparams, bool fast = false);
 
     /** Cancels and destroys a processing job. The reference count of the corresponding initialImage (if any) is decreased. After the call of this function the ProcessingJob instance
-      * gets invalid, you must not use it any more. Dont call this function while the job is being processed.
+      * gets invalid, you must not use it any more. Don't call this function while the job is being processed.
       * @param job is the job to destroy */
     static void destroy (ProcessingJob* job);
 
@@ -536,7 +540,7 @@ public:
 /** This function performs all the image processinf steps corresponding to the given ProcessingJob. It returns when it is ready, so it can be slow.
    * The ProcessingJob passed becomes invalid, you can not use it any more.
    * @param job the ProcessingJob to cancel.
-   * @param errorCode is the error code if an error occured (e.g. the input image could not be loaded etc.)
+   * @param errorCode is the error code if an error occurred (e.g. the input image could not be loaded etc.)
    * @param pl is an optional ProgressListener if you want to keep track of the progress
    * @return the resulting image, with the output profile applied, exif and iptc data set. You have to save it or you can access the pixel data directly.  */
 IImagefloat* processImage (ProcessingJob* job, int& errorCode, ProgressListener* pl = nullptr, bool flush = false);

@@ -523,7 +523,7 @@ int ImageIO::loadJPEGFromMemory (const char* buffer, int bufsize)
             return IMIO_READERROR;
         }
 
-        setScanline (cinfo.output_scanline - 1, row, 8);
+        setScanline (cinfo.output_scanline - 1, row, 8, cinfo.num_components);
 
         if (pl && !(cinfo.output_scanline % 100)) {
             pl->setProgress ((double)(cinfo.output_scanline) / cinfo.output_height);
@@ -705,15 +705,16 @@ int ImageIO::getTIFFSampleFormat (Glib::ustring fname, IIOSampleFormat &sFormat,
                 return IMIO_SUCCESS;
             }
         } else if (samplesperpixel == 3 && sampleformat == SAMPLEFORMAT_IEEEFP) {
-            /*
-             * Not yet supported
-             *
-             if (bitspersample==16) {
-                sFormat = IIOSF_HALF;
+            if (bitspersample==16) {
+                sFormat = IIOSF_FLOAT16;
                 return IMIO_SUCCESS;
-            }*/
+            }
+            if (bitspersample == 24) {
+                sFormat = IIOSF_FLOAT24;
+                return IMIO_SUCCESS;
+            }
             if (bitspersample == 32) {
-                sFormat = IIOSF_FLOAT;
+                sFormat = IIOSF_FLOAT32;
                 return IMIO_SUCCESS;
             }
         }
@@ -789,7 +790,7 @@ int ImageIO::loadTIFF (Glib::ustring fname)
      * effective minimum and maximum values
      */
     if (options.rtSettings.verbose) {
-        printf("Informations of \"%s\":\n", fname.c_str());
+        printf("Information of \"%s\":\n", fname.c_str());
         uint16 tiffDefaultScale, tiffBaselineExposure, tiffLinearResponseLimit;
         if (TIFFGetField(in, TIFFTAG_DEFAULTSCALE, &tiffDefaultScale)) {
             printf("   DefaultScale: %d\n", tiffDefaultScale);
@@ -835,7 +836,6 @@ int ImageIO::loadTIFF (Glib::ustring fname)
 
     allocate (width, height);
 
-    float minValue[3] = {0.f, 0.f, 0.f}, maxValue[3] = {0.f, 0.f, 0.f};
     unsigned char* linebuffer = new unsigned char[TIFFScanlineSize(in) * (samplesperpixel == 1 ? 3 : 1)];
 
     for (int row = 0; row < height; row++) {
@@ -861,31 +861,11 @@ int ImageIO::loadTIFF (Glib::ustring fname)
             }
         }
 
-        if (sampleFormat & (IIOSF_LOGLUV24 | IIOSF_LOGLUV32 | IIOSF_FLOAT)) {
-            setScanline (row, linebuffer, bitspersample, minValue, maxValue);
-        } else {
-            setScanline (row, linebuffer, bitspersample, nullptr, nullptr);
-        }
+        setScanline (row, linebuffer, bitspersample);
 
         if (pl && !(row % 100)) {
             pl->setProgress ((double)(row + 1) / height);
         }
-    }
-
-    if (sampleFormat & (IIOSF_FLOAT | IIOSF_LOGLUV24 | IIOSF_LOGLUV32)) {
-#ifdef _DEBUG
-
-        if (options.rtSettings.verbose)
-            printf("Normalizing \"%s\" image \"%s\" whose mini/maxi values are:\n   Red:   minimum value=%0.5f / maximum value=%0.5f\n   Green: minimum value=%0.5f / maximum value=%0.5f\n   Blue:  minimum value=%0.5f / maximum value=%0.5f\n",
-                   getType(), fname.c_str(),
-                   minValue[0], maxValue[0], minValue[1],
-                   maxValue[1], minValue[2], maxValue[2]
-                  );
-
-#endif
-        float minVal = rtengine::min(minValue[0], minValue[1], minValue[2]);
-        float maxVal = rtengine::max(maxValue[0], maxValue[1], maxValue[2]);
-        normalizeFloat(minVal, maxVal);
     }
 
     TIFFClose(in);
@@ -1358,6 +1338,8 @@ int ImageIO::saveTIFF (Glib::ustring fname, int bps, bool uncompressed)
         pl->setProgress (0.0);
     }
 
+    bool applyExifPatch = false;
+
     if (exifRoot) {
         rtexif::TagDirectory* cl = (const_cast<rtexif::TagDirectory*> (exifRoot))->clone (nullptr);
 
@@ -1400,6 +1382,7 @@ int ImageIO::saveTIFF (Glib::ustring fname, int bps, bool uncompressed)
                 // at a different offset:
                 TIFFSetWriteOffset (out, exif_size + 8);
                 TIFFSetField (out, TIFFTAG_EXIFIFD, 8);
+                applyExifPatch = true;
             }
         }
 
@@ -1510,6 +1493,38 @@ int ImageIO::saveTIFF (Glib::ustring fname, int bps, bool uncompressed)
     if (TIFFFlush(out) != 1) {
         writeOk = false;
     }
+
+    /************************************************************************************************************
+     *
+     * Hombre: This is a dirty hack to update the Exif tag data type to 0x0004 so that Windows can understand it.
+     *         libtiff will set this data type to 0x000d and doesn't provide any mechanism to update it before
+     *         dumping to the file.
+     *
+     */
+    if (applyExifPatch) {
+        unsigned char b[10];
+        uint16 tagCount = 0;
+        lseek(fileno, 4, SEEK_SET);
+        read(fileno, b, 4);
+        uint32 ifd0Offset = rtexif::sget4(b, exifRoot->getOrder());
+        lseek(fileno, ifd0Offset, SEEK_SET);
+        read(fileno, b, 2);
+        tagCount = rtexif::sget2(b, exifRoot->getOrder());
+        for (size_t i = 0; i < tagCount ; ++i) {
+            uint16 tagID = 0;
+            read(fileno, b, 2);
+            tagID = rtexif::sget2(b, exifRoot->getOrder());
+            if (tagID == 0x8769) {
+                rtexif::sset2(4, b, exifRoot->getOrder());
+                write(fileno, b, 2);
+                break;
+            } else {
+                read(fileno, b, 10);
+            }
+        }
+    }
+    /************************************************************************************************************/
+
 
     TIFFClose (out);
 #ifdef WIN32

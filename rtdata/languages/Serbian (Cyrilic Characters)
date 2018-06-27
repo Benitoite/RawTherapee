@@ -5,7 +5,6 @@ ABOUT_TAB_CREDITS;Заслуге
 ABOUT_TAB_LICENSE;Лиценца
 ABOUT_TAB_RELEASENOTES;Белешке о издању
 ABOUT_TAB_SPLASH;Увод
-ADJUSTER_RESET_TO_DEFAULT;Врати на подразумевано
 BATCHQUEUE_AUTOSTART;Сам започни
 BATCHQUEUE_AUTOSTARTHINT;Покреће обраду фотографија када их закажете
 BATCHQUEUE_DESTFILENAME;Путања и име датотеке
@@ -422,9 +421,7 @@ HISTORY_MSG_231;ЦБ - Пре криве
 HISTORY_MSG_232;ЦБ - Пре врсте криве
 HISTORY_MSG_233;ЦБ - Након приве
 HISTORY_MSG_234;ЦБ - Након врсте криве
-HISTORY_MSG_235;ЦБ - Аутоматско мешање канала
 HISTORY_MSG_236;--неискоришћено--
-HISTORY_MSG_237;ЦБ - Миксер
 HISTORY_MSG_238;ФГ - Умекшање
 HISTORY_MSG_239;ФГ - Јачина
 HISTORY_MSG_240;ФГ - Центар
@@ -534,8 +531,6 @@ MAIN_TOOLTIP_THRESHOLD;Праг
 MAIN_TOOLTIP_TOGGLE;Приказује слику пре и после обраде <b>Б</b>
 NAVIGATOR_XY_FULL;Ширина = %1, Висина = %2
 NAVIGATOR_XY_NA;x = ○, y = ○
-OPTIONS_DEFIMG_MISSING;Није пронађен или доступан подразумевани профил за <b>слике које нису у сировом формату</b>.\n\nПроверите фасциклу са профилима, можда не постоји или је оштећена.\n\nБиће коришћене подразумеване вредности.
-OPTIONS_DEFRAW_MISSING;Није пронађен или доступан подразумевани профил за <b>слике у сировом формату</b>.\n\nПроверите фасциклу са профилима, можда не постоји или је оштећена.\n\nБиће коришћене подразумеване вредности.
 PARTIALPASTE_BASICGROUP;Основна подешавања
 PARTIALPASTE_CACORRECTION;Исправљање аберација
 PARTIALPASTE_CHANNELMIXER;Мешање канала
@@ -713,7 +708,7 @@ PREFERENCES_SINGLETABVERTAB;Режим у једном листу, вертик�
 PREFERENCES_SND_BATCHQUEUEDONE;Обрађене су заказане датотеке
 PREFERENCES_SND_HELP;Унесите путању до датотеке или оставите празно уколико не желите звук. На Windows-у можете да користите „SystemDefault“, „SystemAsterisk“ за системске звуке.
 PREFERENCES_SND_LNGEDITPROCDONE;Уредник је завршио обраду
-PREFERENCES_SND_TRESHOLDSECS;бр. секунди
+PREFERENCES_SND_THRESHOLDSECS;бр. секунди
 PREFERENCES_STARTUPIMDIR;Директоријум по покретању
 PREFERENCES_TAB_BROWSER;Преглед датотека
 PREFERENCES_TAB_COLORMGR;Управљање бојама
@@ -796,7 +791,6 @@ TP_BWMIX_ALGO_LI;Линеарно
 TP_BWMIX_ALGO_SP;Специјални ефекти
 TP_BWMIX_ALGO_TOOLTIP;Линеарно: производи нормални <b>линеарни</b> одговор.\nСпецијални ефекти: производи специјалне ефекте мешајући канале <b>нелинеарно</b>.
 TP_BWMIX_AUTOCH;Ауто
-TP_BWMIX_AUTOCH_TIP;Израчунај вредности тако да оптимизује мешање канала.
 TP_BWMIX_CC_ENABLED;Подеси комплементарну боју
 TP_BWMIX_CC_TOOLTIP;Омогући за аутоматско подешавање комплементарне боје у ROYGCBPM режиму.
 TP_BWMIX_CHANNEL;Уједначавање луминансе
@@ -819,9 +813,6 @@ TP_BWMIX_MET;Начин
 TP_BWMIX_MET_CHANMIX;Мешање канала
 TP_BWMIX_MET_DESAT;Уклањање боје
 TP_BWMIX_MET_LUMEQUAL;Уједначавање луминансе
-TP_BWMIX_MIXC;Мешање
-TP_BWMIX_NEUTRAL;Врати мешање
-TP_BWMIX_NEUTRAL_TIP;Врати све вреднсоти (филтер боје, мешање канала) на подразумеване.
 TP_BWMIX_RGBLABEL;Р: %1%%   Г: %2%%   Б: %3%%   Укупно: %4%%
 TP_BWMIX_RGBLABEL_HINT;Коначни РГБ фактори који се брину о опцијама за мешање.\n„Укупно“ приказује збир РГБ вредности:\n- у 100% у релативном режиму\n- више (светлије) или мање (тамније) од 100% у апсолутном режиму.
 TP_BWMIX_RGB_TOOLTIP;Мешање РГБ канала. Користите постојеће преподешене параметре као водиљу.\nОбратите пажњу на негативне вреднсти које могу да направе грешке унутар слике или изазову неправилно понашање.
@@ -1271,7 +1262,7 @@ TP_WBALANCE_WATER_HEADER;Подводна фотографија
 ZOOMPANEL_100;(100%)
 ZOOMPANEL_NEWCROPWINDOW;Отвара нови прозор са детаљима
 ZOOMPANEL_ZOOM100;Повећава преглед на 100% <b>z</b>
-ZOOMPANEL_ZOOMFITSCREEN;Уклапа слику у величину прозора <b>Ф</b>
+ZOOMPANEL_ZOOMFITSCREEN;Уклапа слику у величину прозора <b>Alt</b>-<b>Ф</b>
 ZOOMPANEL_ZOOMIN;Увећава приказ слике <b>+</b>
 ZOOMPANEL_ZOOMOUT;Умањује приказ слике <b>-</b>
 
@@ -1279,6 +1270,7 @@ ZOOMPANEL_ZOOMOUT;Умањује приказ слике <b>-</b>
 ! Untranslated keys follow; remove the ! prefix after an entry is translated.
 !!!!!!!!!!!!!!!!!!!!!!!!!
 
+!ADJUSTER_RESET_TO_DEFAULT;<b>Click</b> - reset to default value.\n<b>Ctrl</b>+<b>click</b> - reset to initial value.
 !BATCHQUEUE_STARTSTOPHINT;Start or stop processing the images in the queue.\n\nShortcut: <b>Ctrl</b>+<b>s</b>
 !CURVEEDITOR_AXIS_IN;I:
 !CURVEEDITOR_AXIS_LEFT_TAN;LT:
@@ -1298,6 +1290,7 @@ ZOOMPANEL_ZOOMOUT;Умањује приказ слике <b>-</b>
 !DYNPROFILEEDITOR_PROFILE;Processing Profile
 !EDIT_OBJECT_TOOLTIP;Displays a widget on the preview window which lets you adjust this tool.
 !EDIT_PIPETTE_TOOLTIP;To add an adjustment point to the curve, hold the Ctrl key while left-clicking the desired spot in the image preview.\nTo adjust the point, hold the Ctrl key while left-clicking the corresponding area in the preview, then let go of Ctrl (unless you desire fine control) and while still holding the left mouse button move the mouse up or down to move that point up or down in the curve.
+!EXIFFILTER_IMAGETYPE;Image type
 !EXIFPANEL_SHOWALL;Show all
 !EXPORT_BYPASS;Processing steps to bypass
 !EXPORT_BYPASS_EQUALIZER;Bypass Wavelet Levels
@@ -1331,10 +1324,13 @@ ZOOMPANEL_ZOOMOUT;Умањује приказ слике <b>-</b>
 !GENERAL_APPLY;Apply
 !GENERAL_ASIMAGE;As Image
 !GENERAL_OPEN;Open
+!GENERAL_RESET;Reset
 !GENERAL_SLIDER;Slider
 !GIMP_PLUGIN_INFO;Welcome to the RawTherapee GIMP plugin!\nOnce you are done editing, simply close the main RawTherapee window and the image will be automatically imported in GIMP.
 !HISTORY_MSG_173;NR - Detail recovery
 !HISTORY_MSG_203;NR - Color space
+!HISTORY_MSG_235;B&amp;W - CM - Auto
+!HISTORY_MSG_237;B&amp;W - CM
 !HISTORY_MSG_252;CbDL - Skin tar/prot
 !HISTORY_MSG_253;CbDL - Reduce artifacts
 !HISTORY_MSG_254;CbDL - Skin hue
@@ -1356,7 +1352,7 @@ ZOOMPANEL_ZOOMOUT;Умањује приказ слике <b>-</b>
 !HISTORY_MSG_270;CT - High - Green
 !HISTORY_MSG_271;CT - High - Blue
 !HISTORY_MSG_272;CT - Balance
-!HISTORY_MSG_273;CT - Reset
+!HISTORY_MSG_273;CT - Color Balance SMH
 !HISTORY_MSG_274;CT - Sat. Shadows
 !HISTORY_MSG_275;CT - Sat. Highlights
 !HISTORY_MSG_276;CT - Opacity
@@ -1371,8 +1367,8 @@ ZOOMPANEL_ZOOMOUT;Умањује приказ слике <b>-</b>
 !HISTORY_MSG_285;NR - Median - Method
 !HISTORY_MSG_286;NR - Median - Type
 !HISTORY_MSG_287;NR - Median - Iterations
-!HISTORY_MSG_288;Flat Field - Clip control
-!HISTORY_MSG_289;Flat Field - Clip control - Auto
+!HISTORY_MSG_288;Flat-Field - Clip control
+!HISTORY_MSG_289;Flat-Field - Clip control - Auto
 !HISTORY_MSG_290;Black Level - Red
 !HISTORY_MSG_291;Black Level - Green
 !HISTORY_MSG_292;Black Level - Blue
@@ -1475,7 +1471,7 @@ ZOOMPANEL_ZOOMOUT;Умањује приказ слике <b>-</b>
 !HISTORY_MSG_389;W - Residual - CB blue mid
 !HISTORY_MSG_390;W - Residual - CB green low
 !HISTORY_MSG_391;W - Residual - CB blue low
-!HISTORY_MSG_392;W - Residual - CB Reset
+!HISTORY_MSG_392;W - Residual - Color Balance
 !HISTORY_MSG_393;DCP - Look table
 !HISTORY_MSG_394;DCP - Baseline exposure
 !HISTORY_MSG_395;DCP - Base table
@@ -1555,21 +1551,29 @@ ZOOMPANEL_ZOOMOUT;Умањује приказ слике <b>-</b>
 !HISTORY_MSG_485;Lens Correction
 !HISTORY_MSG_486;Lens Correction - Camera
 !HISTORY_MSG_487;Lens Correction - Lens
-!HISTORY_MSG_488;HDR Tone Mapping
-!HISTORY_MSG_489;HDR TM - Threshold
-!HISTORY_MSG_490;HDR TM - Amount
+!HISTORY_MSG_488;Dynamic Range Compression
+!HISTORY_MSG_489;DRC - Threshold
+!HISTORY_MSG_490;DRC - Amount
 !HISTORY_MSG_491;White Balance
 !HISTORY_MSG_492;RGB Curves
 !HISTORY_MSG_493;L*a*b* Adjustments
+!HISTORY_MSG_CLAMPOOG;Out-of-gamut color clipping
 !HISTORY_MSG_COLORTONING_LABGRID_VALUE;CT - Color correction
-!HISTORY_MSG_HISTMATCHING;Auto-matched Tone Curve
+!HISTORY_MSG_DUALDEMOSAIC_CONTRAST;AMaZE+VNG4 - Contrast threshold
+!HISTORY_MSG_HISTMATCHING;Auto-Matched Tone Curve
 !HISTORY_MSG_LOCALCONTRAST_AMOUNT;Local Contrast - Amount
 !HISTORY_MSG_LOCALCONTRAST_DARKNESS;Local Contrast - Darkness
 !HISTORY_MSG_LOCALCONTRAST_ENABLED;Local Contrast
 !HISTORY_MSG_LOCALCONTRAST_LIGHTNESS;Local Contrast - Lightness
 !HISTORY_MSG_LOCALCONTRAST_RADIUS;Local Contrast - Radius
 !HISTORY_MSG_METADATA_MODE;Metadata copy mode
-!HISTORY_MSG_TM_FATTAL_ANCHOR;HDR TM - Anchor
+!HISTORY_MSG_MICROCONTRAST_CONTRAST;Microcontrast - Contrast threshold
+!HISTORY_MSG_PIXELSHIFT_DEMOSAIC;PS - Demosaic method for motion
+!HISTORY_MSG_PREPROCESS_LINEDENOISE_DIRECTION;Line noise filter direction
+!HISTORY_MSG_PREPROCESS_PDAFLINESFILTER;PDAF lines filter
+!HISTORY_MSG_PRSHARPEN_CONTRAST;PRS - Contrast threshold
+!HISTORY_MSG_SHARPENING_CONTRAST;Sharpening - Contrast threshold
+!HISTORY_MSG_TM_FATTAL_ANCHOR;DRC - Anchor
 !IPTCPANEL_CATEGORYHINT;Identifies the subject of the image in the opinion of the provider.
 !IPTCPANEL_CITYHINT;Enter the name of the city pictured in this image.
 !IPTCPANEL_COPYRIGHT;Copyright notice
@@ -1604,6 +1608,7 @@ ZOOMPANEL_ZOOMOUT;Умањује приказ слике <b>-</b>
 !MAIN_TAB_ADVANCED_TOOLTIP;Shortcut: <b>Alt-w</b>
 !MAIN_TAB_INSPECT; Inspect
 !MAIN_TOOLTIP_BACKCOLOR3;Background color of the preview: <b>Middle grey</b>\nShortcut: <b>9</b>
+!MAIN_TOOLTIP_PREVIEWSHARPMASK;Preview the <b>Sharpening Contrast Mask</b>.\nShortcut: <b>None</b>\n\nOnly works when sharpening is enabled and zoom >= 100%.
 !MONITOR_PROFILE_SYSTEM;System default
 !NAVIGATOR_B;B:
 !NAVIGATOR_G;G:
@@ -1615,6 +1620,9 @@ ZOOMPANEL_ZOOMOUT;Умањује приказ слике <b>-</b>
 !NAVIGATOR_R;R:
 !NAVIGATOR_S;S:
 !NAVIGATOR_V;V:
+!OPTIONS_BUNDLED_MISSING;The bundled profile "<b>%1</b>" could not be found!\n\nYour installation could be damaged.\n\nDefault internal values will be used instead.
+!OPTIONS_DEFIMG_MISSING;The default profile for <b>non-raw photos</b> could not be found or is not set.\n\nPlease check your profiles' directory, it may be missing or damaged.\n\n"<b>%1</b>" will be used instead.
+!OPTIONS_DEFRAW_MISSING;The default profile for <b>raw photos</b> could not be found or is not set.\n\nPlease check your profiles' directory, it may be missing or damaged.\n\n"<b>%1</b>" will be used instead.
 !PARTIALPASTE_ADVANCEDGROUP;Advanced Settings
 !PARTIALPASTE_COLORTONING;Color toning
 !PARTIALPASTE_EQUALIZER;Wavelet levels
@@ -1630,7 +1638,7 @@ ZOOMPANEL_ZOOMOUT;Умањује приказ слике <b>-</b>
 !PARTIALPASTE_RAW_IMAGENUM;Sub-image
 !PARTIALPASTE_RAW_PIXELSHIFT;Pixel Shift
 !PARTIALPASTE_RETINEX;Retinex
-!PARTIALPASTE_TM_FATTAL;HDR Tone mapping
+!PARTIALPASTE_TM_FATTAL;Dynamic Range Compression
 !PREFERENCES_AUTLISLOW;Low
 !PREFERENCES_AUTLISMAX;Max - Average of all tiles
 !PREFERENCES_AUTLISSTD;High
@@ -1638,7 +1646,6 @@ ZOOMPANEL_ZOOMOUT;Умањује приказ слике <b>-</b>
 !PREFERENCES_AUTLOW;Low
 !PREFERENCES_AUTOSAVE_TP_OPEN;Automatically save tools collapsed/expanded\nstate before exiting
 !PREFERENCES_AUTSTD;Standard
-!PREFERENCES_CIEART_FRAME;CIECAM02-Specific Settings
 !PREFERENCES_CLUTSCACHE;HaldCLUT Cache
 !PREFERENCES_CLUTSCACHE_LABEL;Maximum number of cached CLUTs
 !PREFERENCES_CLUTSDIR;HaldCLUT directory
@@ -1713,6 +1720,10 @@ ZOOMPANEL_ZOOMOUT;Умањује приказ слике <b>-</b>
 !PREFERENCES_STDAUT;Standard
 !PREFERENCES_TAB_DYNAMICPROFILE;Dynamic Profile Rules
 !PREFERENCES_THEME;Theme
+!PREFERENCES_THUMBNAIL_INSPECTOR_JPEG;Embedded JPEG preview
+!PREFERENCES_THUMBNAIL_INSPECTOR_MODE;Image to show
+!PREFERENCES_THUMBNAIL_INSPECTOR_RAW;Neutral raw rendering
+!PREFERENCES_THUMBNAIL_INSPECTOR_RAW_IF_NO_JPEG_FULLSIZE;Embedded JPEG if fullsize, neutral raw otherwise
 !PREFERENCES_TIMAX;High
 !PREFERENCES_TINB;Number of tiles
 !PREFERENCES_TISTD;Standard
@@ -1725,11 +1736,13 @@ ZOOMPANEL_ZOOMOUT;Умањује приказ слике <b>-</b>
 !QINFO_HDR;HDR / %2 frame(s)
 !QINFO_PIXELSHIFT;Pixel Shift / %2 frame(s)
 !SAMPLEFORMAT_0;Unknown data format
-!SAMPLEFORMAT_1;Unsigned 8 bits
-!SAMPLEFORMAT_2;Unsigned 16 bits
-!SAMPLEFORMAT_4;LogLuv 24 bits
-!SAMPLEFORMAT_8;LogLuv 32 bits
-!SAMPLEFORMAT_16;32 bits floating point
+!SAMPLEFORMAT_1;8-bit unsigned
+!SAMPLEFORMAT_2;16-bit unsigned
+!SAMPLEFORMAT_4;24-bit LogLuv
+!SAMPLEFORMAT_8;32-bit LogLuv
+!SAMPLEFORMAT_16;16-bit floating-point
+!SAMPLEFORMAT_32;24-bit floating-point
+!SAMPLEFORMAT_64;32-bit floating-point
 !SOFTPROOF_GAMUTCHECK_TOOLTIP;Highlight pixels with out-of-gamut colors with respect to:\n- the printer profile, if one is set and soft-proofing is enabled,\n- the output profile, if a printer profile is not set and soft-proofing is enabled,\n- the monitor profile, if soft-proofing is disabled.
 !SOFTPROOF_TOOLTIP;Soft-proofing simulates the appearance of the image:\n- when printed, if a printer profile is set in Preferences > Color Management,\n- when viewed on a display that uses the current output profile, if a printer profile is not set.
 !THRESHOLDSELECTOR_BL;Bottom-left
@@ -1738,6 +1751,8 @@ ZOOMPANEL_ZOOMOUT;Умањује приказ слике <b>-</b>
 !TP_BWMIX_FILTER_YELLOW;Yellow
 !TP_BWMIX_GAMMA;Gamma Correction
 !TP_BWMIX_GAM_TOOLTIP;Correct gamma for each RGB channel.
+!TP_BWMIX_MIXC;Channel Mixer
+!TP_BWMIX_NEUTRAL;Reset
 !TP_CBDL_AFT;After Black-and-White
 !TP_CBDL_BEF;Before Black-and-White
 !TP_CBDL_METHOD;Process located
@@ -1748,7 +1763,7 @@ ZOOMPANEL_ZOOMOUT;Умањује приказ слике <b>-</b>
 !TP_COLORAPP_TEMP_TOOLTIP;To select an illuminant, always set Tint=1.\n\nA temp=2856\nD50 temp=5003\nD55 temp=5503\nD65 temp=6504\nD75 temp=7504
 !TP_COLORAPP_YB;Yb% (mean luminance)
 !TP_COLORAPP_YBSCENE;Yb% (mean luminance)
-!TP_COLORAPP_YBSCENE_TOOLTIP;if auto is enabled, Yb is calculated from the mean value of the actual image's luminance
+!TP_COLORAPP_YBSCENE_TOOLTIP;If "auto" is enabled, Yb is calculated from the mean value of the actual image's luminance
 !TP_COLORTONING_AB;o C/L
 !TP_COLORTONING_AUTOSAT;Automatic
 !TP_COLORTONING_BALANCE;Balance
@@ -1845,7 +1860,8 @@ ZOOMPANEL_ZOOMOUT;Умањује приказ слике <b>-</b>
 !TP_DIRPYREQUALIZER_TOOLTIP;Attempts to reduce artifacts in the transitions between skin colors (hue, chroma, luma) and the rest of the image.
 !TP_DISTORTION_AUTO_TIP;Automatically corrects lens distortion in raw files by matching it against the embedded JPEG image if one exists and has had its lens disortion auto-corrected by the camera.
 !TP_EPD_GAMMA;Gamma
-!TP_EXPOSURE_HISTMATCHING;Auto-matched Tone Curve
+!TP_EXPOSURE_CLAMPOOG;Clip out-of-gamut colors
+!TP_EXPOSURE_HISTMATCHING;Auto-Matched Tone Curve
 !TP_EXPOSURE_HISTMATCHING_TOOLTIP;Automatically adjust sliders and curves (except exposure compensation) to match the look of the embedded JPEG thumbnail.
 !TP_EXPOSURE_TCMODE_LUMINANCE;Luminance
 !TP_EXPOSURE_TCMODE_PERCEPTUAL;Perceptual
@@ -1883,6 +1899,13 @@ ZOOMPANEL_ZOOMOUT;Умањује приказ слике <b>-</b>
 !TP_PREPROCESS_DEADPIXFILT_TOOLTIP;Tries to suppress dead pixels.
 !TP_PREPROCESS_HOTPIXFILT;Hot pixel filter
 !TP_PREPROCESS_HOTPIXFILT_TOOLTIP;Tries to suppress hot pixels.
+!TP_PREPROCESS_LINEDENOISE_DIRECTION;Direction
+!TP_PREPROCESS_LINEDENOISE_DIRECTION_BOTH;Both
+!TP_PREPROCESS_LINEDENOISE_DIRECTION_HORIZONTAL;Horizontal
+!TP_PREPROCESS_LINEDENOISE_DIRECTION_PDAF_LINES;Horizontal only on PDAF rows
+!TP_PREPROCESS_LINEDENOISE_DIRECTION_VERTICAL;Vertical
+!TP_PREPROCESS_PDAFLINESFILTER;PDAF lines filter
+!TP_PREPROCESS_PDAFLINESFILTER_TOOLTIP;Tries to suppress stripe noise caused by on-sensor PDAF pixels, occurring with some Sony mirrorless cameras on some backlit scenes with visible flare.
 !TP_PRSHARPENING_LABEL;Post-Resize Sharpening
 !TP_PRSHARPENING_TOOLTIP;Sharpens the image after resizing. Only works when the "Lanczos" resizing method is used. It is impossible to preview the effects of this tool. See RawPedia for usage instructions.
 !TP_RAWCACORR_CASTR;Strength
@@ -1896,9 +1919,12 @@ ZOOMPANEL_ZOOMOUT;Умањује приказ слике <b>-</b>
 !TP_RAWEXPOS_RGB;Red, Green, Blue
 !TP_RAW_1PASSMEDIUM;1-Pass (Medium)
 !TP_RAW_3PASSBEST;3-Pass (Best)
+!TP_RAW_4PASS;4-Pass
 !TP_RAW_AHD;AHD
 !TP_RAW_AMAZE;AMaZE
+!TP_RAW_AMAZEVNG4;AMaZE+VNG4
 !TP_RAW_DCB;DCB
+!TP_RAW_DUALDEMOSAICCONTRAST;Contrast threshold
 !TP_RAW_EAHD;EAHD
 !TP_RAW_FAST;Fast
 !TP_RAW_HD;Threshold
@@ -1911,53 +1937,35 @@ ZOOMPANEL_ZOOMOUT;Умањује приказ слике <b>-</b>
 !TP_RAW_MONO;Mono
 !TP_RAW_NONE;None (Shows sensor pattern)
 !TP_RAW_PIXELSHIFT;Pixel Shift
-!TP_RAW_PIXELSHIFTADAPTIVE;Adaptive detection
 !TP_RAW_PIXELSHIFTBLUR;Blur motion mask
-!TP_RAW_PIXELSHIFTEPERISO;ISO adaption
-!TP_RAW_PIXELSHIFTEPERISO_TOOLTIP;The default value of 0 should work fine for base ISO.\nIncrease the value to improve motion detection for higher ISO.\nIncrease in small steps and watch the motion mask while increasing.
+!TP_RAW_PIXELSHIFTDMETHOD;Demosaic method for motion
+!TP_RAW_PIXELSHIFTEPERISO;Sensitivity
+!TP_RAW_PIXELSHIFTEPERISO_TOOLTIP;The default value of 0 should work fine for base ISO.\nHigher values increase sensitivity of motion detection.\nChange in small steps and watch the motion mask while changing.\nIncrease sensitivity for underexposed or high ISO images.
 !TP_RAW_PIXELSHIFTEQUALBRIGHT;Equalize brightness of frames
 !TP_RAW_PIXELSHIFTEQUALBRIGHTCHANNEL;Equalize per channel
 !TP_RAW_PIXELSHIFTEQUALBRIGHTCHANNEL_TOOLTIP;Enabled: Equalize the RGB channels individually.\nDisabled: Use same equalization factor for all channels.
-!TP_RAW_PIXELSHIFTEQUALBRIGHT_TOOLTIP;Equalize the brightness of the frames to the brightness of the selected frame.\nIf there are overexposed areas in the frames select the brightest frame to avoid magenta colour cast in overexposed areas or enable motion correction.
-!TP_RAW_PIXELSHIFTEXP0;Experimental
+!TP_RAW_PIXELSHIFTEQUALBRIGHT_TOOLTIP;Equalize the brightness of the frames to the brightness of the selected frame.\nIf there are overexposed areas in the frames select the brightest frame to avoid magenta color cast in overexposed areas or enable motion correction.
 !TP_RAW_PIXELSHIFTGREEN;Check green channel for motion
 !TP_RAW_PIXELSHIFTHOLEFILL;Fill holes in motion mask
 !TP_RAW_PIXELSHIFTHOLEFILL_TOOLTIP;Fill holes in motion mask
 !TP_RAW_PIXELSHIFTLMMSE;Use LMMSE for moving parts
 !TP_RAW_PIXELSHIFTLMMSE_TOOLTIP;Use LMMSE instead of AMaZE for areas of motion.\nUseful for high ISO images.
-!TP_RAW_PIXELSHIFTMASKTHRESHOLD;3x3 new threshold
 !TP_RAW_PIXELSHIFTMEDIAN;Use median for moving parts
-!TP_RAW_PIXELSHIFTMEDIAN3;Exclude selected frame from median
-!TP_RAW_PIXELSHIFTMEDIAN3_TOOLTIP;Excludes selected frame from median.\nUseful if moving objects overlap in frame 2 and 3
 !TP_RAW_PIXELSHIFTMEDIAN_TOOLTIP;Use median of all frames instead of selected frame for regions with motion.\nRemoves objects which are at different places in all frames.\nGives motion effect on slow moving (overlapping) objects.
 !TP_RAW_PIXELSHIFTMM_AUTO;Automatic
 !TP_RAW_PIXELSHIFTMM_CUSTOM;Custom
 !TP_RAW_PIXELSHIFTMM_OFF;Off
-!TP_RAW_PIXELSHIFTMOTION;Motion detection level (deprecated)
-!TP_RAW_PIXELSHIFTMOTIONCORRECTION;Green motion correction size
 !TP_RAW_PIXELSHIFTMOTIONMETHOD;Motion Correction
 !TP_RAW_PIXELSHIFTMOTION_TOOLTIP;0 means no motion detection.\n1 - 99 means motion will be detected according to this value. Increase value to increase detection rate.\n100 means the AMaZE-demosaiced frame will be used.
-!TP_RAW_PIXELSHIFTNONGREENAMAZE;Check red/blue AMaZE
 !TP_RAW_PIXELSHIFTNONGREENCROSS;Check red/blue channels for motion
-!TP_RAW_PIXELSHIFTNONGREENCROSS2;Check green AMaZE
-!TP_RAW_PIXELSHIFTNONGREENHORIZONTAL;Check red/blue horizontal
-!TP_RAW_PIXELSHIFTNONGREENVERTICAL;Check red/blue vertical
-!TP_RAW_PIXELSHIFTNREADISO;nRead
-!TP_RAW_PIXELSHIFTONEGREEN;Use one green instead of average
-!TP_RAW_PIXELSHIFTONEGREEN_TOOLTIP;Use one green instead of averaging two greens for regions without motion.
-!TP_RAW_PIXELSHIFTPRNU;PRNU (%)
-!TP_RAW_PIXELSHIFTREDBLUEWEIGHT;Red&Blue weight
 !TP_RAW_PIXELSHIFTSHOWMOTION;Show motion mask
 !TP_RAW_PIXELSHIFTSHOWMOTIONMASKONLY;Show only motion mask
 !TP_RAW_PIXELSHIFTSHOWMOTIONMASKONLY_TOOLTIP;Shows the motion mask without the image.
-!TP_RAW_PIXELSHIFTSHOWMOTION_TOOLTIP;Overlays the image with a mask showing the regions with motion.
+!TP_RAW_PIXELSHIFTSHOWMOTION_TOOLTIP;Overlays the image with a green mask showing the regions with motion.
 !TP_RAW_PIXELSHIFTSIGMA;Blur radius
 !TP_RAW_PIXELSHIFTSIGMA_TOOLTIP;The default radius of 1.0 usually fits well for base ISO.\nIncrease the value for high ISO shots, 5.0 is a good starting point.\nWatch the motion mask while changing the value.
 !TP_RAW_PIXELSHIFTSMOOTH;Smooth transitions
 !TP_RAW_PIXELSHIFTSMOOTH_TOOLTIP;Smooth transitions between areas with motion and areas without.\nSet to 0 to disable transition smoothing.\nSet to 1 to either get the AMaZE/LMMSE result of the selected frame (depending on whether "Use LMMSE" is selected), or the median of all four frames if "Use median" is selected.
-!TP_RAW_PIXELSHIFTSTDDEVFACTORBLUE;StdDev factor Blue
-!TP_RAW_PIXELSHIFTSTDDEVFACTORGREEN;StdDev factor Green
-!TP_RAW_PIXELSHIFTSTDDEVFACTORRED;StdDev factor Red
 !TP_RAW_RCD;RCD
 !TP_RAW_SENSOR_BAYER_LABEL;Sensor with Bayer Matrix
 !TP_RAW_SENSOR_XTRANS_DMETHOD_TOOLTIP;3-pass gives best results (recommended for low ISO images).\n1-pass is almost undistinguishable from 3-pass for high ISO images and is faster.
@@ -2043,9 +2051,11 @@ ZOOMPANEL_ZOOMOUT;Умањује приказ слике <b>-</b>
 !TP_RETINEX_VIEW_TRAN;Transmission - Auto
 !TP_RETINEX_VIEW_TRAN2;Transmission - Fixed
 !TP_RETINEX_VIEW_UNSHARP;Unsharp mask
+!TP_SHARPENING_CONTRAST;Contrast threshold
+!TP_SHARPENMICRO_CONTRAST;Contrast threshold
 !TP_TM_FATTAL_AMOUNT;Amount
 !TP_TM_FATTAL_ANCHOR;Anchor
-!TP_TM_FATTAL_LABEL;HDR Tone Mapping
+!TP_TM_FATTAL_LABEL;Dynamic Range Compression
 !TP_TM_FATTAL_THRESHOLD;Threshold
 !TP_WAVELET_1;Level 1
 !TP_WAVELET_2;Level 2
@@ -2126,7 +2136,7 @@ ZOOMPANEL_ZOOMOUT;Умањује приказ слике <b>-</b>
 !TP_WAVELET_EDGESENSI;Edge sensitivity
 !TP_WAVELET_EDGREINF_TOOLTIP;Reinforce or reduce the action of the first level, do the opposite to the second level, and leave the rest unchanged.
 !TP_WAVELET_EDGTHRESH;Detail
-!TP_WAVELET_EDGTHRESH_TOOLTIP;Change the repartition between the first levels and the others. The higher the threshold the more the action is centred on the first levels. Be careful with negative values, they increase the action of high levels and can introduce artifacts.
+!TP_WAVELET_EDGTHRESH_TOOLTIP;Change the repartition between the first levels and the others. The higher the threshold the more the action is centered on the first levels. Be careful with negative values, they increase the action of high levels and can introduce artifacts.
 !TP_WAVELET_EDRAD;Radius
 !TP_WAVELET_EDRAD_TOOLTIP;This radius adjustment is very different from those in other sharpening tools. Its value is compared to each level through a complex function. In this sense, a value of zero still has an effect.
 !TP_WAVELET_EDSL;Threshold Sliders

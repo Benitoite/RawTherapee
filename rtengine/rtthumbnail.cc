@@ -36,7 +36,10 @@
 #include "jpeg.h"
 #include "../rtgui/ppversion.h"
 #include "improccoordinator.h"
+#include "settings.h"
 #include <locale.h>
+#include "StopWatch.h"
+#include "median.h"
 
 namespace
 {
@@ -146,6 +149,8 @@ extern Options options;
 
 namespace rtengine
 {
+
+extern const Settings *settings;
 
 using namespace procparams;
 
@@ -261,13 +266,93 @@ Thumbnail* Thumbnail::loadFromImage (const Glib::ustring& fname, int &w, int &h,
     return tpp;
 }
 
-Thumbnail* Thumbnail::loadQuickFromRaw (const Glib::ustring& fname, RawMetaDataLocation& rml, eSensorType &sensorType, int &w, int &h, int fixwh, bool rotate, bool inspectorMode)
+
+namespace {
+
+Image8 *load_inspector_mode(const Glib::ustring &fname, RawMetaDataLocation &rml, eSensorType &sensorType, int &w, int &h)
 {
+    BENCHFUN
+    
+    RawImageSource src;
+    int err = src.load(fname, true);
+    if (err) {
+        return nullptr;
+    }
+
+    src.getFullSize(w, h);
+    sensorType = src.getSensorType();
+    
+    ProcParams neutral;
+    neutral.raw.bayersensor.method = RAWParams::BayerSensor::getMethodString(RAWParams::BayerSensor::Method::FAST);
+    neutral.raw.xtranssensor.method = RAWParams::XTransSensor::getMethodString(RAWParams::XTransSensor::Method::FAST);
+    neutral.icm.input = "(camera)";
+    neutral.icm.working = "RT_sRGB";
+
+    src.preprocess(neutral.raw, neutral.lensProf, neutral.coarse, false);
+    double thresholdDummy = 0.f;
+    src.demosaic(neutral.raw, false, thresholdDummy);
+
+    PreviewProps pp(0, 0, w, h, 1);
+
+    Imagefloat tmp(w, h);
+    src.getImage(src.getWB(), TR_NONE, &tmp, pp, neutral.toneCurve, neutral.raw);
+    src.convertColorSpace(&tmp, neutral.icm, src.getWB());
+
+    Image8 *img = new Image8(w, h);
+    const float f = 255.f/65535.f;
+#ifdef _OPENMP
+    #pragma omp parallel for
+#endif
+    for (int y = 0; y < h; ++y) {
+        for (int x = 0; x < w; ++x) {
+            float r = tmp.r(y, x);
+            float g = tmp.g(y, x);
+            float b = tmp.b(y, x);
+            // avoid magenta highlights
+            if (r > MAXVALF && b > MAXVALF) {
+                float v = CLIP((r + g + b) / 3.f) * f;
+                img->r(y, x) = img->g(y, x) = img->b(y, x) = v;
+            } else {
+                img->r(y, x) = Color::gamma_srgbclipped(r) * f;
+                img->g(y, x) = Color::gamma_srgbclipped(g) * f;
+                img->b(y, x) = Color::gamma_srgbclipped(b) * f;
+            }
+        }
+    }
+
+    return img;
+}
+
+} // namespace
+
+Thumbnail* Thumbnail::loadQuickFromRaw (const Glib::ustring& fname, RawMetaDataLocation& rml, eSensorType &sensorType, int &w, int &h, int fixwh, bool rotate, bool inspectorMode, bool forHistogramMatching)
+{
+    Thumbnail* tpp = new Thumbnail ();
+    tpp->isRaw = 1;
+    memset (tpp->colorMatrix, 0, sizeof (tpp->colorMatrix));
+    tpp->colorMatrix[0][0] = 1.0;
+    tpp->colorMatrix[1][1] = 1.0;
+    tpp->colorMatrix[2][2] = 1.0;
+
+    if (inspectorMode && !forHistogramMatching && settings->thumbnail_inspector_mode == Settings::ThumbnailInspectorMode::RAW) {
+        Image8 *img = load_inspector_mode(fname, rml, sensorType, w, h);
+        if (!img) {
+            delete tpp;
+            return nullptr;
+        }
+
+        tpp->scale = 1.;
+        tpp->thumbImg = img;
+
+        return tpp;
+    }
+    
     RawImage *ri = new RawImage (fname);
     unsigned int imageNum = 0;
     int r = ri->loadRaw (false, imageNum, false);
 
     if ( r ) {
+        delete tpp;
         delete ri;
         sensorType = ST_NONE;
         return nullptr;
@@ -301,24 +386,33 @@ Thumbnail* Thumbnail::loadQuickFromRaw (const Glib::ustring& fname, RawMetaDataL
     // did we succeed?
     if ( err ) {
         printf ("Could not extract thumb from %s\n", fname.data());
+        delete tpp;
         delete img;
         delete ri;
         return nullptr;
     }
-
-    Thumbnail* tpp = new Thumbnail ();
-
-    tpp->isRaw = 1;
-    memset (tpp->colorMatrix, 0, sizeof (tpp->colorMatrix));
-    tpp->colorMatrix[0][0] = 1.0;
-    tpp->colorMatrix[1][1] = 1.0;
-    tpp->colorMatrix[2][2] = 1.0;
 
     if (inspectorMode) {
         // Special case, meaning that we want a full sized thumbnail image (e.g. for the Inspector feature)
         w = img->getWidth();
         h = img->getHeight();
         tpp->scale = 1.;
+
+        if (!forHistogramMatching && settings->thumbnail_inspector_mode == Settings::ThumbnailInspectorMode::RAW_IF_NOT_JPEG_FULLSIZE && float(std::max(w, h))/float(std::max(ri->get_width(), ri->get_height())) < 0.9f) {
+            delete img;
+            delete ri;
+            
+            img = load_inspector_mode(fname, rml, sensorType, w, h);
+            if (!img) {
+                delete tpp;
+                return nullptr;
+            }
+
+            tpp->scale = 1.;
+            tpp->thumbImg = img;
+            
+            return tpp;
+        }
     } else {
         if (fixwh == 1) {
             w = h * img->getWidth() / img->getHeight();
@@ -1038,12 +1132,17 @@ IImage8* Thumbnail::processImage (const procparams::ProcParams& params, eSensorT
 
         for (int j = 0; j < rwidth; j++) {
             float red = baseImg->r (i, j) * rmi;
-            baseImg->r (i, j) = CLIP (red);
             float green = baseImg->g (i, j) * gmi;
-            baseImg->g (i, j) = CLIP (green);
             float blue = baseImg->b (i, j) * bmi;
-            baseImg->b (i, j) = CLIP (blue);
-
+            
+            // avoid magenta highlights if highlight recovery is enabled
+            if (params.toneCurve.hrenabled && red > MAXVALF && blue > MAXVALF) {
+                baseImg->r(i, j) = baseImg->g(i, j) = baseImg->b(i, j) = CLIP((red + green + blue) / 3.f);
+            } else {
+                baseImg->r(i, j) = CLIP(red);
+                baseImg->g(i, j) = CLIP(green);
+                baseImg->b(i, j) = CLIP(blue);
+            }
         }
     }
 
@@ -1084,21 +1183,6 @@ IImage8* Thumbnail::processImage (const procparams::ProcParams& params, eSensorT
         ipf.transform (baseImg, trImg, 0, 0, 0, 0, fw, fh, origFW * tscale + 0.5, origFH * tscale + 0.5, metadata, 0, true); // Raw rotate degree not detectable here
         delete baseImg;
         baseImg = trImg;
-    }
-
-    // update blurmap
-    SHMap* shmap = nullptr;
-
-    if (params.sh.enabled) {
-        shmap = new SHMap (fw, fh, false);
-        double radius = sqrt (double (fw * fw + fh * fh)) / 2.0;
-        double shradius = params.sh.radius;
-
-        if (!params.sh.hq) {
-            shradius *= radius / 1800.0;
-        }
-
-        shmap->update (baseImg, shradius, ipf.lumimul, params.sh.hq, 16);
     }
 
     // RGB processing
@@ -1210,7 +1294,7 @@ IImage8* Thumbnail::processImage (const procparams::ProcParams& params, eSensorT
     }
 
     LUTu histToneCurve;
-    ipf.rgbProc (baseImg, labView, nullptr, curve1, curve2, curve, shmap, params.toneCurve.saturation, rCurve, gCurve, bCurve, satLimit, satLimitOpacity, ctColorCurve, ctOpacityCurve, opautili, clToningcurve, cl2Toningcurve, customToneCurve1, customToneCurve2, customToneCurvebw1, customToneCurvebw2, rrm, ggm, bbm, autor, autog, autob, expcomp, hlcompr, hlcomprthresh, dcpProf, as, histToneCurve);
+    ipf.rgbProc (baseImg, labView, nullptr, curve1, curve2, curve, params.toneCurve.saturation, rCurve, gCurve, bCurve, satLimit, satLimitOpacity, ctColorCurve, ctOpacityCurve, opautili, clToningcurve, cl2Toningcurve, customToneCurve1, customToneCurve2, customToneCurvebw1, customToneCurvebw2, rrm, ggm, bbm, autor, autog, autob, expcomp, hlcompr, hlcomprthresh, dcpProf, as, histToneCurve);
 
     // freeing up some memory
     customToneCurve1.Reset();
@@ -1219,10 +1303,6 @@ IImage8* Thumbnail::processImage (const procparams::ProcParams& params, eSensorT
     ctOpacityCurve.Reset();
     customToneCurvebw1.Reset();
     customToneCurvebw2.Reset();
-
-    if (shmap) {
-        delete shmap;
-    }
 
     // luminance histogram update
     if (params.labCurve.contrast != 0) {
@@ -1234,6 +1314,7 @@ IImage8* Thumbnail::processImage (const procparams::ProcParams& params, eSensorT
             }
     }
 
+    
     // luminance processing
 //  ipf.EPDToneMap(labView,0,6);
 
@@ -1303,7 +1384,7 @@ IImage8* Thumbnail::processImage (const procparams::ProcParams& params, eSensorT
         ipf.ciecam_02float (cieView, adap, 1, 2, labView, &params, customColCurve1, customColCurve2, customColCurve3, dummy, dummy, CAMBrightCurveJ, CAMBrightCurveQ, CAMMean, 5, sk, execsharp, d, dj, yb, rtt);
         delete cieView;
     }
-
+    
     // color processing
     //ipf.colorCurve (labView, labView);
 

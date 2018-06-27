@@ -24,6 +24,8 @@
 /*RT*/#define DJGPP
 /*RT*/#include "jpeg.h"
 
+#include <utility>
+#include <vector>
 #include "opthelper.h"
 
 /*
@@ -1951,7 +1953,7 @@ void CLASS parse_hasselblad_gain()
          Data block format. Seems to differ depending on sensor type. For tested H4D-50
          and H3D-31: 10 16 bit signed values per row
          value 0: a correction factor (k) used on even columns, where the new pixel value is
-         calulated as follows:
+         calculated as follows:
          new_value = old_value + (2 * ((k * (old_value_on_row_above-256)) / 32767) - 2)
          note the connection to the value on the row above, seems to be some sort of signal
          leakage correction.
@@ -2023,7 +2025,7 @@ void CLASS hasselblad_correct()
       TODO:
        - Support all gain tag formats
           - The 0x19 tag varies a bit between models. We don't have parsers for all models.
-          - The reference model used was during inital reverse-engineering was a H4D-50,
+          - The reference model used was during initial reverse-engineering was a H4D-50,
             we probably support the Hasselblads with Kodak 31, 39, 40 and 50 megapixels
             well, but more work is needed for Kodak 16 and 22, Dalsa 60 and Sony 50.
        - Apply bad column(?) data (hbd.unknown1)
@@ -2353,30 +2355,34 @@ void CLASS unpacked_load_raw()
 // RT
 void CLASS sony_arq_load_raw()
 {
-  static unsigned frame2pos[] = { 0, 1, 3, 2 };
-  int row, col, bits=0;
-  ushort samples[4];
-  unsigned frame = frame2pos[shot_select];
+    constexpr unsigned frame2pos[] = { 0, 1, 3, 2 };
+    const unsigned frame = frame2pos[shot_select];
 
-  while (1 << ++bits < maximum);
-  for (row=0; row < ((frame < 2) ? 1 : raw_height); row++) {
-    for (col=0; col < ((row == 0) ? raw_width : 1); col++) {
-      RAW(row,col) = 0;
+    // allocate memory for a row of pixels
+    ushort *samples = new ushort[4 * raw_width];
+
+    int bits = 0;
+    while (1 << ++bits < maximum)
+        ;
+    bits = (1 << bits) - 1;
+
+    for (int row = 0; row < ((frame < 2) ? 1 : raw_height); row++) {
+        for (int col = 0; col < ((row == 0) ? raw_width : 1); col++) {
+            RAW(row, col) = 0;
+        }
     }
-  }
-  for (row=0; row < raw_height; row++) {
-    int r = row + (frame & 1);
-    for (col=0; col < raw_width; col++) {
-      int c = col + ((frame >> 1) & 1);
-      read_shorts(samples, 4);
-      if (r < raw_height && c < raw_width) {
-          RAW(r,c) = samples[(2 * (r & 1)) + (c & 1)];
-          if ((RAW(r,c) >>= load_flags) >> bits
-              && (unsigned) (row-top_margin) < height
-              && (unsigned) (col-left_margin) < width) derror();
-      }
+
+    for (int row = 0; row < raw_height; ++row) {
+        int r = row + (frame & 1);
+        read_shorts(samples, 4 * raw_width);
+        if (r < raw_height) {
+            int offset = 2 * (r & 1);
+            for (int c = (frame >> 1) & 1; c < raw_width; ++c, offset += 4) {
+                RAW(r, c) = samples[offset + (c & 1)] & bits;
+            }
+        }
     }
-  }
+    delete [] samples;
 }
 
 
@@ -4378,7 +4384,7 @@ mask_set:
 //}
 
 /*
-   Seach from the current directory up to the root looking for
+   Search from the current directory up to the root looking for
    a ".badpixels" file, and fix those pixels now.
  */
 //void CLASS bad_pixels (const char *cfname)
@@ -6382,6 +6388,26 @@ guess_cfa_pc:
 	  ((int *)mask)[i] = getint(type);
 	black = 0;
 	break;
+      case 51008:           /* OpcodeList1 */
+        {
+            unsigned oldOrder = order;
+            order = 0x4d4d; // always big endian per definition in https://www.adobe.com/content/dam/acom/en/products/photoshop/pdfs/dng_spec_1.4.0.0.pdf chapter 7
+            unsigned ntags = get4(); // read the number of opcodes
+            while (ntags--) {
+              unsigned opcode = get4();
+              fseek (ifp, 8, SEEK_CUR); // skip 8 bytes as they don't interest us currently
+              if (opcode == 4) { // FixBadPixelsConstant
+                fseek (ifp, 4, SEEK_CUR); // skip 4 bytes as we know that the opcode 4 takes 4 byte
+                if(get4() == 0) { // if raw 0 values should be treated as bad pixels, set zero_is_bad to true (1). That's the only value currently supported by rt
+                    zero_is_bad = 1;
+                }
+              } else {
+                fseek (ifp, get4(), SEEK_CUR);
+              }
+            }
+            order = oldOrder;
+          break;
+        }
       case 51009:			/* OpcodeList2 */
 	meta_offset = ftell(ifp);
 	break;
@@ -8302,13 +8328,13 @@ void CLASS adobe_coeff (const char *make, const char *model)
 	{ 6038,-1484,-579,-9145,16746,2512,-875,746,7218 } },
     { "Sony DSLR-A390", 0, 0,
 	{ 6038,-1484,-579,-9145,16746,2512,-875,746,7218 } },
-    { "Sony DSLR-A450", 0, 0xfeb,
+    { "Sony DSLR-A450", 0, 0,
 	{ 4950,-580,-103,-5228,12542,3029,-709,1435,7371 } },
-    { "Sony DSLR-A580", 0, 0xfeb,
+    { "Sony DSLR-A580", 0, 0,
 	{ 5932,-1492,-411,-4813,12285,2856,-741,1524,6739 } },
-    { "Sony DSLR-A500", 0, 0xfeb,
+    { "Sony DSLR-A500", 0, 0,
 	{ 6046,-1127,-278,-5574,13076,2786,-691,1419,7625 } },
-    { "Sony DSLR-A5", 0, 0xfeb,
+    { "Sony DSLR-A5", 0, 0,
 	{ 4950,-580,-103,-5228,12542,3029,-709,1435,7371 } },
     { "Sony DSLR-A700", 0, 0,
 	{ 5775,-805,-359,-8574,16295,2391,-1943,2341,7249 } },
@@ -9071,7 +9097,7 @@ void CLASS identify()
     filters = 0;
     simple_coeff(0);
    	adobe_coeff (make, model);
-  } else if (!strcmp(make,"Canon") && tiff_bps == 15) {
+  } else if (!strcmp(make,"Canon") && tiff_bps == 15) { // Canon mRaw/sRaw
     switch (width) {
       case 3344: width -= 66;
       case 3872: width -= 6;
@@ -9080,9 +9106,27 @@ void CLASS identify()
       SWAP(height,width);
       SWAP(raw_height,raw_width);
     }
-    if (width == 7200 && height == 3888) {
-      raw_width  = width  = 6480;
-      raw_height = height = 4320;
+
+    if(std::fabs(static_cast<float>(width) / height - 1.5f) > 0.02f) {
+        // wrong image dimensions. Calculate correct dimensions. width / height should be close to 1.5
+        std::vector<std::pair<float, int>> dimensions;
+
+        int size = width * height;
+        int newHeight = sqrt(size / 1.48f);
+        while (--newHeight && std::fabs(static_cast<float>(size) / (newHeight * newHeight) - 1.5f) <= 0.02f) {
+            if(size % newHeight == 0) {
+                dimensions.emplace_back(std::fabs(static_cast<float>(size) / (newHeight * newHeight) - 1.5f), newHeight);
+            }
+        }
+        // find ratio closest to 1.5
+        float val = 1.f;
+        while(!dimensions.empty()) {
+            if(dimensions.back().first < val) {
+                raw_height = height = dimensions.back().second;
+                raw_width = width = size / raw_height;
+            }
+            dimensions.pop_back();
+        }
     }
     filters = 0;
     tiff_samples = colors = 3;
@@ -9257,8 +9301,11 @@ canon_a5:
     } else if (load_raw != &CLASS packed_load_raw)
       maximum = (is_raw == 2 && shot_select) ? 0x2f00 : 0x3e00;
     if (!strncmp(model,"X-A10",5)) {
-        raw_width = 4912;
-        raw_height = 3278;
+        width = raw_width = 4912;
+        height = raw_height = 3278;
+    } else if (!strncmp(model, "X-A3", 4) || !strncmp(model, "X-A5", 4)) {
+        width = raw_width = 6016;
+        height = raw_height = 4014;
     }
     top_margin = (raw_height - height) >> 2 << 1;
     left_margin = (raw_width - width ) >> 2 << 1;

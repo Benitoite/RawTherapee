@@ -1,7 +1,6 @@
 #00 Chinese (Traditional)
 #01 2008-07-29 Mingjui Liao
 
-ADJUSTER_RESET_TO_DEFAULT;重置預設參數
 BATCHQUEUE_AUTOSTART;Auto start
 BATCHQUEUE_AUTOSTARTHINT;Start processing automatically when a new job arrives
 CURVEEDITOR_LINEAR;線性
@@ -430,6 +429,7 @@ TP_WBALANCE_TEMPERATURE;色溫
 !ABOUT_TAB_LICENSE;License
 !ABOUT_TAB_RELEASENOTES;Release Notes
 !ABOUT_TAB_SPLASH;Splash
+!ADJUSTER_RESET_TO_DEFAULT;<b>Click</b> - reset to default value.\n<b>Ctrl</b>+<b>click</b> - reset to initial value.
 !BATCHQUEUE_DESTFILENAME;Path and file name
 !BATCHQUEUE_STARTSTOPHINT;Start or stop processing the images in the queue.\n\nShortcut: <b>Ctrl</b>+<b>s</b>
 !BATCH_PROCESSING;Batch Processing
@@ -466,6 +466,7 @@ TP_WBALANCE_TEMPERATURE;色溫
 !EDIT_PIPETTE_TOOLTIP;To add an adjustment point to the curve, hold the Ctrl key while left-clicking the desired spot in the image preview.\nTo adjust the point, hold the Ctrl key while left-clicking the corresponding area in the preview, then let go of Ctrl (unless you desire fine control) and while still holding the left mouse button move the mouse up or down to move that point up or down in the curve.
 !EXIFFILTER_EXPOSURECOMPENSATION;Exposure compensation (EV)
 !EXIFFILTER_FILETYPE;File type
+!EXIFFILTER_IMAGETYPE;Image type
 !EXIFFILTER_METADATAFILTER;Enable metadata filters
 !EXIFPANEL_SHOWALL;Show all
 !EXPORT_BYPASS;Processing steps to bypass
@@ -577,6 +578,7 @@ TP_WBALANCE_TEMPERATURE;色溫
 !GENERAL_FILE;File
 !GENERAL_NONE;None
 !GENERAL_OPEN;Open
+!GENERAL_RESET;Reset
 !GENERAL_SLIDER;Slider
 !GENERAL_WARNING;Warning
 !GIMP_PLUGIN_INFO;Welcome to the RawTherapee GIMP plugin!\nOnce you are done editing, simply close the main RawTherapee window and the image will be automatically imported in GIMP.
@@ -632,7 +634,7 @@ TP_WBALANCE_TEMPERATURE;色溫
 !HISTORY_MSG_127;Flat-Field - Auto-selection
 !HISTORY_MSG_128;Flat-Field - Blur radius
 !HISTORY_MSG_129;Flat-Field - Blur type
-!HISTORY_MSG_130;Auto distorion correction
+!HISTORY_MSG_130;Auto distortion correction
 !HISTORY_MSG_131;NR - Luma
 !HISTORY_MSG_132;NR - Chroma
 !HISTORY_MSG_133;Output gamma
@@ -736,9 +738,9 @@ TP_WBALANCE_TEMPERATURE;色溫
 !HISTORY_MSG_232;B&amp;W - 'Before' curve type
 !HISTORY_MSG_233;B&amp;W - 'After' curve
 !HISTORY_MSG_234;B&amp;W - 'After' curve type
-!HISTORY_MSG_235;B&amp;W - Auto channel mixer
+!HISTORY_MSG_235;B&amp;W - CM - Auto
 !HISTORY_MSG_236;--unused--
-!HISTORY_MSG_237;B&amp;W - Mixer
+!HISTORY_MSG_237;B&amp;W - CM
 !HISTORY_MSG_238;GF - Feather
 !HISTORY_MSG_239;GF - Strength
 !HISTORY_MSG_240;GF - Center
@@ -774,7 +776,7 @@ TP_WBALANCE_TEMPERATURE;色溫
 !HISTORY_MSG_270;CT - High - Green
 !HISTORY_MSG_271;CT - High - Blue
 !HISTORY_MSG_272;CT - Balance
-!HISTORY_MSG_273;CT - Reset
+!HISTORY_MSG_273;CT - Color Balance SMH
 !HISTORY_MSG_274;CT - Sat. Shadows
 !HISTORY_MSG_275;CT - Sat. Highlights
 !HISTORY_MSG_276;CT - Opacity
@@ -789,8 +791,8 @@ TP_WBALANCE_TEMPERATURE;色溫
 !HISTORY_MSG_285;NR - Median - Method
 !HISTORY_MSG_286;NR - Median - Type
 !HISTORY_MSG_287;NR - Median - Iterations
-!HISTORY_MSG_288;Flat Field - Clip control
-!HISTORY_MSG_289;Flat Field - Clip control - Auto
+!HISTORY_MSG_288;Flat-Field - Clip control
+!HISTORY_MSG_289;Flat-Field - Clip control - Auto
 !HISTORY_MSG_290;Black Level - Red
 !HISTORY_MSG_291;Black Level - Green
 !HISTORY_MSG_292;Black Level - Blue
@@ -893,7 +895,7 @@ TP_WBALANCE_TEMPERATURE;色溫
 !HISTORY_MSG_389;W - Residual - CB blue mid
 !HISTORY_MSG_390;W - Residual - CB green low
 !HISTORY_MSG_391;W - Residual - CB blue low
-!HISTORY_MSG_392;W - Residual - CB Reset
+!HISTORY_MSG_392;W - Residual - Color Balance
 !HISTORY_MSG_393;DCP - Look table
 !HISTORY_MSG_394;DCP - Baseline exposure
 !HISTORY_MSG_395;DCP - Base table
@@ -973,21 +975,29 @@ TP_WBALANCE_TEMPERATURE;色溫
 !HISTORY_MSG_485;Lens Correction
 !HISTORY_MSG_486;Lens Correction - Camera
 !HISTORY_MSG_487;Lens Correction - Lens
-!HISTORY_MSG_488;HDR Tone Mapping
-!HISTORY_MSG_489;HDR TM - Threshold
-!HISTORY_MSG_490;HDR TM - Amount
+!HISTORY_MSG_488;Dynamic Range Compression
+!HISTORY_MSG_489;DRC - Threshold
+!HISTORY_MSG_490;DRC - Amount
 !HISTORY_MSG_491;White Balance
 !HISTORY_MSG_492;RGB Curves
 !HISTORY_MSG_493;L*a*b* Adjustments
+!HISTORY_MSG_CLAMPOOG;Out-of-gamut color clipping
 !HISTORY_MSG_COLORTONING_LABGRID_VALUE;CT - Color correction
-!HISTORY_MSG_HISTMATCHING;Auto-matched Tone Curve
+!HISTORY_MSG_DUALDEMOSAIC_CONTRAST;AMaZE+VNG4 - Contrast threshold
+!HISTORY_MSG_HISTMATCHING;Auto-Matched Tone Curve
 !HISTORY_MSG_LOCALCONTRAST_AMOUNT;Local Contrast - Amount
 !HISTORY_MSG_LOCALCONTRAST_DARKNESS;Local Contrast - Darkness
 !HISTORY_MSG_LOCALCONTRAST_ENABLED;Local Contrast
 !HISTORY_MSG_LOCALCONTRAST_LIGHTNESS;Local Contrast - Lightness
 !HISTORY_MSG_LOCALCONTRAST_RADIUS;Local Contrast - Radius
 !HISTORY_MSG_METADATA_MODE;Metadata copy mode
-!HISTORY_MSG_TM_FATTAL_ANCHOR;HDR TM - Anchor
+!HISTORY_MSG_MICROCONTRAST_CONTRAST;Microcontrast - Contrast threshold
+!HISTORY_MSG_PIXELSHIFT_DEMOSAIC;PS - Demosaic method for motion
+!HISTORY_MSG_PREPROCESS_LINEDENOISE_DIRECTION;Line noise filter direction
+!HISTORY_MSG_PREPROCESS_PDAFLINESFILTER;PDAF lines filter
+!HISTORY_MSG_PRSHARPEN_CONTRAST;PRS - Contrast threshold
+!HISTORY_MSG_SHARPENING_CONTRAST;Sharpening - Contrast threshold
+!HISTORY_MSG_TM_FATTAL_ANCHOR;DRC - Anchor
 !HISTORY_NEWSNAPSHOT_TOOLTIP;Shortcut: <b>Alt-s</b>
 !IPTCPANEL_CATEGORYHINT;Identifies the subject of the image in the opinion of the provider.
 !IPTCPANEL_CITYHINT;Enter the name of the city pictured in this image.
@@ -1059,6 +1069,7 @@ TP_WBALANCE_TEMPERATURE;色溫
 !MAIN_TOOLTIP_PREVIEWG;Preview the <b>Green channel</b>.\nShortcut: <b>g</b>
 !MAIN_TOOLTIP_PREVIEWL;Preview the <b>Luminosity</b>.\nShortcut: <b>v</b>\n\n0.299*R + 0.587*G + 0.114*B
 !MAIN_TOOLTIP_PREVIEWR;Preview the <b>Red channel</b>.\nShortcut: <b>r</b>
+!MAIN_TOOLTIP_PREVIEWSHARPMASK;Preview the <b>Sharpening Contrast Mask</b>.\nShortcut: <b>None</b>\n\nOnly works when sharpening is enabled and zoom >= 100%.
 !MAIN_TOOLTIP_SHOWHIDELP1;Show/Hide the left panel.\nShortcut: <b>l</b>
 !MAIN_TOOLTIP_SHOWHIDERP1;Show/Hide the right panel.\nShortcut: <b>Alt-l</b>
 !MAIN_TOOLTIP_SHOWHIDETP1;Show/Hide the top panel.\nShortcut: <b>Shift-l</b>
@@ -1076,8 +1087,9 @@ TP_WBALANCE_TEMPERATURE;色溫
 !NAVIGATOR_V;V:
 !NAVIGATOR_XY_FULL;Width: %1, Height: %2
 !NAVIGATOR_XY_NA;x: --, y: --
-!OPTIONS_DEFIMG_MISSING;The default profile for <b>non-raw photos</b> could not be found or is not set.\n\nPlease check your profiles' directory, it may be missing or damaged.\n\nDefault internal values will be used.
-!OPTIONS_DEFRAW_MISSING;The default profile for <b>raw photos</b> could not be found or is not set.\n\nPlease check your profiles' directory, it may be missing or damaged.\n\nDefault internal values will be used.
+!OPTIONS_BUNDLED_MISSING;The bundled profile "<b>%1</b>" could not be found!\n\nYour installation could be damaged.\n\nDefault internal values will be used instead.
+!OPTIONS_DEFIMG_MISSING;The default profile for <b>non-raw photos</b> could not be found or is not set.\n\nPlease check your profiles' directory, it may be missing or damaged.\n\n"<b>%1</b>" will be used instead.
+!OPTIONS_DEFRAW_MISSING;The default profile for <b>raw photos</b> could not be found or is not set.\n\nPlease check your profiles' directory, it may be missing or damaged.\n\n"<b>%1</b>" will be used instead.
 !PARTIALPASTE_ADVANCEDGROUP;Advanced Settings
 !PARTIALPASTE_CHANNELMIXER;Channel mixer
 !PARTIALPASTE_CHANNELMIXERBW;Black-and-white
@@ -1130,7 +1142,7 @@ TP_WBALANCE_TEMPERATURE;色溫
 !PARTIALPASTE_RGBCURVES;RGB curves
 !PARTIALPASTE_SHARPENEDGE;Edges
 !PARTIALPASTE_SHARPENMICRO;Microcontrast
-!PARTIALPASTE_TM_FATTAL;HDR Tone mapping
+!PARTIALPASTE_TM_FATTAL;Dynamic Range Compression
 !PARTIALPASTE_VIBRANCE;Vibrance
 !PREFERENCES_ADD;Add
 !PREFERENCES_AUTLISLOW;Low
@@ -1148,10 +1160,6 @@ TP_WBALANCE_TEMPERATURE;色溫
 !PREFERENCES_BEHSETALL;All to 'Set'
 !PREFERENCES_BEHSETALLHINT;Set all parameters to the <b>Set</b> mode.\nAdjustments of parameters in the batch tool panel will be <b>absolute</b>, the actual values will be displayed.
 !PREFERENCES_BLACKBODY;Tungsten
-!PREFERENCES_CIEART;CIECAM02 optimization
-!PREFERENCES_CIEART_FRAME;CIECAM02-Specific Settings
-!PREFERENCES_CIEART_LABEL;Use float precision instead of double
-!PREFERENCES_CIEART_TOOLTIP;If enabled, CIECAM02 calculations are performed in the single-precision floating-point format instead of the double-precision one. This provides a small increase in speed at the expense of a negligible loss of quality.
 !PREFERENCES_CLUTSCACHE;HaldCLUT Cache
 !PREFERENCES_CLUTSCACHE_LABEL;Maximum number of cached CLUTs
 !PREFERENCES_CLUTSDIR;HaldCLUT directory
@@ -1281,12 +1289,16 @@ TP_WBALANCE_TEMPERATURE;色溫
 !PREFERENCES_SND_BATCHQUEUEDONE;Queue processing done
 !PREFERENCES_SND_HELP;Enter a full file path to set a sound, or leave blank for no sound.\nFor system sounds on Windows use "SystemDefault", "SystemAsterisk" etc., and on Linux use "complete", "window-attention" etc.
 !PREFERENCES_SND_LNGEDITPROCDONE;Editor processing done
-!PREFERENCES_SND_TRESHOLDSECS;After seconds
+!PREFERENCES_SND_THRESHOLDSECS;After seconds
 !PREFERENCES_STDAUT;Standard
 !PREFERENCES_TAB_DYNAMICPROFILE;Dynamic Profile Rules
 !PREFERENCES_TAB_PERFORMANCE;Performance & Quality
 !PREFERENCES_TAB_SOUND;Sounds
 !PREFERENCES_THEME;Theme
+!PREFERENCES_THUMBNAIL_INSPECTOR_JPEG;Embedded JPEG preview
+!PREFERENCES_THUMBNAIL_INSPECTOR_MODE;Image to show
+!PREFERENCES_THUMBNAIL_INSPECTOR_RAW;Neutral raw rendering
+!PREFERENCES_THUMBNAIL_INSPECTOR_RAW_IF_NO_JPEG_FULLSIZE;Embedded JPEG if fullsize, neutral raw otherwise
 !PREFERENCES_TIMAX;High
 !PREFERENCES_TINB;Number of tiles
 !PREFERENCES_TISTD;Standard
@@ -1319,11 +1331,13 @@ TP_WBALANCE_TEMPERATURE;色溫
 !QINFO_HDR;HDR / %2 frame(s)
 !QINFO_PIXELSHIFT;Pixel Shift / %2 frame(s)
 !SAMPLEFORMAT_0;Unknown data format
-!SAMPLEFORMAT_1;Unsigned 8 bits
-!SAMPLEFORMAT_2;Unsigned 16 bits
-!SAMPLEFORMAT_4;LogLuv 24 bits
-!SAMPLEFORMAT_8;LogLuv 32 bits
-!SAMPLEFORMAT_16;32 bits floating point
+!SAMPLEFORMAT_1;8-bit unsigned
+!SAMPLEFORMAT_2;16-bit unsigned
+!SAMPLEFORMAT_4;24-bit LogLuv
+!SAMPLEFORMAT_8;32-bit LogLuv
+!SAMPLEFORMAT_16;16-bit floating-point
+!SAMPLEFORMAT_32;24-bit floating-point
+!SAMPLEFORMAT_64;32-bit floating-point
 !SAVEDLG_AUTOSUFFIX;Automatically add a suffix if the file already exists
 !SAVEDLG_FORCEFORMATOPTS;Force saving options
 !SAVEDLG_SUBSAMP;Subsampling
@@ -1349,7 +1363,6 @@ TP_WBALANCE_TEMPERATURE;色溫
 !TP_BWMIX_ALGO_SP;Special effects
 !TP_BWMIX_ALGO_TOOLTIP;Linear: will produce a normal <b>linear</b> response.\nSpecial effects: will produce special effects by mixing channels <b>non-linearly</b>.
 !TP_BWMIX_AUTOCH;Auto
-!TP_BWMIX_AUTOCH_TIP;Calculate values optimizing Channel Mixer.
 !TP_BWMIX_CC_ENABLED;Adjust complementary color
 !TP_BWMIX_CC_TOOLTIP;Enable to allow automatic adjustment of complementary colors in ROYGCBPM mode.
 !TP_BWMIX_CHANNEL;Luminance equalizer
@@ -1376,9 +1389,8 @@ TP_WBALANCE_TEMPERATURE;色溫
 !TP_BWMIX_MET_CHANMIX;Channel Mixer
 !TP_BWMIX_MET_DESAT;Desaturation
 !TP_BWMIX_MET_LUMEQUAL;Luminance Equalizer
-!TP_BWMIX_MIXC;Mixer
-!TP_BWMIX_NEUTRAL;Reset mixer
-!TP_BWMIX_NEUTRAL_TIP;Reset all values (Color Filter, Channel Mixer) to default.
+!TP_BWMIX_MIXC;Channel Mixer
+!TP_BWMIX_NEUTRAL;Reset
 !TP_BWMIX_RGBLABEL;R: %1%%   G: %2%%   B: %3%%   Total: %4%%
 !TP_BWMIX_RGBLABEL_HINT;Final RGB factors that take care of all the mixer options.\n"Total" displays the sum of the RGB values:\n- always 100% in relative mode\n- higher (lighter) or lower (darker) than 100% in absolute mode.
 !TP_BWMIX_RGB_TOOLTIP;Mix the RGB channels. Use presets for guidance.\nPay attention to negative values that may cause artifacts or erratic behavior.
@@ -1425,7 +1437,7 @@ TP_WBALANCE_TEMPERATURE;色溫
 !TP_COLORAPP_BRIGHT;Brightness (Q)
 !TP_COLORAPP_BRIGHT_TOOLTIP;Brightness in CIECAM02 takes into account the white's luminosity and differs from L*a*b* and RGB brightness.
 !TP_COLORAPP_CHROMA;Chroma (C)
-!TP_COLORAPP_CHROMA_M;Colorfulnes (M)
+!TP_COLORAPP_CHROMA_M;Colorfulness (M)
 !TP_COLORAPP_CHROMA_M_TOOLTIP;Colorfulness in CIECAM02 differs from L*a*b* and RGB colorfulness.
 !TP_COLORAPP_CHROMA_S;Saturation (S)
 !TP_COLORAPP_CHROMA_S_TOOLTIP;Saturation in CIECAM02 differs from L*a*b* and RGB saturation.
@@ -1457,7 +1469,7 @@ TP_WBALANCE_TEMPERATURE;色溫
 !TP_COLORAPP_LIGHT;Lightness (J)
 !TP_COLORAPP_LIGHT_TOOLTIP;Lightness in CIECAM02 differs from L*a*b* and RGB lightness.
 !TP_COLORAPP_MODEL;WP Model
-!TP_COLORAPP_MODEL_TOOLTIP;White-Point Model.\n\n<b>WB [RT] + [output]</b>: RT's white balance is used for the scene, CIECAM02 is set to D50, and the output device's white balance is set in Viewing Conditions.\n\n<b>WB [RT+CAT02] + [output]</b>: RT's white balance settings are used by CAT02 and the output device's white balance is set in Viewing Conditions.\n\n<b>Free temp+green + CAT02 + [output]:</b> temp and green are selected bu user, output device's white balance is set in Viewing Conditions.
+!TP_COLORAPP_MODEL_TOOLTIP;White-Point Model.\n\n<b>WB [RT] + [output]</b>: RT's white balance is used for the scene, CIECAM02 is set to D50, and the output device's white balance is set in Viewing Conditions.\n\n<b>WB [RT+CAT02] + [output]</b>: RT's white balance settings are used by CAT02 and the output device's white balance is set in Viewing Conditions.\n\n<b>Free temp+green + CAT02 + [output]:</b> temp and green are selected by the user, the output device's white balance is set in Viewing Conditions.
 !TP_COLORAPP_NEUTRAL;Reset
 !TP_COLORAPP_NEUTRAL_TIP;Reset all sliders checkbox and curves to their default values
 !TP_COLORAPP_RSTPRO;Red & skin-tones protection
@@ -1487,7 +1499,7 @@ TP_WBALANCE_TEMPERATURE;色溫
 !TP_COLORAPP_WBRT;WB [RT] + [output]
 !TP_COLORAPP_YB;Yb% (mean luminance)
 !TP_COLORAPP_YBSCENE;Yb% (mean luminance)
-!TP_COLORAPP_YBSCENE_TOOLTIP;if auto is enabled, Yb is calculated from the mean value of the actual image's luminance
+!TP_COLORAPP_YBSCENE_TOOLTIP;If "auto" is enabled, Yb is calculated from the mean value of the actual image's luminance
 !TP_COLORTONING_AB;o C/L
 !TP_COLORTONING_AUTOSAT;Automatic
 !TP_COLORTONING_BALANCE;Balance
@@ -1619,12 +1631,13 @@ TP_WBALANCE_TEMPERATURE;色溫
 !TP_EPD_STRENGTH;Strength
 !TP_EPD_TOOLTIP;Tone mapping is possible in L*a*b* mode (standard) and CIECAM02 mode.\n\nWhen in L*a*b* mode, tone mapping can also be used on the residual image of the Wavelet Levels tool.\n\nTo engage CIECAM02 tone mapping mode enable the following settings:\n1. CIECAM02\n2. Algorithm="Brightness + Colorfulness (QM)"\n3. "Tone mapping using CIECAM02 brightness (Q)"
 !TP_EXPOSURE_AUTOLEVELS_TIP;Toggles execution of Auto Levels to automatically set Exposure slider values based on an image analysis.\nEnables Highlight Reconstruction if necessary.
+!TP_EXPOSURE_CLAMPOOG;Clip out-of-gamut colors
 !TP_EXPOSURE_CLIP_TIP;The fraction of pixels to be clipped in Auto Levels operation.
 !TP_EXPOSURE_COMPRHIGHLIGHTSTHRESHOLD;Highlight compression threshold
 !TP_EXPOSURE_CURVEEDITOR1;Tone curve 1
 !TP_EXPOSURE_CURVEEDITOR2;Tone curve 2
 !TP_EXPOSURE_CURVEEDITOR2_TOOLTIP;Please refer to the "Exposure > Tone Curves" RawPedia article to learn how to achieve the best results by using two tone curves.
-!TP_EXPOSURE_HISTMATCHING;Auto-matched Tone Curve
+!TP_EXPOSURE_HISTMATCHING;Auto-Matched Tone Curve
 !TP_EXPOSURE_HISTMATCHING_TOOLTIP;Automatically adjust sliders and curves (except exposure compensation) to match the look of the embedded JPEG thumbnail.
 !TP_EXPOSURE_SATURATION;Saturation
 !TP_EXPOSURE_TCMODE_FILMLIKE;Film-like
@@ -1777,7 +1790,14 @@ TP_WBALANCE_TEMPERATURE;色溫
 !TP_PREPROCESS_HOTPIXFILT_TOOLTIP;Tries to suppress hot pixels.
 !TP_PREPROCESS_LABEL;Preprocessing
 !TP_PREPROCESS_LINEDENOISE;Line noise filter
+!TP_PREPROCESS_LINEDENOISE_DIRECTION;Direction
+!TP_PREPROCESS_LINEDENOISE_DIRECTION_BOTH;Both
+!TP_PREPROCESS_LINEDENOISE_DIRECTION_HORIZONTAL;Horizontal
+!TP_PREPROCESS_LINEDENOISE_DIRECTION_PDAF_LINES;Horizontal only on PDAF rows
+!TP_PREPROCESS_LINEDENOISE_DIRECTION_VERTICAL;Vertical
 !TP_PREPROCESS_NO_FOUND;None found
+!TP_PREPROCESS_PDAFLINESFILTER;PDAF lines filter
+!TP_PREPROCESS_PDAFLINESFILTER_TOOLTIP;Tries to suppress stripe noise caused by on-sensor PDAF pixels, occurring with some Sony mirrorless cameras on some backlit scenes with visible flare.
 !TP_PRSHARPENING_LABEL;Post-Resize Sharpening
 !TP_PRSHARPENING_TOOLTIP;Sharpens the image after resizing. Only works when the "Lanczos" resizing method is used. It is impossible to preview the effects of this tool. See RawPedia for usage instructions.
 !TP_RAWCACORR_AUTO;Auto-correction
@@ -1798,8 +1818,10 @@ TP_WBALANCE_TEMPERATURE;色溫
 !TP_RAWEXPOS_TWOGREEN;Link greens
 !TP_RAW_1PASSMEDIUM;1-Pass (Medium)
 !TP_RAW_3PASSBEST;3-Pass (Best)
+!TP_RAW_4PASS;4-Pass
 !TP_RAW_AHD;AHD
 !TP_RAW_AMAZE;AMaZE
+!TP_RAW_AMAZEVNG4;AMaZE+VNG4
 !TP_RAW_DCB;DCB
 !TP_RAW_DCBENHANCE;DCB enhancement
 !TP_RAW_DCBITERATIONS;Number of DCB iterations
@@ -1807,6 +1829,7 @@ TP_WBALANCE_TEMPERATURE;色溫
 !TP_RAW_DMETHOD_PROGRESSBAR;%1 demosaicing...
 !TP_RAW_DMETHOD_PROGRESSBAR_REFINE;Demosaicing refinement...
 !TP_RAW_DMETHOD_TOOLTIP;Note: IGV and LMMSE are dedicated to high ISO images to aid in noise reduction without leading to maze patterns, posterization or a washed-out look.\nPixel Shift is for Pentax/Sony Pixel Shift files. It falls back to AMaZE for non-Pixel Shift files.
+!TP_RAW_DUALDEMOSAICCONTRAST;Contrast threshold
 !TP_RAW_EAHD;EAHD
 !TP_RAW_FALSECOLOR;False color suppression steps
 !TP_RAW_FAST;Fast
@@ -1823,53 +1846,35 @@ TP_WBALANCE_TEMPERATURE;色溫
 !TP_RAW_MONO;Mono
 !TP_RAW_NONE;None (Shows sensor pattern)
 !TP_RAW_PIXELSHIFT;Pixel Shift
-!TP_RAW_PIXELSHIFTADAPTIVE;Adaptive detection
 !TP_RAW_PIXELSHIFTBLUR;Blur motion mask
-!TP_RAW_PIXELSHIFTEPERISO;ISO adaption
-!TP_RAW_PIXELSHIFTEPERISO_TOOLTIP;The default value of 0 should work fine for base ISO.\nIncrease the value to improve motion detection for higher ISO.\nIncrease in small steps and watch the motion mask while increasing.
+!TP_RAW_PIXELSHIFTDMETHOD;Demosaic method for motion
+!TP_RAW_PIXELSHIFTEPERISO;Sensitivity
+!TP_RAW_PIXELSHIFTEPERISO_TOOLTIP;The default value of 0 should work fine for base ISO.\nHigher values increase sensitivity of motion detection.\nChange in small steps and watch the motion mask while changing.\nIncrease sensitivity for underexposed or high ISO images.
 !TP_RAW_PIXELSHIFTEQUALBRIGHT;Equalize brightness of frames
 !TP_RAW_PIXELSHIFTEQUALBRIGHTCHANNEL;Equalize per channel
 !TP_RAW_PIXELSHIFTEQUALBRIGHTCHANNEL_TOOLTIP;Enabled: Equalize the RGB channels individually.\nDisabled: Use same equalization factor for all channels.
-!TP_RAW_PIXELSHIFTEQUALBRIGHT_TOOLTIP;Equalize the brightness of the frames to the brightness of the selected frame.\nIf there are overexposed areas in the frames select the brightest frame to avoid magenta colour cast in overexposed areas or enable motion correction.
-!TP_RAW_PIXELSHIFTEXP0;Experimental
+!TP_RAW_PIXELSHIFTEQUALBRIGHT_TOOLTIP;Equalize the brightness of the frames to the brightness of the selected frame.\nIf there are overexposed areas in the frames select the brightest frame to avoid magenta color cast in overexposed areas or enable motion correction.
 !TP_RAW_PIXELSHIFTGREEN;Check green channel for motion
 !TP_RAW_PIXELSHIFTHOLEFILL;Fill holes in motion mask
 !TP_RAW_PIXELSHIFTHOLEFILL_TOOLTIP;Fill holes in motion mask
 !TP_RAW_PIXELSHIFTLMMSE;Use LMMSE for moving parts
 !TP_RAW_PIXELSHIFTLMMSE_TOOLTIP;Use LMMSE instead of AMaZE for areas of motion.\nUseful for high ISO images.
-!TP_RAW_PIXELSHIFTMASKTHRESHOLD;3x3 new threshold
 !TP_RAW_PIXELSHIFTMEDIAN;Use median for moving parts
-!TP_RAW_PIXELSHIFTMEDIAN3;Exclude selected frame from median
-!TP_RAW_PIXELSHIFTMEDIAN3_TOOLTIP;Excludes selected frame from median.\nUseful if moving objects overlap in frame 2 and 3
 !TP_RAW_PIXELSHIFTMEDIAN_TOOLTIP;Use median of all frames instead of selected frame for regions with motion.\nRemoves objects which are at different places in all frames.\nGives motion effect on slow moving (overlapping) objects.
 !TP_RAW_PIXELSHIFTMM_AUTO;Automatic
 !TP_RAW_PIXELSHIFTMM_CUSTOM;Custom
 !TP_RAW_PIXELSHIFTMM_OFF;Off
-!TP_RAW_PIXELSHIFTMOTION;Motion detection level (deprecated)
-!TP_RAW_PIXELSHIFTMOTIONCORRECTION;Green motion correction size
 !TP_RAW_PIXELSHIFTMOTIONMETHOD;Motion Correction
 !TP_RAW_PIXELSHIFTMOTION_TOOLTIP;0 means no motion detection.\n1 - 99 means motion will be detected according to this value. Increase value to increase detection rate.\n100 means the AMaZE-demosaiced frame will be used.
-!TP_RAW_PIXELSHIFTNONGREENAMAZE;Check red/blue AMaZE
 !TP_RAW_PIXELSHIFTNONGREENCROSS;Check red/blue channels for motion
-!TP_RAW_PIXELSHIFTNONGREENCROSS2;Check green AMaZE
-!TP_RAW_PIXELSHIFTNONGREENHORIZONTAL;Check red/blue horizontal
-!TP_RAW_PIXELSHIFTNONGREENVERTICAL;Check red/blue vertical
-!TP_RAW_PIXELSHIFTNREADISO;nRead
-!TP_RAW_PIXELSHIFTONEGREEN;Use one green instead of average
-!TP_RAW_PIXELSHIFTONEGREEN_TOOLTIP;Use one green instead of averaging two greens for regions without motion.
-!TP_RAW_PIXELSHIFTPRNU;PRNU (%)
-!TP_RAW_PIXELSHIFTREDBLUEWEIGHT;Red&Blue weight
 !TP_RAW_PIXELSHIFTSHOWMOTION;Show motion mask
 !TP_RAW_PIXELSHIFTSHOWMOTIONMASKONLY;Show only motion mask
 !TP_RAW_PIXELSHIFTSHOWMOTIONMASKONLY_TOOLTIP;Shows the motion mask without the image.
-!TP_RAW_PIXELSHIFTSHOWMOTION_TOOLTIP;Overlays the image with a mask showing the regions with motion.
+!TP_RAW_PIXELSHIFTSHOWMOTION_TOOLTIP;Overlays the image with a green mask showing the regions with motion.
 !TP_RAW_PIXELSHIFTSIGMA;Blur radius
 !TP_RAW_PIXELSHIFTSIGMA_TOOLTIP;The default radius of 1.0 usually fits well for base ISO.\nIncrease the value for high ISO shots, 5.0 is a good starting point.\nWatch the motion mask while changing the value.
 !TP_RAW_PIXELSHIFTSMOOTH;Smooth transitions
 !TP_RAW_PIXELSHIFTSMOOTH_TOOLTIP;Smooth transitions between areas with motion and areas without.\nSet to 0 to disable transition smoothing.\nSet to 1 to either get the AMaZE/LMMSE result of the selected frame (depending on whether "Use LMMSE" is selected), or the median of all four frames if "Use median" is selected.
-!TP_RAW_PIXELSHIFTSTDDEVFACTORBLUE;StdDev factor Blue
-!TP_RAW_PIXELSHIFTSTDDEVFACTORGREEN;StdDev factor Green
-!TP_RAW_PIXELSHIFTSTDDEVFACTORRED;StdDev factor Red
 !TP_RAW_RCD;RCD
 !TP_RAW_SENSOR_BAYER_LABEL;Sensor with Bayer Matrix
 !TP_RAW_SENSOR_XTRANS_DMETHOD_TOOLTIP;3-pass gives best results (recommended for low ISO images).\n1-pass is almost undistinguishable from 3-pass for high ISO images and is faster.
@@ -1973,13 +1978,15 @@ TP_WBALANCE_TEMPERATURE;色溫
 !TP_SHARPENEDGE_LABEL;Edges
 !TP_SHARPENEDGE_PASSES;Iterations
 !TP_SHARPENEDGE_THREE;Luminance only
+!TP_SHARPENING_CONTRAST;Contrast threshold
 !TP_SHARPENMICRO_AMOUNT;Quantity
+!TP_SHARPENMICRO_CONTRAST;Contrast threshold
 !TP_SHARPENMICRO_LABEL;Microcontrast
 !TP_SHARPENMICRO_MATRIX;3×3 matrix instead of 5×5
 !TP_SHARPENMICRO_UNIFORMITY;Uniformity
 !TP_TM_FATTAL_AMOUNT;Amount
 !TP_TM_FATTAL_ANCHOR;Anchor
-!TP_TM_FATTAL_LABEL;HDR Tone Mapping
+!TP_TM_FATTAL_LABEL;Dynamic Range Compression
 !TP_TM_FATTAL_THRESHOLD;Threshold
 !TP_VIBRANCE_AVOIDCOLORSHIFT;Avoid color shift
 !TP_VIBRANCE_CURVEEDITOR_SKINTONES;HH
@@ -2081,7 +2088,7 @@ TP_WBALANCE_TEMPERATURE;色溫
 !TP_WAVELET_EDGESENSI;Edge sensitivity
 !TP_WAVELET_EDGREINF_TOOLTIP;Reinforce or reduce the action of the first level, do the opposite to the second level, and leave the rest unchanged.
 !TP_WAVELET_EDGTHRESH;Detail
-!TP_WAVELET_EDGTHRESH_TOOLTIP;Change the repartition between the first levels and the others. The higher the threshold the more the action is centred on the first levels. Be careful with negative values, they increase the action of high levels and can introduce artifacts.
+!TP_WAVELET_EDGTHRESH_TOOLTIP;Change the repartition between the first levels and the others. The higher the threshold the more the action is centered on the first levels. Be careful with negative values, they increase the action of high levels and can introduce artifacts.
 !TP_WAVELET_EDRAD;Radius
 !TP_WAVELET_EDRAD_TOOLTIP;This radius adjustment is very different from those in other sharpening tools. Its value is compared to each level through a complex function. In this sense, a value of zero still has an effect.
 !TP_WAVELET_EDSL;Threshold Sliders

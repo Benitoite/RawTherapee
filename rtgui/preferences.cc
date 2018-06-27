@@ -225,6 +225,7 @@ Gtk::Widget* Preferences::getBatchProcPanel ()
 
     mi = behModel->append (); // Used for both Resize and Post-Resize sharpening
     mi->set_value (behavColumns.label, M ("TP_SHARPENING_LABEL"));
+    appendBehavList (mi, M ("TP_SHARPENING_CONTRAST"), ADDSET_SHARP_CONTRAST, false);
     appendBehavList (mi, M ("TP_SHARPENING_RADIUS"), ADDSET_SHARP_RADIUS, false);
     appendBehavList (mi, M ("TP_SHARPENING_AMOUNT"), ADDSET_SHARP_AMOUNT, false);
     appendBehavList (mi, M ("TP_SHARPENING_RLD_DAMPING"), ADDSET_SHARP_DAMPING, false);
@@ -248,18 +249,19 @@ Gtk::Widget* Preferences::getBatchProcPanel ()
     mi = behModel->append ();
     mi->set_value (behavColumns.label, M ("TP_SHARPENMICRO_LABEL"));
     appendBehavList (mi, M ("TP_SHARPENMICRO_AMOUNT"), ADDSET_SHARPENMICRO_AMOUNT, false);
+    appendBehavList (mi, M ("TP_SHARPENMICRO_CONTRAST"), ADDSET_SHARPENMICRO_CONTRAST, false);
     appendBehavList (mi, M ("TP_SHARPENMICRO_UNIFORMITY"), ADDSET_SHARPENMICRO_UNIFORMITY, false);
 
     mi = behModel->append ();
     mi->set_value (behavColumns.label, M ("TP_DIRPYRDENOISE_LABEL"));
     //appendBehavList (mi, M("TP_DIRPYRDENOISE_LUMA")+", "+M("TP_DIRPYRDENOISE_CHROMA"), ADDSET_DIRPYRDN_CHLUM, true);
-    appendBehavList (mi, M ("TP_DIRPYRDENOISE_LUMA"), ADDSET_DIRPYRDN_LUMA, true);
-    appendBehavList (mi, M ("TP_DIRPYRDENOISE_LDETAIL"), ADDSET_DIRPYRDN_LUMDET, true);
-    appendBehavList (mi, M ("TP_DIRPYRDENOISE_CHROMA"), ADDSET_DIRPYRDN_CHROMA, true);
-    appendBehavList (mi, M ("TP_DIRPYRDENOISE_RED"), ADDSET_DIRPYRDN_CHROMARED, true);
-    appendBehavList (mi, M ("TP_DIRPYRDENOISE_BLUE"), ADDSET_DIRPYRDN_CHROMABLUE, true);
-    appendBehavList (mi, M ("TP_DIRPYRDENOISE_GAMMA"), ADDSET_DIRPYRDN_GAMMA, true);
-    appendBehavList (mi, M ("TP_DIRPYRDENOISE_PASSES"), ADDSET_DIRPYRDN_PASSES, true);
+    appendBehavList (mi, M ("TP_DIRPYRDENOISE_LUMINANCE_SMOOTHING"), ADDSET_DIRPYRDN_LUMA, true);
+    appendBehavList (mi, M ("TP_DIRPYRDENOISE_LUMINANCE_DETAIL"), ADDSET_DIRPYRDN_LUMDET, true);
+    appendBehavList (mi, M ("TP_DIRPYRDENOISE_CHROMINANCE_MASTER"), ADDSET_DIRPYRDN_CHROMA, true);
+    appendBehavList (mi, M ("TP_DIRPYRDENOISE_CHROMINANCE_REDGREEN"), ADDSET_DIRPYRDN_CHROMARED, true);
+    appendBehavList (mi, M ("TP_DIRPYRDENOISE_CHROMINANCE_BLUEYELLOW"), ADDSET_DIRPYRDN_CHROMABLUE, true);
+    appendBehavList (mi, M ("TP_DIRPYRDENOISE_MAIN_GAMMA"), ADDSET_DIRPYRDN_GAMMA, true);
+    appendBehavList (mi, M ("TP_DIRPYRDENOISE_MEDIAN_PASSES"), ADDSET_DIRPYRDN_PASSES, true);
 
     mi = behModel->append ();
     mi->set_value (behavColumns.label, M ("TP_WBALANCE_LABEL"));
@@ -270,7 +272,6 @@ Gtk::Widget* Preferences::getBatchProcPanel ()
 
     mi = behModel->append ();
     mi->set_value (behavColumns.label, M ("TP_COLORAPP_LABEL"));
-    appendBehavList (mi, M ("TP_COLORAPP_CIECAT_DEGREE"), ADDSET_CAT_DEGREE, true);
     appendBehavList (mi, M ("TP_COLORAPP_ADAPTSCENE"), ADDSET_CAT_ADAPTSCENE, true);
     appendBehavList (mi, M ("TP_COLORAPP_LIGHT"), ADDSET_CAT_LIGHT, true);
     appendBehavList (mi, M ("TP_COLORAPP_BRIGHT"), ADDSET_CAT_BRIGHT, true);
@@ -385,6 +386,19 @@ Gtk::Widget* Preferences::getBatchProcPanel ()
     appendBehavList (mi, M ("TP_WAVELET_EDGEDETECT"), ADDSET_WA_EDGEDETECT, true);
     appendBehavList (mi, M ("TP_WAVELET_EDGEDETECTTHR"), ADDSET_WA_EDGEDETECTTHR, true);
     appendBehavList (mi, M ("TP_WAVELET_EDGEDETECTTHR2"), ADDSET_WA_EDGEDETECTTHR2, true);
+
+    mi = behModel->append ();
+    mi->set_value (behavColumns.label, M ("TP_RAW_SENSOR_BAYER_LABEL"));
+    appendBehavList (mi, M ("TP_RAW_FALSECOLOR"), ADDSET_BAYER_FALSE_COLOR_SUPPRESSION, false);
+    appendBehavList (mi, M ("TP_RAW_DCBITERATIONS") + ", " + M("TP_RAW_LMMSEITERATIONS"), ADDSET_BAYER_ITER, false);
+    appendBehavList (mi, M ("TP_RAW_DUALDEMOSAICCONTRAST"), ADDSET_BAYER_DUALDEMOZCONTRAST, false);
+    appendBehavList (mi, M ("TP_RAW_PIXELSHIFTSIGMA"), ADDSET_BAYER_PS_SIGMA, false);
+    appendBehavList (mi, M ("TP_RAW_PIXELSHIFTSMOOTH"), ADDSET_BAYER_PS_SMOOTH, false);
+    appendBehavList (mi, M ("TP_RAW_PIXELSHIFTEPERISO"), ADDSET_BAYER_PS_EPERISO, false);
+
+    mi = behModel->append ();
+    mi->set_value (behavColumns.label, M ("TP_RAW_SENSOR_XTRANS_LABEL"));
+    appendBehavList (mi, M ("TP_RAW_FALSECOLOR"), ADDSET_XTRANS_FALSE_COLOR_SUPPRESSION, false);
 
     mi = behModel->append ();
     mi->set_value (behavColumns.label, M ("TP_PREPROCESS_LABEL"));
@@ -657,7 +671,19 @@ Gtk::Widget* Preferences::getPerformancePanel ()
     maxInspectorBuffersSB->set_range (1, 12); // ... we have to set a limit, 12 seem to be enough even for systems with tons of RAM
     maxIBuffersHB->pack_start (*maxIBufferLbl, Gtk::PACK_SHRINK, 0);
     maxIBuffersHB->pack_end (*maxInspectorBuffersSB, Gtk::PACK_SHRINK, 0);
-    finspect->add (*maxIBuffersHB);
+
+    Gtk::VBox *inspectorvb = Gtk::manage(new Gtk::VBox());
+    inspectorvb->add(*maxIBuffersHB);
+
+    Gtk::HBox *insphb = Gtk::manage(new Gtk::HBox());
+    thumbnailInspectorMode = Gtk::manage(new Gtk::ComboBoxText());
+    thumbnailInspectorMode->append(M("PREFERENCES_THUMBNAIL_INSPECTOR_JPEG"));
+    thumbnailInspectorMode->append(M("PREFERENCES_THUMBNAIL_INSPECTOR_RAW"));
+    thumbnailInspectorMode->append(M("PREFERENCES_THUMBNAIL_INSPECTOR_RAW_IF_NO_JPEG_FULLSIZE"));
+    insphb->pack_start(*Gtk::manage(new Gtk::Label(M("PREFERENCES_THUMBNAIL_INSPECTOR_MODE") + ": ")), Gtk::PACK_SHRINK, 4);
+    insphb->pack_start(*thumbnailInspectorMode);
+    inspectorvb->pack_start(*insphb);
+    finspect->add (*inspectorvb);
     mainContainer->pack_start (*finspect, Gtk::PACK_SHRINK, 4);
 
     Gtk::Frame* fdenoise = Gtk::manage ( new Gtk::Frame (M ("PREFERENCES_NOISE")) );
@@ -890,71 +916,6 @@ Gtk::Widget* Preferences::getColorManagementPanel ()
     fprinter->add (*gprinter);
 
     mvbcm->pack_start (*fprinter, Gtk::PACK_SHRINK);
-
-    //------------------------- CIECAM ----------------------
-
-    /*
-        Gtk::Label* viewlab = Gtk::manage (new Gtk::Label (M ("PREFERENCES_VIEW") + ":", Gtk::ALIGN_START));
-        setExpandAlignProperties (viewlab, false, false, Gtk::ALIGN_START, Gtk::ALIGN_CENTER);
-
-        view = Gtk::manage (new Gtk::ComboBoxText ());
-        setExpandAlignProperties (view, true, false, Gtk::ALIGN_FILL, Gtk::ALIGN_CENTER);
-        view->append (M("PREFERENCES_D50_MENU"));
-
-        view->append (M ("PREFERENCES_D50"));
-        view->append (M("PREFERENCES_D55"));
-        view->append (M("PREFERENCES_D60"));
-        view->append (M("PREFERENCES_D65"));
-        view->append (M("PREFERENCES_BLACKBODY"));
-        view->append (M("PREFERENCES_FLUOF2"));
-        view->append (M("PREFERENCES_FLUOF7"));
-        view->append (M("PREFERENCES_FLUOF11"));
-
-        Gtk::Label* greylab = Gtk::manage (new Gtk::Label (M ("PREFERENCES_GREY") + ":", Gtk::ALIGN_START));
-        setExpandAlignProperties (greylab, false, false, Gtk::ALIGN_START, Gtk::ALIGN_CENTER);
-        grey = Gtk::manage (new Gtk::ComboBoxText ());
-        setExpandAlignProperties (grey, true, false, Gtk::ALIGN_FILL, Gtk::ALIGN_CENTER);
-        grey->append (M("PREFERENCES_GREY05"));
-        grey->append (M("PREFERENCES_GREY10"));
-        grey->append (M("PREFERENCES_GREY15"));
-        grey->append (M ("PREFERENCES_GREY18"));
-        grey->append (M("PREFERENCES_GREY18_MENU"));
-
-        grey->append (M("PREFERENCES_GREY23"));
-        grey->append (M("PREFERENCES_GREY30"));
-        grey->append (M("PREFERENCES_GREY40"));
-    */
-    /*
-        Gtk::Label* greySclab = Gtk::manage (new Gtk::Label (M ("PREFERENCES_GREYSC") + ":", Gtk::ALIGN_START));
-        setExpandAlignProperties (greySclab, false, false, Gtk::ALIGN_START, Gtk::ALIGN_CENTER);
-        greySc = Gtk::manage (new Gtk::ComboBoxText ());
-        setExpandAlignProperties (greySc, true, false, Gtk::ALIGN_FILL, Gtk::ALIGN_CENTER);
-        greySc->append (M ("PREFERENCES_GREYSCA"));
-        greySc->append (M ("PREFERENCES_GREYSC18"));
-    */
-    Gtk::Frame* fcielab = Gtk::manage ( new Gtk::Frame (M ("PREFERENCES_CIEART_FRAME")) );
-    setExpandAlignProperties (fcielab, true, false, Gtk::ALIGN_FILL, Gtk::ALIGN_START);
-
-    Gtk::Grid* colo = Gtk::manage (new Gtk::Grid ());
-    setExpandAlignProperties (colo, true, false, Gtk::ALIGN_FILL, Gtk::ALIGN_FILL);
-    Gtk::Label* lreloadneeded1 = Gtk::manage (new Gtk::Label (M ("PREFERENCES_IMG_RELOAD_NEEDED"), Gtk::ALIGN_START));
-    setExpandAlignProperties (lreloadneeded1, true, false, Gtk::ALIGN_START, Gtk::ALIGN_CENTER);
-    colo->attach    (*lreloadneeded1, 0, 0, 2, 1);
-    /*
-        colo->attach    (*viewlab,        0, 1, 1, 1);
-        colo->attach    (*view,           1, 1, 1, 1);
-        colo->attach    (*greylab,        0, 2, 1, 1);
-        colo->attach    (*grey,           1, 2, 1, 1);
-    */
-//    colo->attach    (*greySclab,      0, 3, 1, 1);
-//    colo->attach    (*greySc,         1, 3, 1, 1);
-    cbciecamfloat = Gtk::manage (new Gtk::CheckButton (M ("PREFERENCES_CIEART_LABEL")));
-    setExpandAlignProperties (cbciecamfloat, false, false, Gtk::ALIGN_START, Gtk::ALIGN_CENTER);
-    colo->attach (*cbciecamfloat, 0, 4, 2, 1);
-    cbciecamfloat->set_tooltip_markup (M ("PREFERENCES_CIEART_TOOLTIP"));
-    fcielab->add (*colo);
-
-    mvbcm->pack_start (*fcielab, Gtk::PACK_SHRINK, 4);
 
     return mvbcm;
 }
@@ -1528,7 +1489,7 @@ Gtk::Widget* Preferences::getSoundPanel ()
     txtSndLngEditProcDone = Gtk::manage (new Gtk::Entry());
     pSndLngEditProcDone->pack_start (*txtSndLngEditProcDone, Gtk::PACK_EXPAND_WIDGET, 4);
 
-    Gtk::Label* lSndLngEditProcDoneSecs = Gtk::manage (new Gtk::Label (M ("PREFERENCES_SND_TRESHOLDSECS") + Glib::ustring (":")));
+    Gtk::Label* lSndLngEditProcDoneSecs = Gtk::manage (new Gtk::Label (M ("PREFERENCES_SND_THRESHOLDSECS") + Glib::ustring (":")));
     pSndLngEditProcDone->pack_start (*lSndLngEditProcDoneSecs, Gtk::PACK_SHRINK, 12);
 
     spbSndLngEditProcDoneSecs = Gtk::manage ( new Gtk::SpinButton () );
@@ -1777,7 +1738,6 @@ void Preferences::storePreferences ()
 // moptions.rtSettings.viewingdevicegrey = grey->get_active_row_number ();
 //    moptions.rtSettings.viewinggreySc = greySc->get_active_row_number ();
 // moptions.rtSettings.autocielab = cbAutocielab->get_active ();
-    moptions.rtSettings.ciecamfloat = cbciecamfloat->get_active ();
     moptions.rtSettings.leveldnv = dnv->get_active_row_number ();
     moptions.rtSettings.leveldnti = dnti->get_active_row_number ();
     moptions.rtSettings.leveldnliss = dnliss->get_active_row_number ();
@@ -1853,6 +1813,7 @@ void Preferences::storePreferences ()
     moptions.rgbDenoiseThreadLimit = rgbDenoiseTreadLimitSB->get_value_as_int();
     moptions.clutCacheSize = clutCacheSizeSB->get_value_as_int();
     moptions.maxInspectorBuffers = maxInspectorBuffersSB->get_value_as_int();
+    moptions.rtSettings.thumbnail_inspector_mode = static_cast<rtengine::Settings::ThumbnailInspectorMode>(thumbnailInspectorMode->get_active_row_number());
 
 // Sounds only on Windows and Linux
 #if defined(WIN32) || defined(__linux__)
@@ -1948,7 +1909,6 @@ void Preferences::fillPreferences ()
     cbdaubech->set_active (moptions.rtSettings.daubech);
 
 //  cbAutocielab->set_active (moptions.rtSettings.autocielab);
-    cbciecamfloat->set_active (moptions.rtSettings.ciecamfloat);
     languages->set_active_text (moptions.language);
     ckbLangAutoDetect->set_active (moptions.languageAutoDetect);
     int themeNbr = getThemeRowNumber (moptions.theme);
@@ -2072,6 +2032,7 @@ void Preferences::fillPreferences ()
     rgbDenoiseTreadLimitSB->set_value (moptions.rgbDenoiseThreadLimit);
     clutCacheSizeSB->set_value (moptions.clutCacheSize);
     maxInspectorBuffersSB->set_value (moptions.maxInspectorBuffers);
+    thumbnailInspectorMode->set_active(int(moptions.rtSettings.thumbnail_inspector_mode));
 
     darkFrameDir->set_current_folder ( moptions.rtSettings.darkFramesPath );
     darkFrameChanged ();
@@ -2215,7 +2176,7 @@ void Preferences::selectStartupDir ()
     Gtk::FileChooserDialog dialog (getToplevelWindow (this), M ("PREFERENCES_DIRSELECTDLG"), Gtk::FILE_CHOOSER_ACTION_SELECT_FOLDER);
 //    dialog.set_transient_for(*this);
 
-    //Add response buttons the the dialog:
+    //Add response buttons to the dialog:
     dialog.add_button (M ("GENERAL_CANCEL"), Gtk::RESPONSE_CANCEL);
     dialog.add_button (M ("GENERAL_OPEN"), Gtk::RESPONSE_OK);
 

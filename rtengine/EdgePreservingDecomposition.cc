@@ -42,7 +42,8 @@ float *SparseConjugateGradient(void Ax(float *Product, float *x, void *Pass), fl
     }
 
     //s is preconditionment of r. Without, direct to r.
-    float *s = r, rs = 0.0f;
+    float *s = r;
+    double rs = 0.0; // use double precision for large summations
 
     if(Preconditioner != nullptr) {
         s = new float[n];
@@ -77,7 +78,7 @@ float *SparseConjugateGradient(void Ax(float *Product, float *x, void *Pass), fl
 
     for(iterate = 0; iterate < MaximumIterates; iterate++) {
         //Get step size alpha, store ax while at it.
-        float ab = 0.0f;
+        double ab = 0.0; // use double precision for large summations
         Ax(ax, d, Pass);
 #ifdef _OPENMP
         #pragma omp parallel for reduction(+:ab)
@@ -94,7 +95,7 @@ float *SparseConjugateGradient(void Ax(float *Product, float *x, void *Pass), fl
         ab = rs / ab;
 
         //Update x and r with this step size.
-        float rms = 0.0;
+        double rms = 0.0; // use double precision for large summations
 #ifdef _OPENMP
         #pragma omp parallel for reduction(+:rms)
 #endif
@@ -124,28 +125,14 @@ float *SparseConjugateGradient(void Ax(float *Product, float *x, void *Pass), fl
         #pragma omp parallel
 #endif
         {
-            float c = 0.0f;
 #ifdef _OPENMP
-            #pragma omp for reduction(+:rs)                            // Summation with error correction
+            #pragma omp for reduction(+:rs)
 #endif
 
             for(int ii = 0; ii < n; ii++) {
-                float temp = r[ii] * s[ii];
-                float t = rs + temp;
-
-                if( fabsf(rs) >= fabsf(temp) ) {
-                    c += ((rs - t) + temp);
-                } else {
-                    c += ((temp - t) + rs);
-                }
-
-                rs = t;
+                rs += r[ii] * s[ii];
             }
 
-#ifdef _OPENMP
-            #pragma omp critical
-#endif
-            rs += c;
         }
 
         ab = rs / ab;
@@ -789,7 +776,7 @@ float *EdgePreservingDecomposition::CreateBlur(float *Source, float Scale, float
 
 
 // checked for race condition here
-// a0[] is read and write but adressed by i only
+// a0[] is read and write but addressed by i only
 // a[] is read only
 // a_w_1 is write only
 // a_w is write only

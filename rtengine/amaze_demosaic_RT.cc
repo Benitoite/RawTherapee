@@ -38,7 +38,7 @@
 namespace rtengine
 {
 
-void RawImageSource::amaze_demosaic_RT(int winx, int winy, int winw, int winh, array2D<float> &rawData, array2D<float> &red, array2D<float> &green, array2D<float> &blue)
+void RawImageSource::amaze_demosaic_RT(int winx, int winy, int winw, int winh, const array2D<float> &rawData, array2D<float> &red, array2D<float> &green, array2D<float> &blue)
 {
     BENCHFUN
 
@@ -105,7 +105,7 @@ void RawImageSource::amaze_demosaic_RT(int winx, int winy, int winw, int winh, a
                                    };
     //gaussian on 5x5 alt quincunx, sigma=1.5
     constexpr float gausseven[2] = {0.13719494435797422f, 0.05640252782101291f};
-    //guassian on quincunx grid
+    //gaussian on quincunx grid
     constexpr float gquinc[4] = {0.169917f, 0.108947f, 0.069855f, 0.0287182f};
 
     typedef struct {

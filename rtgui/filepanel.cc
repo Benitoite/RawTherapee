@@ -81,6 +81,7 @@ FilePanel::FilePanel () : parent(nullptr), error(0)
 
     tpc->addPParamsChangeListener (history);
     history->setProfileChangeListener (tpc);
+    history->set_size_request(-1, 50);
 
     Gtk::ScrolledWindow* sFilterPanel = Gtk::manage ( new Gtk::ScrolledWindow() );
     filterPanel = Gtk::manage ( new FilterPanel () );
@@ -120,7 +121,7 @@ FilePanel::FilePanel () : parent(nullptr), error(0)
 
     tpcPaned = Gtk::manage ( new Gtk::VPaned () );
     tpcPaned->pack1 (*tpc->toolPanelNotebook, false, true);
-    tpcPaned->pack2 (*history, true, true);
+    tpcPaned->pack2 (*history, true, false);
 
     rightNotebook->append_page (*sFilterPanel, *filtLab);
     rightNotebook->append_page (*inspectorPanel, *inspectLab);
@@ -411,7 +412,7 @@ bool FilePanel::handleShortcutKey (GdkEventKey* event)
 
 void FilePanel::loadingThumbs(Glib::ustring str, double rate)
 {
-    GThreadLock lock; // All GUI acces from idle_add callbacks or separate thread HAVE to be protected
+    GThreadLock lock; // All GUI access from idle_add callbacks or separate thread HAVE to be protected
 
     if( !str.empty()) {
         parent->setProgressStr(str);

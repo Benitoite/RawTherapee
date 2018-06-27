@@ -74,8 +74,9 @@
 
 // Bit representations of flags
 enum {
-    LUT_CLIP_BELOW = 1 << 0,
-    LUT_CLIP_ABOVE = 1 << 1
+    LUT_CLIP_OFF,   // LUT does not clip input values
+    LUT_CLIP_BELOW, // LUT clips input values at lower bound
+    LUT_CLIP_ABOVE  // LUT clips input values at upper bound
 };
 
 template<typename T>
@@ -95,9 +96,6 @@ protected:
     // list of variables ordered to improve cache speed
     int maxs;
     float maxsf;
-    // For the SSE routine operator[](vfloat), we just clip float lookup values
-    // to just below the max value.
-    float maxIndexFloat;
     T * data;
     unsigned int clip;
     unsigned int size;
@@ -105,16 +103,16 @@ protected:
 private:
     unsigned int owner;
 #ifdef __SSE2__
-    vfloat maxsv ALIGNED16;
-    vfloat sizev ALIGNED16;
-    vint sizeiv ALIGNED16;
+    alignas(16) vfloat maxsv;
+    alignas(16) vfloat sizev;
+    alignas(16) vint sizeiv;
 #endif
 public:
     /// convenience flag! If one doesn't want to delete the buffer but want to flag it to be recomputed...
     /// The user have to handle it itself, even if some method can (re)initialize it
     bool dirty;
 
-    LUT(int s, int flags = 0xfffffff)
+    LUT(int s, int flags = LUT_CLIP_BELOW | LUT_CLIP_ABOVE, bool initZero = false)
     {
 #ifndef NDEBUG
 
@@ -135,14 +133,16 @@ public:
         upperBound = size - 1;
         maxs = size - 2;
         maxsf = (float)maxs;
-        maxIndexFloat = ((float)upperBound) - 1e-5;
 #ifdef __SSE2__
         maxsv =  F2V( maxs );
         sizeiv =  _mm_set1_epi32( (int)(size - 1) );
         sizev = F2V( size - 1 );
 #endif
+        if (initZero) {
+            clear();
+        }
     }
-    void operator ()(int s, int flags = 0xfffffff)
+    void operator ()(int s, int flags = LUT_CLIP_BELOW | LUT_CLIP_ABOVE, bool initZero = false)
     {
 #ifndef NDEBUG
 
@@ -166,12 +166,15 @@ public:
         upperBound = size - 1;
         maxs = size - 2;
         maxsf = (float)maxs;
-        maxIndexFloat = ((float)upperBound) - 1e-5;
 #ifdef __SSE2__
         maxsv =  F2V( maxs );
         sizeiv =  _mm_set1_epi32( (int)(size - 1) );
         sizev = F2V( size - 1 );
 #endif
+        if (initZero) {
+            clear();
+        }
+
     }
 
     LUT()
@@ -242,7 +245,6 @@ public:
             this->upperBound = rhs.upperBound;
             this->maxs = this->size - 2;
             this->maxsf = (float)this->maxs;
-            this->maxIndexFloat = ((float)this->upperBound) - 1e-5;
 #ifdef __SSE2__
             this->maxsv =  F2V( this->size - 2);
             this->sizeiv =  _mm_set1_epi32( (int)(this->size - 1) );
@@ -317,7 +319,7 @@ public:
 
         // Clamp and convert to integer values. Extract out of SSE register because all
         // lookup operations use regular addresses.
-        vfloat clampedIndexes = vmaxf(ZEROV, vminf(F2V(maxIndexFloat), indexv));
+        vfloat clampedIndexes = vmaxf(ZEROV, vminf(maxsv, indexv));
         vint indexes = _mm_cvttps_epi32(clampedIndexes);
         int indexArray[4];
         _mm_storeu_si128(reinterpret_cast<__m128i*>(&indexArray[0]), indexes);
@@ -349,7 +351,7 @@ public:
 
         // Clamp and convert to integer values. Extract out of SSE register because all
         // lookup operations use regular addresses.
-        vfloat clampedIndexes = vmaxf(ZEROV, vminf(F2V(maxIndexFloat), indexv));
+        vfloat clampedIndexes = vmaxf(ZEROV, vminf(maxsv, indexv));
         vint indexes = _mm_cvttps_epi32(clampedIndexes);
         int indexArray[4];
         _mm_storeu_si128(reinterpret_cast<__m128i*>(&indexArray[0]), indexes);
@@ -369,7 +371,7 @@ public:
         vfloat lower = _mm_castsi128_ps(_mm_unpacklo_epi64(temp0, temp1));
         vfloat upper = _mm_castsi128_ps(_mm_unpackhi_epi64(temp0, temp1));
 
-        vfloat diff = clampedIndexes - _mm_cvtepi32_ps(indexes);
+        vfloat diff = vmaxf(ZEROV, vminf(sizev, indexv)) - _mm_cvtepi32_ps(indexes);
         return vintpf(diff, upper, lower);
     }
 
@@ -380,7 +382,7 @@ public:
 
         // Clamp and convert to integer values. Extract out of SSE register because all
         // lookup operations use regular addresses.
-        vfloat clampedIndexes = vmaxf(ZEROV, vminf(F2V(maxsf), indexv));
+        vfloat clampedIndexes = vmaxf(ZEROV, vminf(maxsv, indexv));
         vint indexes = _mm_cvttps_epi32(clampedIndexes);
         int indexArray[4];
         _mm_storeu_si128(reinterpret_cast<__m128i*>(&indexArray[0]), indexes);
@@ -403,94 +405,34 @@ public:
         vfloat diff = indexv - _mm_cvtepi32_ps(indexes);
         return vintpf(diff, upper, lower);
     }
+
+    // vectorized LUT access with integer indices. Clips at lower and upper bounds
 #ifdef __SSE4_1__
     template<typename U = T, typename = typename std::enable_if<std::is_same<U, float>::value>::type>
-    vfloat operator[](vint idxv ) const
+    vfloat operator[](vint idxv) const
     {
-        vfloat tempv, p1v;
         idxv = _mm_max_epi32( _mm_setzero_si128(), _mm_min_epi32(idxv, sizeiv));
-        // access the LUT 4 times and shuffle the values into p1v
-
-        int idx;
-
-        // get 4th value
-        idx = _mm_extract_epi32(idxv, 3);
-        tempv = _mm_load_ss(&data[idx]);
-        p1v = PERMUTEPS(tempv, _MM_SHUFFLE(0, 0, 0, 0));
-        // now p1v is 3 3 3 3
-
-        // get 3rd value
-        idx = _mm_extract_epi32(idxv, 2);
-        tempv = _mm_load_ss(&data[idx]);
-        p1v = _mm_move_ss( p1v, tempv);
-        // now p1v is 3 3 3 2
-
-        // get 2nd value
-        idx = _mm_extract_epi32(idxv, 1);
-        tempv = _mm_load_ss(&data[idx]);
-        p1v = PERMUTEPS( p1v, _MM_SHUFFLE(1, 0, 1, 0));
-        // now p1v is 3 2 3 2
-        p1v = _mm_move_ss( p1v, tempv );
-        // now p1v is 3 2 3 1
-
-        // get 1st value
-        idx = _mm_cvtsi128_si32(idxv);
-        tempv = _mm_load_ss(&data[idx]);
-        p1v = PERMUTEPS( p1v, _MM_SHUFFLE(3, 2, 0, 0));
-        // now p1v is 3 2 1 1
-        p1v = _mm_move_ss( p1v, tempv );
-        // now p1v is 3 2 1 0
-
-        return p1v;
+        // access the LUT 4 times. Trust the compiler. It generates good code here, better than hand written SSE code
+        return _mm_setr_ps(data[_mm_extract_epi32(idxv,0)], data[_mm_extract_epi32(idxv,1)], data[_mm_extract_epi32(idxv,2)], data[_mm_extract_epi32(idxv,3)]);
     }
 #else
     template<typename U = T, typename = typename std::enable_if<std::is_same<U, float>::value>::type>
-    vfloat operator[](vint idxv ) const
+    vfloat operator[](vint idxv) const
     {
-        vfloat tempv, p1v;
-        tempv = _mm_cvtepi32_ps(idxv);
-        tempv = _mm_min_ps( tempv, sizev );
-        idxv = _mm_cvttps_epi32(_mm_max_ps( tempv, _mm_setzero_ps( )  ));
-        // access the LUT 4 times and shuffle the values into p1v
-
-        int idx;
-
-        // get 4th value
-        idx = _mm_cvtsi128_si32 (_mm_shuffle_epi32(idxv, _MM_SHUFFLE(3, 3, 3, 3)));
-        tempv = _mm_load_ss(&data[idx]);
-        p1v = PERMUTEPS(tempv, _MM_SHUFFLE(0, 0, 0, 0));
-        // now p1v is 3 3 3 3
-
-        // get 3rd value
-        idx = _mm_cvtsi128_si32 (_mm_shuffle_epi32(idxv, _MM_SHUFFLE(2, 2, 2, 2)));
-        tempv = _mm_load_ss(&data[idx]);
-        p1v = _mm_move_ss( p1v, tempv);
-        // now p1v is 3 3 3 2
-
-        // get 2nd value
-        idx = _mm_cvtsi128_si32 (_mm_shuffle_epi32(idxv, _MM_SHUFFLE(1, 1, 1, 1)));
-        tempv = _mm_load_ss(&data[idx]);
-        p1v = PERMUTEPS( p1v, _MM_SHUFFLE(1, 0, 1, 0));
-        // now p1v is 3 2 3 2
-        p1v = _mm_move_ss( p1v, tempv );
-        // now p1v is 3 2 3 1
-
-        // get 1st value
-        idx = _mm_cvtsi128_si32 (idxv);
-        tempv = _mm_load_ss(&data[idx]);
-        p1v = PERMUTEPS( p1v, _MM_SHUFFLE(3, 2, 0, 0));
-        // now p1v is 3 2 1 1
-        p1v = _mm_move_ss( p1v, tempv );
-        // now p1v is 3 2 1 0
-
-        return p1v;
+        vfloat tempv = vmaxf(ZEROV, vminf(sizev, _mm_cvtepi32_ps(idxv))); // convert to float because SSE2 has no min/max for 32bit integers
+        idxv = _mm_cvttps_epi32(tempv);
+        // access the LUT 4 times. Trust the compiler. It generates good code here, better than hand written SSE code
+        return _mm_setr_ps(data[_mm_cvtsi128_si32(idxv)],
+                           data[_mm_cvtsi128_si32(_mm_shuffle_epi32(idxv, _MM_SHUFFLE(1, 1, 1, 1)))],
+                           data[_mm_cvtsi128_si32(_mm_shuffle_epi32(idxv, _MM_SHUFFLE(2, 2, 2, 2)))],
+                           data[_mm_cvtsi128_si32(_mm_shuffle_epi32(idxv, _MM_SHUFFLE(3, 3, 3, 3)))]);
     }
 #endif
 #endif
 
     // use with float indices
-    template<typename U = T, typename = typename std::enable_if<std::is_same<U, float>::value>::type>
-    T operator[](float index) const
+    template<typename U = T, typename V, typename = typename std::enable_if<std::is_floating_point<V>::value && std::is_same<U, float>::value>::type>
+    T operator[](V index) const
     {
         int idx = (int)index;  // don't use floor! The difference in negative space is no problems here
 
@@ -587,7 +529,6 @@ public:
         maxs = 0;
         maxsf = 0.f;
         clip = 0;
-        maxIndexFloat = ((float)upperBound) - 1e-5;
     }
 
     // create an identity LUT (LUT(x) = x) or a scaled identity LUT (LUT(x) = x / divisor)
@@ -683,7 +624,7 @@ public:
     }
 
     // share the buffer with another LUT, handy for same data but different clip flags
-    void share(const LUT<T> &source, int flags = 0xfffffff)
+    void share(const LUT<T> &source, int flags = LUT_CLIP_BELOW | LUT_CLIP_ABOVE)
     {
         if (owner && data) {
             delete[] data;
@@ -697,7 +638,6 @@ public:
         upperBound = size - 1;
         maxs = size - 2;
         maxsf = (float)maxs;
-        maxIndexFloat = ((float)upperBound) - 1e-5;
 #ifdef __SSE2__
         maxsv =  F2V( size - 2);
         sizeiv =  _mm_set1_epi32( (int)(size - 1) );

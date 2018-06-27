@@ -34,8 +34,8 @@ extern const Settings* settings;
 
 ImProcCoordinator::ImProcCoordinator ()
     : orig_prev (nullptr), oprevi (nullptr), oprevl (nullptr), nprevl (nullptr), fattal_11_dcrop_cache(nullptr), previmg (nullptr), workimg (nullptr),
-      ncie (nullptr), imgsrc (nullptr), shmap (nullptr), lastAwbEqual (0.), lastAwbTempBias (0.0), ipf (&params, true), monitorIntent (RI_RELATIVE),
-      softProof (false), gamutCheck (false), scale (10), highDetailPreprocessComputed (false), highDetailRawComputed (false),
+      ncie (nullptr), imgsrc (nullptr), lastAwbEqual (0.), lastAwbTempBias (0.0), ipf (&params, true), monitorIntent (RI_RELATIVE),
+      softProof (false), gamutCheck (false), sharpMask(false), scale (10), highDetailPreprocessComputed (false), highDetailRawComputed (false),
       allocated (false), bwAutoR (-9000.f), bwAutoG (-9000.f), bwAutoB (-9000.f), CAMMean (NAN),
 
       hltonecurve (65536),
@@ -215,7 +215,7 @@ void ImProcCoordinator::updatePreviewImage (int todo, Crop* cropCall)
     // If high detail (=100%) is newly selected, do a demosaic update, since the last was just with FAST
 
     if (imageTypeListener) {
-        imageTypeListener->imageTypeChanged (imgsrc->isRAW(), imgsrc->getSensorType() == ST_BAYER, imgsrc->getSensorType() == ST_FUJI_XTRANS);
+        imageTypeListener->imageTypeChanged (imgsrc->isRAW(), imgsrc->getSensorType() == ST_BAYER, imgsrc->getSensorType() == ST_FUJI_XTRANS, imgsrc->isMono());
     }
 
     if (   (todo & M_RAW)
@@ -230,8 +230,10 @@ void ImProcCoordinator::updatePreviewImage (int todo, Crop* cropCall)
                 printf ("Demosaic X-Trans image with using method: %s\n", rp.xtranssensor.method.c_str());
             }
         }
+        bool autoContrast = false;
+        double contrastThreshold = 0.f;
+        imgsrc->demosaic (rp, autoContrast, contrastThreshold); //enabled demosaic
 
-        imgsrc->demosaic ( rp); //enabled demosaic
         // if a demosaic happened we should also call getimage later, so we need to set the M_INIT flag
         todo |= M_INIT;
 
@@ -359,7 +361,7 @@ void ImProcCoordinator::updatePreviewImage (int todo, Crop* cropCall)
                                     calclum->b(ii>>1,jj>>1) = orig_prev->b(ii,jj);
                                 }
                             }
-                            imgsrc->convertColorSpace(calclum, params.icm, currWB);//claculate values after colorspace conversion
+                            imgsrc->convertColorSpace(calclum, params.icm, currWB);//calculate values after colorspace conversion
                         }
 
                         int kall=1;
@@ -414,23 +416,6 @@ void ImProcCoordinator::updatePreviewImage (int todo, Crop* cropCall)
 
     readyphase++;
     progress ("Preparing shadow/highlight map...", 100 * readyphase / numofphases);
-
-    if ((todo & M_BLURMAP) && params.sh.enabled) {
-        double radius = sqrt (double (pW * pW + pH * pH)) / 2.0;
-        double shradius = params.sh.radius;
-
-        if (!params.sh.hq) {
-            shradius *= radius / 1800.0;
-        }
-
-        if (!shmap) {
-            shmap = new SHMap (pW, pH, true);
-        }
-
-        shmap->update (oprevi, shradius, ipf.lumimul, params.sh.hq, scale);
-    }
-
-
 
     readyphase++;
 
@@ -566,7 +551,7 @@ void ImProcCoordinator::updatePreviewImage (int todo, Crop* cropCall)
             DCPProfile::ApplyState as;
             DCPProfile *dcpProf = imgsrc->getDCP (params.icm, as);
 
-            ipf.rgbProc (oprevi, oprevl, nullptr, hltonecurve, shtonecurve, tonecurve, shmap, params.toneCurve.saturation,
+            ipf.rgbProc (oprevi, oprevl, nullptr, hltonecurve, shtonecurve, tonecurve, params.toneCurve.saturation,
                          rCurve, gCurve, bCurve, colourToningSatLimit, colourToningSatLimitOpacity, ctColorCurve, ctOpacityCurve, opautili, clToningcurve, cl2Toningcurve, customToneCurve1, customToneCurve2, beforeToneCurveBW, afterToneCurveBW, rrm, ggm, bbm, bwAutoR, bwAutoG, bwAutoB, params.toneCurve.expcomp, params.toneCurve.hlcompr, params.toneCurve.hlcomprthresh, dcpProf, as, histToneCurve);
 
             if (params.blackwhite.enabled && params.blackwhite.autoc && abwListener) {
@@ -910,12 +895,6 @@ void ImProcCoordinator::freeAll ()
 
         delete workimg;
 
-        if (shmap) {
-            delete shmap;
-        }
-
-        shmap = nullptr;
-
     }
 
     allocated = false;
@@ -965,10 +944,6 @@ void ImProcCoordinator::setScale (int prevscale)
         //ncie is only used in ImProcCoordinator::updatePreviewImage, it will be allocated on first use and deleted if not used anymore
         previmg = new Image8 (pW, pH);
         workimg = new Image8 (pW, pH);
-
-        if (params.sh.enabled) {
-            shmap = new SHMap (pW, pH, true);
-        }
 
         allocated = true;
     }
@@ -1187,6 +1162,11 @@ void ImProcCoordinator::getSoftProofing (bool &softProof, bool &gamutCheck)
     gamutCheck = this->gamutCheck;
 }
 
+void ImProcCoordinator::setSharpMask (bool sharpMask)
+{
+    this->sharpMask = sharpMask;
+}
+
 void ImProcCoordinator::saveInputICCReference (const Glib::ustring& fname, bool apply_wb)
 {
 
@@ -1203,7 +1183,8 @@ void ImProcCoordinator::saveInputICCReference (const Glib::ustring& fname, bool 
     ppar.icm.input = "(none)";
     Imagefloat* im = new Imagefloat (fW, fH);
     imgsrc->preprocess ( ppar.raw, ppar.lensProf, ppar.coarse );
-    imgsrc->demosaic (ppar.raw );
+    double dummy = 0.0;
+    imgsrc->demosaic (ppar.raw, false, dummy);
     ColorTemp currWB = ColorTemp (params.wb.temperature, params.wb.green, params.wb.equal, params.wb.method);
 
     if (params.wb.method == "Camera") {

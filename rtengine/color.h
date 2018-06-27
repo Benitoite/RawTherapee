@@ -97,6 +97,10 @@ private:
 #ifdef __SSE2__
     static vfloat hue2rgb(vfloat p, vfloat q, vfloat t);
 #endif
+
+    static float computeXYZ2Lab(float f);
+    static float computeXYZ2LabY(float f);
+    
 public:
 
     typedef enum Channel {
@@ -607,6 +611,7 @@ public:
     */
     static void XYZ2Lab(float x, float y, float z, float &L, float &a, float &b);
     static void RGB2Lab(float *X, float *Y, float *Z, float *L, float *a, float *b, const float wp[3][3], int width);
+    static void RGB2L(float *X, float *Y, float *Z, float *L, const float wp[3][3], int width);
 
     /**
     * @brief Convert Lab in Yuv
@@ -1372,7 +1377,7 @@ public:
     * @param CC chroma before [0 ; 180]
     * @param corectionHuechroma hue correction depending on chromaticity (saturation), in radians [0 ; 0.45] (return value)
     * @param correctlum hue correction depending on luminance (brightness, contrast,...), in radians [0 ; 0.45] (return value)
-    * @param munsDbgInfo (Debug target only) object to collect informations
+    * @param munsDbgInfo (Debug target only) object to collect information
     */
 
 #ifdef _DEBUG
@@ -1380,6 +1385,7 @@ public:
 #else
     static void AllMunsellLch (bool lumaMuns, float Lprov1, float Loldd, float HH, float Chprov1, float CC, float &correctionHueChroma, float &correctlum);
 #endif
+    static void AllMunsellLch (float Lprov1, float HH, float Chprov1, float CC, float &correctionHueChroma);
 
 
     /**
@@ -1412,6 +1418,7 @@ public:
     static void gamutLchonly  (float HH, float2 sincosval, float &Lprov1, float &Chprov1, float &R, float &G, float &B, const double wip[3][3], const bool isHLEnabled, const float lowerCoef, const float higherCoef);
     static void gamutLchonly  (float2 sincosval, float &Lprov1, float &Chprov1, const float wip[3][3], const bool isHLEnabled, const float lowerCoef, const float higherCoef);
 #endif
+    static void gamutLchonly  (float HH, float2 sincosval, float &Lprov1, float &Chprov1, float &saturation, const float wip[3][3], const bool isHLEnabled, const float lowerCoef, const float higherCoef);
 
 
     /**
@@ -1772,7 +1779,7 @@ public:
         //hr=translate Hue Lab value  (-Pi +Pi) in approximative hr (hsv values) (0 1) [red 1/6 yellow 1/6 green 1/6 cyan 1/6 blue 1/6 magenta 1/6 ]
         // with multi linear correspondances (I expect there is no error !!)
         double hr = 0.0;
-        //allways put h between 0 and 1
+        //always put h between 0 and 1
 
         if      (HH >= 0.f       && HH < 0.6f    ) {
             hr = 0.11666 * double(HH) + 0.93;    //hr 0.93  1.00    full red

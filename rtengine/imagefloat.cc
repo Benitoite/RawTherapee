@@ -44,48 +44,56 @@ Imagefloat::~Imagefloat ()
 }
 
 // Call this method to handle floating points input values of different size
-void Imagefloat::setScanline (int row, unsigned char* buffer, int bps, float *minValue, float *maxValue)
+void Imagefloat::setScanline (int row, unsigned char* buffer, int bps, unsigned int numSamples, float *minValue, float *maxValue)
 {
 
     if (data == nullptr) {
         return;
     }
 
+    // The DNG decoder convert to 32 bits float data even if the file contains 16 or 24 bits data.
+    // DNG_HalfToFloat and DNG_FP24ToFloat from dcraw.cc can be used to manually convert
+    // from 16 and 24 bits to 32 bits float respectively
     switch (sampleFormat) {
-    case (IIOSF_FLOAT): {
+    case (IIOSF_FLOAT16):
+    case (IIOSF_FLOAT24):
+    case (IIOSF_FLOAT32): {
         int ix = 0;
         float* sbuffer = (float*) buffer;
 
         for (int i = 0; i < width; i++) {
-            r(row, i) = sbuffer[ix];
+            r(row, i) = 65535.f * sbuffer[ix];
 
             if (minValue) {
                 if (sbuffer[ix] < minValue[0]) {
                     minValue[0] = sbuffer[ix];
                 } else if (sbuffer[ix] > maxValue[0]) {
                     maxValue[0] = sbuffer[ix];
-                } ++ix;
+                }
             }
+            ++ix;
 
-            g(row, i) = sbuffer[ix];
+            g(row, i) = 65535.f * sbuffer[ix];
 
             if (minValue) {
                 if (sbuffer[ix] < minValue[1]) {
                     minValue[1] = sbuffer[ix];
                 } else if (sbuffer[ix] > maxValue[1]) {
                     maxValue[1] = sbuffer[ix];
-                } ++ix;
+                }
             }
+            ++ix;
 
-            b(row, i) = sbuffer[ix];
+            b(row, i) = 65535.f * sbuffer[ix];
 
             if (minValue) {
                 if (sbuffer[ix] < minValue[2]) {
                     minValue[2] = sbuffer[ix];
                 } else if (sbuffer[ix] > maxValue[2]) {
                     maxValue[2] = sbuffer[ix];
-                } ++ix;
+                }
             }
+            ++ix;
         }
 
         break;
@@ -143,6 +151,9 @@ void Imagefloat::setScanline (int row, unsigned char* buffer, int bps, float *mi
     }
 }
 
+
+namespace rtengine { extern void filmlike_clip(float *r, float *g, float *b); }
+
 void Imagefloat::getScanline (int row, unsigned char* buffer, int bps)
 {
 
@@ -160,18 +171,24 @@ void Imagefloat::getScanline (int row, unsigned char* buffer, int bps)
             sbuffer[ix++] = g(row, i) / 65535.f;
             sbuffer[ix++] = b(row, i) / 65535.f;
         }
-    } else if (bps == 16) {
+    } else {
         unsigned short *sbuffer = (unsigned short *)buffer;
         for (int i = 0, ix = 0; i < width; i++) {
-            sbuffer[ix++] = CLIP(r(row, i));
-            sbuffer[ix++] = CLIP(g(row, i));
-            sbuffer[ix++] = CLIP(b(row, i));
-        }
-    } else if (bps == 8) {
-        for (int i = 0, ix = 0; i < width; i++) {
-            buffer[ix++] = rtengine::uint16ToUint8Rounded(CLIP(r(row, i)));
-            buffer[ix++] = rtengine::uint16ToUint8Rounded(CLIP(g(row, i)));
-            buffer[ix++] = rtengine::uint16ToUint8Rounded(CLIP(b(row, i)));
+            float ri = r(row, i);
+            float gi = g(row, i);
+            float bi = b(row, i);
+            if (ri > 65535.f || gi > 65535.f || bi > 65535.f) {
+                filmlike_clip(&ri, &gi, &bi);
+            }
+            if (bps == 16) {
+                sbuffer[ix++] = CLIP(ri);
+                sbuffer[ix++] = CLIP(gi);
+                sbuffer[ix++] = CLIP(bi);
+            } else if (bps == 8) {
+                buffer[ix++] = rtengine::uint16ToUint8Rounded(CLIP(ri));
+                buffer[ix++] = rtengine::uint16ToUint8Rounded(CLIP(gi));
+                buffer[ix++] = rtengine::uint16ToUint8Rounded(CLIP(bi));
+            }
         }
     }
 }
@@ -235,6 +252,8 @@ void Imagefloat::getStdImage (ColorTemp ctemp, int tran, Imagefloat* image, Prev
     gm /= area;
     bm /= area;
 
+    const auto CLIP0 = [](float v) -> float { return std::max(v, 0.f); };
+
 #ifdef _OPENMP
     #pragma omp parallel
     {
@@ -267,9 +286,9 @@ void Imagefloat::getStdImage (ColorTemp ctemp, int tran, Imagefloat* image, Prev
                         continue;
                     }
 
-                    lineR[dst_x] = CLIP(rm2 * r(src_y, src_x));
-                    lineG[dst_x] = CLIP(gm2 * g(src_y, src_x));
-                    lineB[dst_x] = CLIP(bm2 * b(src_y, src_x));
+                    lineR[dst_x] = CLIP0(rm2 * r(src_y, src_x));
+                    lineG[dst_x] = CLIP0(gm2 * g(src_y, src_x));
+                    lineB[dst_x] = CLIP0(bm2 * b(src_y, src_x));
                 }
             } else {
                 // source image, first line of the current destination row
@@ -300,15 +319,15 @@ void Imagefloat::getStdImage (ColorTemp ctemp, int tran, Imagefloat* image, Prev
                     // convert back to gamma and clip
                     if (src_sub_width == skip && src_sub_height == skip) {
                         // Common case where the sub-region is complete
-                        lineR[dst_x] = CLIP(rm * rtot);
-                        lineG[dst_x] = CLIP(gm * gtot);
-                        lineB[dst_x] = CLIP(bm * btot);
+                        lineR[dst_x] = CLIP0(rm * rtot);
+                        lineG[dst_x] = CLIP0(gm * gtot);
+                        lineB[dst_x] = CLIP0(bm * btot);
                     } else {
                         // computing a special factor for this incomplete sub-region
                         float area = src_sub_width * src_sub_height;
-                        lineR[dst_x] = CLIP(rm2 * rtot / area);
-                        lineG[dst_x] = CLIP(gm2 * gtot / area);
-                        lineB[dst_x] = CLIP(bm2 * btot / area);
+                        lineR[dst_x] = CLIP0(rm2 * rtot / area);
+                        lineG[dst_x] = CLIP0(gm2 * gtot / area);
+                        lineB[dst_x] = CLIP0(bm2 * btot / area);
                     }
                 }
             }
@@ -354,9 +373,9 @@ Imagefloat::to8()
 
     for (int h = 0; h < height; ++h) {
         for (int w = 0; w < width; ++w) {
-            img8->r(h, w) = uint16ToUint8Rounded(r(h, w));
-            img8->g(h, w) = uint16ToUint8Rounded(g(h, w));
-            img8->b(h, w) = uint16ToUint8Rounded(b(h, w));
+            img8->r(h, w) = uint16ToUint8Rounded(CLIP(r(h, w)));
+            img8->g(h, w) = uint16ToUint8Rounded(CLIP(g(h, w)));
+            img8->b(h, w) = uint16ToUint8Rounded(CLIP(b(h, w)));
         }
     }
 
@@ -373,9 +392,9 @@ Imagefloat::to16()
 
     for (int h = 0; h < height; ++h) {
         for (int w = 0; w < width; ++w) {
-            img16->r(h, w) = r(h, w);
-            img16->g(h, w) = g(h, w);
-            img16->b(h, w) = b(h, w);
+            img16->r(h, w) = CLIP(r(h, w));
+            img16->g(h, w) = CLIP(g(h, w));
+            img16->b(h, w) = CLIP(b(h, w));
         }
     }
 
@@ -531,7 +550,7 @@ void Imagefloat::ExecCMSTransform(cmsHTRANSFORM hTransform)
     }
 }
 
-// Parallized transformation; create transform with cmsFLAGS_NOCACHE!
+// Parallelized transformation; create transform with cmsFLAGS_NOCACHE!
 void Imagefloat::ExecCMSTransform(cmsHTRANSFORM hTransform, const LabImage &labImage, int cx, int cy)
 {
     // LittleCMS cannot parallelize planar Lab float images

@@ -42,7 +42,7 @@ extern const Settings* settings;
 
 Crop::Crop (ImProcCoordinator* parent, EditDataProvider *editDataProvider, bool isDetailWindow)
     : PipetteBuffer (editDataProvider), origCrop (nullptr), laboCrop (nullptr), labnCrop (nullptr),
-      cropImg (nullptr), cbuf_real (nullptr), cshmap (nullptr), transCrop (nullptr), cieCrop (nullptr), cbuffer (nullptr),
+      cropImg (nullptr), transCrop (nullptr), cieCrop (nullptr),
       updating (false), newUpdatePending (false), skip (10),
       cropx (0), cropy (0), cropw (-1), croph (-1),
       trafx (0), trafy (0), trafw (-1), trafh (-1),
@@ -434,7 +434,7 @@ void Crop::update (int todo)
                 Imagefloat *origCropPart = new Imagefloat (crW, crH);//allocate memory
                 Imagefloat *provicalc = new Imagefloat ((crW + 1) / 2, (crH + 1) / 2); //for denoise curves
 
-                int  coordW[3];//coordonate of part of image to mesure noise
+                int  coordW[3];//coordinate of part of image to measure noise
                 int  coordH[3];
                 int begW = 50;
                 int begH = 50;
@@ -507,7 +507,7 @@ void Crop::update (int todo)
             float multip = 1.f;
 
             if (!parent->imgsrc->isRAW()) {
-                multip = 2.f;    //take into account gamma for TIF / JPG approximate value...not good fot gamma=1
+                multip = 2.f;    //take into account gamma for TIF / JPG approximate value...not good for gamma=1
             }
 
             float adjustr = 1.f;
@@ -799,47 +799,13 @@ void Crop::update (int todo)
 
     }
 
-    // blurmap for shadow & highlights
-    if ((todo & M_BLURMAP) && params.sh.enabled) {
-        double radius = sqrt (double (skips (parent->fw, skip) * skips (parent->fw, skip) + skips (parent->fh, skip) * skips (parent->fh, skip))) / 2.0;
-        double shradius = params.sh.radius;
-
-        if (!params.sh.hq) {
-            shradius *= radius / 1800.0;
-        }
-
-        if (!cshmap) {
-            cshmap = new SHMap (cropw, croph, true);
-        }
-
-        cshmap->update (baseCrop, shradius, parent->ipf.lumimul, params.sh.hq, skip);
-
-        if (parent->shmap->min_f < 65535.f) { // don't call forceStat with wrong values
-            cshmap->forceStat (parent->shmap->max_f, parent->shmap->min_f, parent->shmap->avg);
-        }
-    }
-
-
-    // shadows & highlights & tone curve & convert to cielab
-    /*int xref,yref;
-    xref=000;yref=000;
-    if (colortest && cropw>115 && croph>115)
-        for(int j=1;j<5;j++){
-            xref+=j*30;yref+=j*30;
-            if (settings->verbose) printf("before rgbProc RGB Xr%i Yr%i Skip=%d  R=%f  G=%f  B=%f gamma=%f  \n",xref,yref,skip,
-                   baseCrop->r[(int)(xref/skip)][(int)(yref/skip)]/256,
-                   baseCrop->g[(int)(xref/skip)][(int)(yref/skip)]/256,
-                   baseCrop->b[(int)(xref/skip)][(int)(yref/skip)]/256,
-                   parent->imgsrc->getGamma());
-        }*/
-
     if (todo & M_RGBCURVE) {
         double rrm, ggm, bbm;
         DCPProfile::ApplyState as;
         DCPProfile *dcpProf = parent->imgsrc->getDCP (params.icm, as);
 
         LUTu histToneCurve;
-        parent->ipf.rgbProc (baseCrop, laboCrop, this, parent->hltonecurve, parent->shtonecurve, parent->tonecurve, cshmap,
+        parent->ipf.rgbProc (baseCrop, laboCrop, this, parent->hltonecurve, parent->shtonecurve, parent->tonecurve, 
                              params.toneCurve.saturation, parent->rCurve, parent->gCurve, parent->bCurve, parent->colourToningSatLimit, parent->colourToningSatLimitOpacity, parent->ctColorCurve, parent->ctOpacityCurve, parent->opautili, parent->clToningcurve, parent->cl2Toningcurve,
                              parent->customToneCurve1, parent->customToneCurve2, parent->beforeToneCurveBW, parent->afterToneCurveBW, rrm, ggm, bbm,
                              parent->bwAutoR, parent->bwAutoG, parent->bwAutoB, dcpProf, as, histToneCurve);
@@ -899,7 +865,7 @@ void Crop::update (int todo)
 
             if ((params.colorappearance.enabled && !settings->autocielab)  || (!params.colorappearance.enabled)) {
                 parent->ipf.MLmicrocontrast (labnCrop);
-                parent->ipf.sharpening (labnCrop, (float**)cbuffer, params.sharpening);
+                parent->ipf.sharpening (labnCrop, params.sharpening, parent->sharpMask);
             }
         }
 
@@ -1026,18 +992,11 @@ void Crop::update (int todo)
                 cieCrop = new CieImage (cropw, croph);
             }
 
-            if (settings->ciecamfloat) {
-                float d, dj, yb; // not used after this block
-                parent->ipf.ciecam_02float (cieCrop, float (adap), 1, 2, labnCrop, &params, parent->customColCurve1, parent->customColCurve2, parent->customColCurve3,
-                                            dummy, dummy, parent->CAMBrightCurveJ, parent->CAMBrightCurveQ, parent->CAMMean, 5, skip, execsharp, d, dj, yb, 1);
-            } else {
-                double dd, dj; // not used after this block
-
-                parent->ipf.ciecam_02 (cieCrop, adap, 1, 2, labnCrop, &params, parent->customColCurve1, parent->customColCurve2, parent->customColCurve3,
-                                       dummy, dummy, parent->CAMBrightCurveJ, parent->CAMBrightCurveQ, parent->CAMMean, 5, skip, execsharp, dd, dj, 1);
-            }
+            float d, dj, yb; // not used after this block
+            parent->ipf.ciecam_02float (cieCrop, float (adap), 1, 2, labnCrop, &params, parent->customColCurve1, parent->customColCurve2, parent->customColCurve3,
+                                        dummy, dummy, parent->CAMBrightCurveJ, parent->CAMBrightCurveQ, parent->CAMMean, 5, skip, execsharp, d, dj, yb, 1, parent->sharpMask);
         } else {
-            // CIECAM is disbaled, we free up its image buffer to save some space
+            // CIECAM is disabled, we free up its image buffer to save some space
             if (cieCrop) {
                 delete cieCrop;
             }
@@ -1123,21 +1082,6 @@ void Crop::freeAll ()
             cieCrop = nullptr;
         }
 
-        if (cbuf_real) {
-            delete [] cbuf_real;
-            cbuf_real = nullptr;
-        }
-
-        if (cbuffer  ) {
-            delete [] cbuffer;
-            cbuffer = nullptr;
-        }
-
-        if (cshmap   ) {
-            delete    cshmap;
-            cshmap = nullptr;
-        }
-
         PipetteBuffer::flush();
     }
 
@@ -1210,8 +1154,6 @@ bool Crop::setCropSizes (int rcx, int rcy, int rcw, int rch, int skip, bool inte
     ory = by1;
     orw = bw;
     orh = bh;
-
-    ProcParams& params = parent->params;
 
     parent->ipf.transCoord (parent->fw, parent->fh, bx1, by1, bw, bh, orx, ory, orw, orh);
 
@@ -1315,30 +1257,6 @@ bool Crop::setCropSizes (int rcx, int rcy, int rcw, int rch, int skip, bool inte
         if (cieCrop) {
             delete cieCrop;
             cieCrop = nullptr;
-        }
-
-        if (cbuffer  ) {
-            delete [] cbuffer;
-        }
-
-        if (cbuf_real) {
-            delete [] cbuf_real;
-        }
-
-        if (cshmap   ) {
-            delete    cshmap;
-            cshmap = nullptr;
-        }
-
-        cbuffer = new float*[croph];
-        cbuf_real = new float[ (croph + 2)*cropw];
-
-        for (int i = 0; i < croph; i++) {
-            cbuffer[i] = cbuf_real + cropw * i + cropw;
-        }
-
-        if (params.sh.enabled) {
-            cshmap = new SHMap (cropw, croph, true);
         }
 
         if (editType == ET_PIPETTE) {

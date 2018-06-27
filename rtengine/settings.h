@@ -64,7 +64,6 @@ public:
 
     bool            gamutICC; // no longer used
     bool            gamutLch;
-    bool            ciecamfloat;
     bool            HistogramWorking;
     int             amchroma;
     int             protectred;
@@ -80,10 +79,16 @@ public:
     //  double          colortoningab; //
     //  double          decaction;
     //  bool            bw_complementary;
-    double          artifact_cbdl;
     double          level0_cbdl;
     double          level123_cbdl;
     Glib::ustring   lensfunDbDirectory; ///< The directory containing the lensfun database. If empty, the system defaults will be used (as described in http://lensfun.sourceforge.net/manual/dbsearch.html)
+
+    enum class ThumbnailInspectorMode {
+        JPEG,
+        RAW,
+        RAW_IF_NOT_JPEG_FULLSIZE
+    };
+    ThumbnailInspectorMode thumbnail_inspector_mode;
     
     /** Creates a new instance of Settings.
       * @return a pointer to the new Settings instance. */

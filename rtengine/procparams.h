@@ -281,6 +281,7 @@ struct ToneCurveParams {
     int         hlcompr;        // Highlight Recovery's compression
     int         hlcomprthresh;  // Highlight Recovery's threshold
     bool histmatching; // histogram matching
+    bool clampOOG; // clamp out of gamut colours
 
     ToneCurveParams();
 
@@ -453,6 +454,7 @@ struct ColorToningParams {
     double labgridAHigh;
     double labgridBHigh;
     static const double LABGRID_CORR_MAX;
+    static const double LABGRID_CORR_SCALE;
 
     ColorToningParams();
 
@@ -472,6 +474,7 @@ struct ColorToningParams {
   */
 struct SharpeningParams {
     bool           enabled;
+    double         contrast;
     double         radius;
     int            amount;
     Threshold<int> threshold;
@@ -508,6 +511,7 @@ struct SharpenMicroParams {
     bool    enabled;
     bool    matrix;
     double  amount;
+    double  contrast;
     double  uniformity;
 
     SharpenMicroParams();
@@ -649,7 +653,7 @@ struct ColorAppearanceParams {
 struct DefringeParams {
     bool    enabled;
     double  radius;
-    float   threshold;
+    int     threshold;
     std::vector<double> huecurve;
 
     DefringeParams();
@@ -741,7 +745,6 @@ struct FattalToneMappingParams {
   */
 struct SHParams {
     bool    enabled;
-    bool    hq;
     int     highlights;
     int     htonalwidth;
     int     shadows;
@@ -1098,7 +1101,7 @@ struct WaveletParams {
     bool exptoning;
     bool expnoise;
 
-    Glib::ustring Lmethod;
+    int Lmethod;
     Glib::ustring CLmethod;
     Glib::ustring Backmethod;
     Glib::ustring Tilesmethod;
@@ -1222,33 +1225,33 @@ struct RAWParams {
     struct BayerSensor {
         enum class Method {
             AMAZE,
-            IGV,
+            AMAZEVNG4,
+            RCD,
+            RCDVNG4,
+            DCB,
+            DCBVNG4,
             LMMSE,
+            IGV,
+            AHD,
             EAHD,
             HPHD,
             VNG4,
-            DCB,
-            AHD,
-            RCD,
             FAST,
             MONO,
-            NONE,
-            PIXELSHIFT
-        };
-
-        enum class PSMotionCorrection {
-            GRID_1X1,
-            GRID_1X2,
-            GRID_3X3,
-            GRID_5X5,
-            GRID_7X7,
-            GRID_3X3_NEW
+            PIXELSHIFT,
+            NONE
         };
 
         enum class PSMotionCorrectionMethod {
             OFF,
             AUTO,
             CUSTOM
+        };
+
+        enum class PSDemosaicMethod {
+            AMAZE,
+            AMAZEVNG4,
+            LMMSE
         };
 
         Glib::ustring method;
@@ -1260,41 +1263,33 @@ struct RAWParams {
         double black3;
         bool twogreen;
         int linenoise;
+        enum class LineNoiseDirection {
+            HORIZONTAL = 1,
+            VERTICAL,
+            BOTH,
+            PDAF_LINES = 5
+        };
+        LineNoiseDirection linenoiseDirection;
         int greenthresh;
         int dcb_iterations;
         int lmmse_iterations;
-        int pixelShiftMotion;
-        PSMotionCorrection pixelShiftMotionCorrection;
+        double dualDemosaicContrast;
         PSMotionCorrectionMethod pixelShiftMotionCorrectionMethod;
-        double pixelShiftStddevFactorGreen;
-        double pixelShiftStddevFactorRed;
-        double pixelShiftStddevFactorBlue;
         double pixelShiftEperIso;
-        double pixelShiftNreadIso;
-        double pixelShiftPrnu;
         double pixelShiftSigma;
-        double pixelShiftSum;
-        double pixelShiftRedBlueWeight;
         bool pixelShiftShowMotion;
         bool pixelShiftShowMotionMaskOnly;
-        bool pixelShiftAutomatic;
-        bool pixelShiftNonGreenHorizontal;
-        bool pixelShiftNonGreenVertical;
         bool pixelShiftHoleFill;
         bool pixelShiftMedian;
-        bool pixelShiftMedian3;
         bool pixelShiftGreen;
         bool pixelShiftBlur;
         double pixelShiftSmoothFactor;
-        bool pixelShiftExp0;
-        bool pixelShiftLmmse;
-        bool pixelShiftOneGreen;
         bool pixelShiftEqualBright;
         bool pixelShiftEqualBrightChannel;
         bool pixelShiftNonGreenCross;
-        bool pixelShiftNonGreenCross2;
-        bool pixelShiftNonGreenAmaze;
+        Glib::ustring pixelShiftDemosaicMethod;
         bool dcb_enhance;
+        bool pdafLinesFilter;
 
         BayerSensor();
 
@@ -1305,6 +1300,9 @@ struct RAWParams {
 
         static const std::vector<const char*>& getMethodStrings();
         static Glib::ustring getMethodString(Method method);
+
+        static const std::vector<const char*>& getPSDemosaicMethodStrings();
+        static Glib::ustring getPSDemosaicMethodString(PSDemosaicMethod method);
     };
 
     /**
@@ -1312,7 +1310,9 @@ struct RAWParams {
      */
     struct XTransSensor {
         enum class Method {
+            FOUR_PASS,
             THREE_PASS,
+            TWO_PASS,
             ONE_PASS,
             FAST,
             MONO,
@@ -1320,6 +1320,7 @@ struct RAWParams {
         };
 
         Glib::ustring method;
+        double dualDemosaicContrast;
         int ccSteps;
         double blackred;
         double blackgreen;
@@ -1487,7 +1488,7 @@ private:
   * saving too)
   *
   * PartialProfile is not responsible of ProcParams and ParamsEdited object creation
-  * and hence is not responsible of their destructions. The function that instanciate
+  * and hence is not responsible of their destructions. The function that instantiate
   * PartialProfile object has to handle all this itself.
   */
 class PartialProfile :

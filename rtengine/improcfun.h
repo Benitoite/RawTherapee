@@ -34,6 +34,7 @@
 #include "curves.h"
 #include "cplx_wavelet_dec.h"
 #include "pipettebuffer.h"
+#include "gamutwarning.h"
 
 namespace rtengine
 {
@@ -45,8 +46,7 @@ class ImProcFunctions
 
 
     cmsHTRANSFORM monitorTransform;
-    cmsHTRANSFORM lab2outputTransform;
-    cmsHTRANSFORM output2monitorTransform;
+    std::unique_ptr<GamutWarning> gamutWarning;
 
     const ProcParams* params;
     double scale;
@@ -57,11 +57,6 @@ class ImProcFunctions
     void transformLuminanceOnly (Imagefloat* original, Imagefloat* transformed, int cx, int cy, int oW, int oH, int fW, int fH);
     void transformGeneral(bool highQuality, Imagefloat *original, Imagefloat *transformed, int cx, int cy, int sx, int sy, int oW, int oH, int fW, int fH, const LensCorrection *pLCPMap);
     void transformLCPCAOnly(Imagefloat *original, Imagefloat *transformed, int cx, int cy, const LensCorrection *pLCPMap);
-
-    void sharpenHaloCtrl    (float** luminance, float** blurmap, float** base, int W, int H, const SharpeningParams &sharpenParam);
-    void sharpenHaloCtrl    (LabImage* lab, float** blurmap, float** base, int W, int H, SharpeningParams &sharpenParam);
-    void sharpenHaloCtrlcam (CieImage* ncie, float** blurmap, float** base, int W, int H);
-    void dcdamping          (float** aI, float** aO, float damping, int W, int H);
 
     bool needsCA            ();
     bool needsDistortion    ();
@@ -197,7 +192,7 @@ public:
     double lumimul[3];
 
     ImProcFunctions       (const ProcParams* iparams, bool imultiThread = true)
-        : monitorTransform (nullptr), lab2outputTransform (nullptr), output2monitorTransform (nullptr), params (iparams), scale (1), multiThread (imultiThread), lumimul{} {}
+        : monitorTransform (nullptr), params (iparams), scale (1), multiThread (imultiThread), lumimul{} {}
     ~ImProcFunctions      ();
     bool needsLuminanceOnly() { return !(needsCA() || needsDistortion() || needsRotation() || needsPerspective() || needsLCP() || needsLensfun()) && (needsVignetting() || needsPCVignetting() || needsGradient());}
     void setScale         (double iscale);
@@ -208,10 +203,10 @@ public:
     void firstAnalysis    (const Imagefloat* const working, const ProcParams &params, LUTu & vhist16);
     void updateColorProfiles (const Glib::ustring& monitorProfile, RenderingIntent monitorIntent, bool softProof, bool gamutCheck);
     void rgbProc          (Imagefloat* working, LabImage* lab, PipetteBuffer *pipetteBuffer, LUTf & hltonecurve, LUTf & shtonecurve, LUTf & tonecurve,
-                           SHMap* shmap, int sat, LUTf & rCurve, LUTf & gCurve, LUTf & bCurve, float satLimit, float satLimitOpacity, const ColorGradientCurve & ctColorCurve, const OpacityCurve & ctOpacityCurve, bool opautili, LUTf & clcurve, LUTf & cl2curve, const ToneCurve & customToneCurve1, const ToneCurve & customToneCurve2,
+                           int sat, LUTf & rCurve, LUTf & gCurve, LUTf & bCurve, float satLimit, float satLimitOpacity, const ColorGradientCurve & ctColorCurve, const OpacityCurve & ctOpacityCurve, bool opautili, LUTf & clcurve, LUTf & cl2curve, const ToneCurve & customToneCurve1, const ToneCurve & customToneCurve2,
                            const ToneCurve & customToneCurvebw1, const ToneCurve & customToneCurvebw2, double &rrm, double &ggm, double &bbm, float &autor, float &autog, float &autob, DCPProfile *dcpProf, const DCPProfile::ApplyState &asIn, LUTu &histToneCurve );
     void rgbProc          (Imagefloat* working, LabImage* lab, PipetteBuffer *pipetteBuffer, LUTf & hltonecurve, LUTf & shtonecurve, LUTf & tonecurve,
-                           SHMap* shmap, int sat, LUTf & rCurve, LUTf & gCurve, LUTf & bCurve, float satLimit, float satLimitOpacity, const ColorGradientCurve & ctColorCurve, const OpacityCurve & ctOpacityCurve, bool opautili, LUTf & clcurve, LUTf & cl2curve, const ToneCurve & customToneCurve1, const ToneCurve & customToneCurve2,
+                           int sat, LUTf & rCurve, LUTf & gCurve, LUTf & bCurve, float satLimit, float satLimitOpacity, const ColorGradientCurve & ctColorCurve, const OpacityCurve & ctOpacityCurve, bool opautili, LUTf & clcurve, LUTf & cl2curve, const ToneCurve & customToneCurve1, const ToneCurve & customToneCurve2,
                            const ToneCurve & customToneCurvebw1, const ToneCurve & customToneCurvebw2, double &rrm, double &ggm, double &bbm, float &autor, float &autog, float &autob,
                            double expcomp, int hlcompr, int hlcomprthresh, DCPProfile *dcpProf, const DCPProfile::ApplyState &asIn, LUTu &histToneCurve);
     void labtoning (float r, float g, float b, float &ro, float &go, float &bo, int algm, int metchrom, int twoc, float satLimit, float satLimitOpacity, const ColorGradientCurve & ctColorCurve, const OpacityCurve & ctOpacityCurve, LUTf & clToningcurve, LUTf & cl2Toningcurve, float iplow, float iphigh, double wp[3][3], double wip[3][3]  );
@@ -227,15 +222,13 @@ public:
     void luminanceCurve   (LabImage* lold, LabImage* lnew, LUTf &curve);
     void ciecam_02float   (CieImage* ncie, float adap, int pW, int pwb, LabImage* lab, const ProcParams* params,
                            const ColorAppearance & customColCurve1, const ColorAppearance & customColCurve, const ColorAppearance & customColCurve3,
-                           LUTu &histLCAM, LUTu &histCCAM, LUTf & CAMBrightCurveJ, LUTf & CAMBrightCurveQ, float &mean, int Iterates, int scale, bool execsharp, float &d, float &dj, float &yb, int rtt);
-    void ciecam_02        (CieImage* ncie, double adap, int pW, int pwb, LabImage* lab, const ProcParams* params,
-                           const ColorAppearance & customColCurve1, const ColorAppearance & customColCurve, const ColorAppearance & customColCurve3,
-                           LUTu &histLCAM, LUTu &histCCAM, LUTf & CAMBrightCurveJ, LUTf & CAMBrightCurveQ, float &mean, int Iterates, int scale, bool execsharp, double &d, double &dj, int rtt);
+                           LUTu &histLCAM, LUTu &histCCAM, LUTf & CAMBrightCurveJ, LUTf & CAMBrightCurveQ, float &mean, int Iterates, int scale, bool execsharp, float &d, float &dj, float &yb, int rtt,
+                           bool showSharpMask = false);
     void chromiLuminanceCurve (PipetteBuffer *pipetteBuffer, int pW, LabImage* lold, LabImage* lnew, LUTf &acurve, LUTf &bcurve, LUTf & satcurve, LUTf & satclcurve, LUTf &clcurve, LUTf &curve, bool utili, bool autili, bool butili, bool ccutili, bool cclutili, bool clcutili, LUTu &histCCurve, LUTu &histLurve);
     void vibrance         (LabImage* lab);//Jacques' vibrance
 //    void colorCurve       (LabImage* lold, LabImage* lnew);
-    void sharpening       (LabImage* lab, float** buffer, SharpeningParams &sharpenParam);
-    void sharpeningcam    (CieImage* ncie, float** buffer);
+    void sharpening       (LabImage* lab, const SharpeningParams &sharpenParam, bool showMask = false);
+    void sharpeningcam    (CieImage* ncie, float** buffer, bool showMask = false);
     void transform        (Imagefloat* original, Imagefloat* transformed, int cx, int cy, int sx, int sy, int oW, int oH, int fW, int fH, const FramesMetaData *metadata, int rawRotationDeg, bool fullImage);
     float resizeScale     (const ProcParams* params, int fw, int fh, int &imw, int &imh);
     void lab2monitorRgb   (LabImage* lab, Image8* image);
@@ -336,17 +329,18 @@ public:
     void idirpyr_eq_channelcam  (float ** data_coarse, float ** data_fine, float ** buffer, int width, int height, int level, float multi[6], const double dirpyrThreshold, float ** l_a_h, float ** l_b_c, const double skinprot, float b_l, float t_l, float t_r);
     void defringe       (LabImage* lab);
     void defringecam    (CieImage* ncie);
-    void badpixcam      (CieImage* ncie, double rad, int thr, int mode, float skinprot, float chrom, int hotbad);
-    void badpixlab      (LabImage* lab, double rad, int thr, int mode, float skinprot, float chrom);
+    void badpixcam      (CieImage* ncie, double rad, int thr, int mode, float chrom, bool hotbad);
+    void badpixlab      (LabImage* lab, double rad, int thr, float chrom);
 
-    void PF_correct_RT    (LabImage * src, LabImage * dst, double radius, int thresh);
-    void PF_correct_RTcam (CieImage * src, CieImage * dst, double radius, int thresh);
-    void Badpixelscam (CieImage * src, CieImage * dst, double radius, int thresh, int mode, float skinprot, float chrom, int hotbad);
-    void BadpixelsLab (LabImage * src, LabImage * dst, double radius, int thresh, int mode, float skinprot, float chrom);
+    void PF_correct_RT    (LabImage * lab, double radius, int thresh);
+    void PF_correct_RTcam (CieImage * ncie, double radius, int thresh);
+    void Badpixelscam (CieImage * ncie, double radius, int thresh, int mode, float chrom, bool hotbad);
+    void BadpixelsLab (LabImage * lab, double radius, int thresh, float chrom);
 
     void ToneMapFattal02(Imagefloat *rgb);
     void localContrast(LabImage *lab);
     void colorToningLabGrid(LabImage *lab, int xstart, int xend, int ystart, int yend, bool MultiThread);
+    void shadowsHighlights(LabImage *lab);
     
     Image8*     lab2rgb   (LabImage* lab, int cx, int cy, int cw, int ch, const procparams::ColorManagementParams &icm, bool consider_histogram_settings=true);
     Imagefloat*    lab2rgbOut (LabImage* lab, int cx, int cy, int cw, int ch, const procparams::ColorManagementParams &icm, GammaValues *ga = nullptr);
