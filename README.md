@@ -1,10 +1,10 @@
-Linux:
-    `docker run -it --rm -e DISPLAY=$DISPLAY  -v /tmp/.X11-unix:/tmp/.X11-unix -v ~:/hi:private kd6kxr/rawtherapee-dev`
+Linux:<br>
+* `docker run -it --rm -e DISPLAY=$DISPLAY  -v /tmp/.X11-unix:/tmp/.X11-unix -v ~:/hi:private kd6kxr/rawtherapee-dev`
 
-Windows:
-`"c:\Program Files (x86)\Xming\Xming.exe" :0 -ac -clipboard -multiwindow`<br>
-`docker run -it -e DISPLAY=192.168.0.3:0 -v ~:/hi:private kd6kxr/rawtherapee-dev`<br>
-`..........................^^^^^^^^^^^` Replace with your ip address.
+Windows:<br>
+1. `"c:\Program Files (x86)\Xming\Xming.exe" :0 -ac -clipboard -multiwindow`<br>
+2. `docker run -it -e DISPLAY=192.168.0.3:0 -v ~:/hi:private kd6kxr/rawtherapee-dev`<br>
+*Replace 192.168.0.3 with your ip address.
 
 * Mounts your home directory to `/hi` and starts up rawtherapee-dev application
 
