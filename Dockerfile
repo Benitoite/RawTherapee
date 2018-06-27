@@ -6,7 +6,7 @@ RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install --no-instal
 
 #   clone source code, checkout dev branch
 
-RUN mkdir -p ~/programs && git clone http://github.com/Beep6581/RawTherapee ~/programs/code-rawtherapee && cd ~/programs/code-rawtherapee && git checkout dev
+RUN mkdir -p ~/programs && git clone https://github.com/Beep6581/RawTherapee.git ~/programs/code-rawtherapee && cd ~/programs/code-rawtherapee && git checkout dev
 
 #   configure build system and compile
 
