@@ -22,7 +22,7 @@ RUN cd ~/programs/code-rawtherapee && mkdir build && cd build && cmake \
     -DWITH_SAN="OFF" \
     -DWITH_SYSTEM_KLT="OFF" \
     ..
-RUN cd ~/programs/code-rawtherapee && make -j$(nproc --all) && make install
+RUN cd ~/programs/code-rawtherapee/build && make -j$(nproc --all) && make install
 
 #   set the entrypoint command
 
