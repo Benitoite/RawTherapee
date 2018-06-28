@@ -7,14 +7,16 @@ RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install --no-instal
 #   prepare the environment
 
 RUN locale-gen en_US.UTF-8
-
-#   update lensfun data
-
-RUN LANG=en_US.UTF-8 LANGUAGE=en_US:en LC_ALL=en_US.UTF-8 lensfun-update-data
+ENV LANG en_US.UTF-8
+ENV LANGUAGE en_US:en
+ENV LC_ALL en_US.UTF-8
 
 #   clone source code, checkout dev branch
 
 RUN mkdir -p ~/programs && git clone http://github.com/Beep6581/RawTherapee.git ~/programs/code-rawtherapee && cd ~/programs/code-rawtherapee && git checkout dev
+
+#   update lensfun data
+RUN cd ~/programs && wget -O lensfun-update-data https://raw.githubusercontent.com/Benitoite/lensfun/patch-1/apps/lensfun-update-data && lensfun-update-data
 
 #   configure build system and compile
 
