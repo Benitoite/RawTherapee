@@ -1,5 +1,9 @@
 FROM debian:testing
 
+#   add the dependencies
+
+RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install --no-install-recommends build-essential locales cmake git curl libcanberra-gtk3-dev libexiv2-dev libexpat-dev libfftw3-dev libglibmm-2.4-dev libgtk-3-dev libgtkmm-3.0-dev libiptcdata0-dev libjpeg-dev liblcms2-dev liblensfun-dev liblensfun-bin liblensfun-data-v1 libpng-dev libsigc++-2.0-dev libtiff5-dev zlib1g-dev ca-certificates ssl-cert -y
+
 #   prepare the environment
 
 RUN locale-gen en_US.UTF-8
@@ -7,9 +11,7 @@ ENV LANG en_US.UTF-8
 ENV LANGUAGE en_US:en
 ENV LC_ALL en_US.UTF-8
 
-#   add the dependencies
-
-RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install --no-install-recommends build-essential cmake git curl libcanberra-gtk3-dev libexiv2-dev libexpat-dev libfftw3-dev libglibmm-2.4-dev libgtk-3-dev libgtkmm-3.0-dev libiptcdata0-dev libjpeg-dev liblcms2-dev liblensfun-dev liblensfun-bin liblensfun-data-v1 libpng-dev libsigc++-2.0-dev libtiff5-dev zlib1g-dev ca-certificates ssl-cert -y
+#   update lensfun data
 RUN lensfun-update-data
 
 #   clone source code, checkout dev branch
