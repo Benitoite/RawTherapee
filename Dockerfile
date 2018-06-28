@@ -6,7 +6,7 @@ RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install --no-instal
 
 #   prepare the environment
 
-RUN locale-gen=en_US.UTF-8
+RUN locale-gen en_US.UTF-8
 
 #   update lensfun data
 
