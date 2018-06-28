@@ -1,19 +1,14 @@
-Linux:<br>
+Linux:
 * `docker run -it --rm -e DISPLAY=$DISPLAY  -v /tmp/.X11-unix:/tmp/.X11-unix -v ~:/hi:private kd6kxr/rawtherapee-dev`
 
-Windows:<br>
-1. `"c:\Program Files (x86)\Xming\Xming.exe" :0 -ac -clipboard -multiwindow`<br>
-2. `docker run -it -e DISPLAY=192.168.0.3:0 -v ~:/hi:private kd6kxr/rawtherapee-dev`<br>
+Windows:
+1. `"c:\Program Files (x86)\Xming\Xming.exe" :0 -ac -clipboard -multiwindow`
+2. `docker run -it -e DISPLAY=192.168.0.3:0 -v ~:/hi:private kd6kxr/rawtherapee-dev`
 *Replace 192.168.0.3 with your ip address.
 
 * Mounts your home directory to `/hi` and starts up rawtherapee-dev application
 
-
-
-===================
-
-
-![RawTherapee logo](http://rawtherapee.com/images/logos/rawtherapee_logo_discuss.png)
+![logo](https://kd6kxr.us/rawtherapee-dev.png)
 
 RawTherapee is a powerful, cross-platform raw photo processing program, released as [libre software](https://en.wikipedia.org/wiki/Free_software) under the [GNU General Public License Version 3](https://opensource.org/licenses/gpl-3.0.html). It is written mostly in C++ using a [GTK+](http://www.gtk.org/) front-end. It uses a patched version of [dcraw](http://www.cybercom.net/~dcoffin/dcraw/) for reading raw files, with an in-house solution which adds the highest quality support for certain camera models unsupported by dcraw and enhances the accuracy of certain raw files already supported by dcraw. It is notable for the advanced control it gives the user over the demosaicing and development process.
 
