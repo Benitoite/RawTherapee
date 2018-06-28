@@ -6,13 +6,11 @@ RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install --no-instal
 
 #   prepare the environment
 
-RUN locale-gen en_US.UTF-8
-ENV LANG en_US.UTF-8
-ENV LANGUAGE en_US:en
-ENV LC_ALL en_US.UTF-8
+RUN locale-gen=en_US.UTF-8
 
 #   update lensfun data
-RUN lensfun-update-data
+
+RUN LANG=en_US.UTF-8 LANGUAGE=en_US:en LC_ALL=en_US.UTF-8 lensfun-update-data
 
 #   clone source code, checkout dev branch
 
