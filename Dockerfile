@@ -7,9 +7,9 @@ RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install --no-instal
 #   prepare the environment
 
 RUN locale-gen en_US.UTF-8
-ENV LANG en_US.UTF-8
+ENV LANG en_US
 ENV LANGUAGE en_US:en
-ENV LC_ALL en_US.UTF-8
+ENV LC_ALL en_US
 
 #   clone source code, checkout dev branch
 
