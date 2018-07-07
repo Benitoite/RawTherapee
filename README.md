@@ -8,7 +8,7 @@ MacOS:
 
 2. In second terminal (*Replace `<your ip address>` with your ip address, for example 192.168.0.100):
 
-`docker run -e DISPLAY=<your ip address>:0 -e QT_XKB_CONFIG_ROOT=/usr/share/X11/xkb -v /tmp/X11-unix=/tmp/X11-unix -v ~:/hi:private kd6kxr/hdrmerge`
+`docker run -e DISPLAY=<your ip address>:0 -e QT_XKB_CONFIG_ROOT=/usr/share/X11/xkb -v /tmp/X11-unix=/tmp/X11-unix -v ~:/hi:private kd6kxr/rawtherapee-dev`
 
 Linux:
 * `docker run -it --rm -e DISPLAY=$DISPLAY  -v /tmp/.X11-unix:/tmp/.X11-unix -v ~:/hi:private kd6kxr/rawtherapee-dev`
