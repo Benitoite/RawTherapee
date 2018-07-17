@@ -1,10 +1,10 @@
 MacOS:
 
-1. In first of two terminals:
+1. In first of two terminals (*Replace `<your ip address>` with your ip address, for example 192.168.0.100):
 
 `open -a XQuartz`
 
-`socat TCP-LISTEN:6000,reuseaddr,fork UNIX-CLIENT:\"$DISPLAY\"`
+`socat TCP-LISTEN:6000,bind=<your ip address>,reuseaddr,fork UNIX-CLIENT:\"$DISPLAY\"`
 
 2. In second terminal (*Replace `<your ip address>` with your ip address, for example 192.168.0.100):
 
