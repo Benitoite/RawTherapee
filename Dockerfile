@@ -13,7 +13,7 @@ ENV LC_ALL C.UTF-8
 
 #   clone source code, checkout dev branch
 
-RUN mkdir -p ~/programs && git clone http://github.com/Beep6581/RawTherapee.git ~/programs/code-rawtherapee && cd ~/programs/code-rawtherapee && git checkout dev
+RUN mkdir -p ~/programs && git clone http://github.com/Beep6581/RawTherapee.git ~/programs/code-rawtherapee && cd ~/programs/code-rawtherapee && git checkout newlocallab
 
 #   update lensfun data
 RUN cd ~/programs && curl -o lensfun-update-data https://raw.githubusercontent.com/Benitoite/lensfun/patch-1/apps/lensfun-update-data && chmod +x lensfun-update-data && ./lensfun-update-data
@@ -22,7 +22,7 @@ RUN cd ~/programs && curl -o lensfun-update-data https://raw.githubusercontent.c
 
 RUN cd ~/programs/code-rawtherapee && mkdir build && cd build && cmake \
     -DCMAKE_BUILD_TYPE="release"  \
-    -DCACHE_NAME_SUFFIX="5-dev" \
+    -DCACHE_NAME_SUFFIX="5-newlocallab" \
     -DPROC_TARGET_NUMBER="1" \
     -DBUILD_BUNDLE="ON" \
     -DBUNDLE_BASE_INSTALL_DIR="$HOME/programs/rawtherapee" \
