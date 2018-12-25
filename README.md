@@ -1,14 +1,14 @@
 MacOS:
 
-1. In first of two terminals (*Replace `<your ip address>` with your ip address, for example 192.168.0.100):
+1. In first of two terminals:
 
 `open -a XQuartz`
 
-`socat TCP-LISTEN:6000,bind=<your ip address>,reuseaddr,fork UNIX-CLIENT:\"$DISPLAY\"`
+`socat TCP-LISTEN:6000,bind=$(ifconfig -a|tail +9|grep 'inet '|cut -d ' ' -f 2),reuseaddr,fork UNIX-CLIENT:\"$DISPLAY\"`
 
-2. In second terminal (*Replace `<your ip address>` with your ip address, for example 192.168.0.100):
+2. In second terminal:
 
-`docker run -e DISPLAY=<your ip address>:0 -e QT_XKB_CONFIG_ROOT=/usr/share/X11/xkb -v /tmp/X11-unix=/tmp/X11-unix -v ~:/hi:private kd6kxr/rawtherapee-dev`
+`docker run -e DISPLAY=$(ifconfig -a|tail +9|grep 'inet '|tail -c +6|cut -d ' ' -f 2):0 -e QT_XKB_CONFIG_ROOT=/usr/share/X11/xkb -v /tmp/X11-unix=/tmp/X11-unix -v ~:/hi:private kd6kxr/rawtherapee-dev`
 
 Linux:
 * `docker run -it --rm -e DISPLAY=$DISPLAY  -v /tmp/.X11-unix:/tmp/.X11-unix -v ~:/hi:private kd6kxr/rawtherapee-dev`
