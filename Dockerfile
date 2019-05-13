@@ -13,7 +13,7 @@ ENV LC_ALL C.UTF-8
 
 #   clone source code, checkout dev branch
 
-RUN mkdir -p ~/programs && git clone http://github.com/Beep6581/RawTherapee.git ~/programs/code-rawtherapee && cd ~/programs/code-rawtherapee && git checkout 5.5
+RUN mkdir -p ~/programs && git clone http://github.com/Beep6581/RawTherapee.git ~/programs/code-rawtherapee && cd ~/programs/code-rawtherapee && git checkout 5.6
 
 #   update lensfun
 RUN cd ~/programs && curl -o lensfun-update-data https://raw.githubusercontent.com/Benitoite/lensfun/patch-1/apps/lensfun-update-data && chmod +x lensfun-update-data && ./lensfun-update-data
