@@ -38,8 +38,8 @@ jobs:
             -DLENSFUNDBDIR="share/lensfun" \
             -DCMAKE_C_COMPILER="clang" \
             -DCMAKE_CXX_COMPILER="clang++" \
-            -DCMAKE_C_CLAGS="-Wno-pass-fail -Wno-deprecated-register -Wno-unused-command-line-argument" \
-            -DCMAKE_CXX_CLAGS="-Wno-pass-fail -Wno-deprecated-register -Wno-unused-command-line-argument" \
+            -DCMAKE_C_FLAGS="-Wno-pass-fail -Wno-deprecated-register -Wno-unused-command-line-argument" \
+            -DCMAKE_CXX_FLAGS="-Wno-pass-fail -Wno-deprecated-register -Wno-unused-command-line-argument" \
             -DOpenMP_C_FLAGS="${C_FLAGS} -fopenmp=libomp" \
             -DOpenMP_CXX_FLAGS="${C_FLAGS} -fopenmp=libomp" \
             -DOpenMP_C_LIB_NAMES="libomp" \
@@ -47,7 +47,7 @@ jobs:
             -DOpenMP_libomp_LIBRARY="/usr/local/lib/libomp.dylib" \
             -DCMAKE_AR="/usr/local/opt/llvm/bin/llvm-ar" \
             -DCMAKE_RANLIB="/usr/local/opt/llvm/bin/llvm-ranlib" \
-            -DCMAKE_OSX_DEPLOYMENT_TARGET="10.11" \
+            -DCMAKE_OSX_DEPLOYMENT_TARGET="10.15" \
             ..
           make --jobs
           make install
