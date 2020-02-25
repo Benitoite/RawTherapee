@@ -36,8 +36,8 @@ jobs:
             -DPROC_LABEL="generic processor" \
             -DWITH_LTO="OFF" \
             -DLENSFUNDBDIR="share/lensfun" \
-            -DCMAKE_C_COMPILER="clang" \
-            -DCMAKE_CXX_COMPILER="clang++" \
+            -DCMAKE_C_COMPILER="clang-mp-9.0" \
+            -DCMAKE_CXX_COMPILER="clang++-mp-9.0" \
             -DCMAKE_C_FLAGS="-arch x86_64 -Wno-pass-failed -Wno-deprecated-register -Wno-unused-command-line-argument" \
             -DCMAKE_CXX_FLAGS="-arch x86_64 -Wno-pass-failed -Wno-deprecated-register -Wno-unused-command-line-argument" \
             -DOpenMP_C_FLAGS="${C_FLAGS} -fopenmp=libomp" \
