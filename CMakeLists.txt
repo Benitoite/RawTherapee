@@ -145,7 +145,7 @@ if(WIN32)
         CACHE STRING "Additional search paths")
 endif()
 
-if(APPLE)
+if(APPLE) # TODO make -mtune generic conditional and/or specifiable.
     if(CMAKE_CXX_COMPILER MATCHES "g\\+\\+-mp-4.[5-8]"
        OR CMAKE_CXX_COMPILER_ARG1 MATCHES "g\\+\\+-mp-4.[5-8]")
         set(CMAKE_EXE_LINKER_FLAGS
@@ -219,7 +219,7 @@ endif()
 if(BUILD_BUNDLE)
     if(APPLE)
         set(BINDIR "${BUNDLE_BASE_INSTALL_DIR}")
-        set(CMAKE_INSTALL_PREFIX ".")
+        set(CMAKE_INSTALL_PREFIX "${PROJECT_SOURCE_DIR}/build")
     else()
         set(BINDIR .)
         set(CMAKE_INSTALL_PREFIX "${BUNDLE_BASE_INSTALL_DIR}")
