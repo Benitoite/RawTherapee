@@ -38,8 +38,8 @@ jobs:
             -DLENSFUNDBDIR="share/lensfun" \
             -DCMAKE_C_COMPILER="clang" \
             -DCMAKE_CXX_COMPILER="clang++" \
-            -DCMAKE_C_FLAGS="-Wno-pass-fail -Wno-deprecated-register -Wno-unused-command-line-argument" \
-            -DCMAKE_CXX_FLAGS="-Wno-pass-fail -Wno-deprecated-register -Wno-unused-command-line-argument" \
+            -DCMAKE_C_FLAGS="-Wno-pass-failed -Wno-deprecated-register -Wno-unused-command-line-argument" \
+            -DCMAKE_CXX_FLAGS="-Wno-pass-failed -Wno-deprecated-register -Wno-unused-command-line-argument" \
             -DOpenMP_C_FLAGS="${C_FLAGS} -fopenmp=libomp" \
             -DOpenMP_CXX_FLAGS="${C_FLAGS} -fopenmp=libomp" \
             -DOpenMP_C_LIB_NAMES="libomp" \
