@@ -661,7 +661,7 @@ elseif(APPLE)
             "-DCXX_FLAGS:STRING=${CXX_FLAGS}"
             "-DLFLAGS:STRING=${LFLAGS}"
             "-DCOMPILER_INFO:STRING=${COMPILER_INFO}"
-            "-P \"${PROJECT_SOURCE_DIR}/UpdateInfo.cmake\"")
+            "-P '${PROJECT_SOURCE_DIR}/UpdateInfo.cmake'")
 else()
     list(APPEND ABOUT_COMMAND_WITH_ARGS -DSYSTEM:STRING=Linux
          -DCXX_FLAGS:STRING=${CXX_FLAGS} -DLFLAGS:STRING=${LFLAGS}
@@ -670,7 +670,7 @@ endif()
 
 list(APPEND
      ABOUT_COMMAND_WITH_ARGS
-         "-P \"${PROJECT_SOURCE_DIR}/UpdateInfo.cmake\"")
+         "-P '${PROJECT_SOURCE_DIR}/UpdateInfo.cmake'")
 
 add_custom_target(
     UpdateInfo ALL
