@@ -40,7 +40,7 @@ jobs:
             -DCMAKE_C_COMPILER="/usr/local/opt/llvm/bin/clang" \
             -DCMAKE_CXX_COMPILER="/usr/local/opt/llvm/bin/clang++" \
             -DCMAKE_C_FLAGS="-I/usr/local/opt/llvm/include -I/usr/local/opt/llvm/include/c++/v1/ -arch x86_64 -Wno-pass-failed -Wno-deprecated-register -Wno-unused-command-line-argument" \
-            -DCMAKE_CXX_FLAGS="-I/usr/local/opt/llvm/include -I/usr/local/opt/llvm/include/c++/v1/-arch x86_64 -Wno-pass-failed -Wno-deprecated-register -Wno-unused-command-line-argument" \
+            -DCMAKE_CXX_FLAGS="-I/usr/local/opt/llvm/include -I/usr/local/opt/llvm/include/c++/v1/ -arch x86_64 -Wno-pass-failed -Wno-deprecated-register -Wno-unused-command-line-argument" \
             -DOpenMP_C_FLAGS="${C_FLAGS} -fopenmp=libomp" \
             -DOpenMP_CXX_FLAGS="${C_FLAGS} -fopenmp=libomp" \
             -DOpenMP_C_LIB_NAMES="libomp" \
