@@ -36,13 +36,15 @@ jobs:
             -DPROC_LABEL="generic processor" \
             -DWITH_LTO="OFF" \
             -DLENSFUNDBDIR="share/lensfun" \
-            -DOpenMP_C_FLAGS=-fopenmp=libomp \
-            -DOpenMP_CXX_FLAGS=-fopenmp=libomp \
+            -DCMAKE_C_COMPILER="clang" \
+            -DCMAKE_CXX_COMPILER="clang++" \
+            -DCMAKE_C_CLAGS="-Wno-pass-fail -Wno-deprecated-register -Wno-unused-command-line-argument" \
+            -DCMAKE_CXX_CLAGS="-Wno-pass-fail -Wno-deprecated-register -Wno-unused-command-line-argument" \
+            -DOpenMP_C_FLAGS="${C_FLAGS} -fopenmp=libomp" \
+            -DOpenMP_CXX_FLAGS="${C_FLAGS} -fopenmp=libomp" \
             -DOpenMP_C_LIB_NAMES="libomp" \
             -DOpenMP_CXX_LIB_NAMES="libomp" \
             -DOpenMP_libomp_LIBRARY="/usr/local/lib/libomp.dylib" \
-            -DOpenMP_C_FLAGS="${C_FLAGS}" \
-            -DOpenMP_CXX_FLAGS="${C_FLAGS}" \
             -DCMAKE_AR="/usr/local/opt/llvm/bin/llvm-ar" \
             -DCMAKE_RANLIB="/usr/local/opt/llvm/bin/llvm-ranlib" \
             -DCMAKE_OSX_DEPLOYMENT_TARGET="10.11" \
