@@ -27,7 +27,7 @@ jobs:
           RAW_THERAPEE_MAJOR: '5'
           RAW_THERAPEE_MINOR: '8'
           C_FLAGS: >
-            -arch x86_64 -mtune=generic -Xpreprocessor -fopenmp /usr/local/lib/libomp.dylib -I/usr/local/include -I/usr/local/opt/gdk-pixbuf/include -I/usr/local/opt/libiconv/include -I/usr/local/opt/libxml2/include -I/usr/local/opt/expat/include
+            "-arch x86_64 -mtune=generic -Xpreprocessor -fopenmp /usr/local/lib/libomp.dylib -I/usr/local/include -I/usr/local/opt/gdk-pixbuf/include -I/usr/local/opt/libiconv/include -I/usr/local/opt/libxml2/include -I/usr/local/opt/expat/include"
         run: |
           C_FLAGS=$(echo -e $C_FLAGS | tr -d '\n') 
           # GITHUB_REF is the ref that triggered the build, like
@@ -48,8 +48,8 @@ jobs:
             -DCMAKE_CXX_COMPILER="/usr/bin/clang++" \
             -DCMAKE_C_FLAGS="-arch x86_64 -Wno-pass-failed -Wno-deprecated-register -Wno-unused-command-line-argument" \
             -DCMAKE_CXX_FLAGS="-arch x86_64 -Wno-pass-failed -Wno-deprecated-register -Wno-unused-command-line-argument" \
-            -DOpenMP_C_FLAGS="${C_FLAGS} -Xpreprocessor -fopenmp=libomp" \
-            -DOpenMP_CXX_FLAGS="${C_FLAGS} -Xpreprocessor -fopenmp=libomp" \
+            -DOpenMP_C_FLAGS="${C_FLAGS}" -Xpreprocessor -fopenmp=libomp \
+            -DOpenMP_CXX_FLAGS="${C_FLAGS}" -Xpreprocessor -fopenmp=libomp \
             -DOpenMP_C_LIB_NAMES="libomp" \
             -DOpenMP_CXX_LIB_NAMES="libomp" \
             -DOpenMP_libomp_LIBRARY="/usr/local/lib/libomp.dylib" \
