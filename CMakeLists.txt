@@ -662,7 +662,7 @@ elseif(APPLE)
             ABOUT_COMMAND_WITH_ARGS
         "cmake"
         -P "${PROJECT_SOURCE_DIR}/UpdateInfo.cmake"
-        -DPROJECT_SOURCE_DIR:STRING="${PROJECT_SOURCE_DIR}"
+        "-DPROJECT_SOURCE_DIR:STRING=${PROJECT_SOURCE_DIR}"
         -DSYSTEM:STRING="Apple"
         -DCXX_FLAGS:STRING=${CXX_FLAGS}
         -DLFLAGS:STRING=${LFLAGS}
