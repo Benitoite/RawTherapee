@@ -174,7 +174,7 @@ if(BUILD_SHARED_LIBS)
     install(TARGETS rtengine DESTINATION ${LIBDIR})
 endif()
 
-string(REGEX REPLACE "\n$" "" <RTENGINE_CXX_FLAGS> "${<RTENGINE_CXX_FLAGS>}") # strip any newline characters
+string(REGEX REPLACE "\n$" "" RTENGINE_CXX_FLAGS "${RTENGINE_CXX_FLAGS}") # strip any newline characters
 set_target_properties(rtengine PROPERTIES COMPILE_FLAGS "${RTENGINE_CXX_FLAGS}")
 
 target_link_libraries(rtengine rtexif
