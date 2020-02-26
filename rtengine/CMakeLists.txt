@@ -140,6 +140,7 @@ set(RTENGINESOURCEFILES
 )
 
 if(LENSFUN_HAS_LOAD_DIRECTORY)
+    string(REGEX REPLACE "\n$" "" RT_LENSFUN_HAS_LOAD_DIRECTORY "${RT_LENSFUN_HAS_LOAD_DIRECTORY}") # strip any newline characters
     set_source_files_properties(rtlensfun.cc PROPERTIES COMPILE_DEFINITIONS RT_LENSFUN_HAS_LOAD_DIRECTORY)
 endif()
 
