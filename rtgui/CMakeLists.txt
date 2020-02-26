@@ -198,6 +198,41 @@ if(WIN32)
         ${LENSFUN_LIBRARY_DIRS}
         ${RSVG_LIBRARY_DIRS}
         )
+elseif(APPLE)
+        include_directories(${EXTRA_INCDIR}
+        ${CANBERRA-GTK_INCLUDE_DIRS}
+        ${EXPAT_INCLUDE_DIRS}
+        ${FFTW3F_LIBRARY_DIRS}
+        ${GIOMM_INCLUDE_DIRS}
+        ${GIO_INCLUDE_DIRS}
+        ${GLIB2_INCLUDE_DIRS}
+        ${GLIBMM_INCLUDE_DIRS}
+        ${GOBJECT_INCLUDE_DIRS}
+        ${GTHREAD_INCLUDE_DIRS}
+        ${GTKMM_INCLUDE_DIRS}
+        ${GTK_INCLUDE_DIRS}
+        ${IPTCDATA_INCLUDE_DIRS}
+        ${LCMS_INCLUDE_DIRS}
+        ${LENSFUN_INCLUDE_DIRS}
+        ${RSVG_INCLUDE_DIRS}
+        )
+    link_directories(. "${PROJECT_SOURCE_DIR}/rtexif"
+        ${CANBERRA-GTK_LIBRARY_DIRS}
+        ${EXPAT_LIBRARY_DIRS}
+        ${FFTW3F_LIBRARY_DIRS}
+        ${GIOMM_LIBRARY_DIRS}
+        ${GIO_LIBRARY_DIRS}
+        ${GLIB2_LIBRARY_DIRS}
+        ${GLIBMM_LIBRARY_DIRS}
+        ${GOBJECT_LIBRARY_DIRS}
+        ${GTHREAD_LIBRARY_DIRS}
+        ${GTKMM_LIBRARY_DIRS}
+        ${GTK_LIBRARY_DIRS}
+        ${IPTCDATA_LIBRARY_DIRS}
+        ${LCMS_LIBRARY_DIRS}
+        ${LENSFUN_LIBRARY_DIRS}
+        ${RSVG_LIBRARY_DIRS}
+        )
 else()
     include_directories(${EXTRA_INCDIR}
         ${CANBERRA-GTK_INCLUDE_DIRS}
