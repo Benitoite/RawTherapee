@@ -31,7 +31,7 @@ jobs:
           cmake \
             -DCMAKE_BUILD_TYPE="release" \
             -DCMAKE_VERBOSE_MAKEFILE:BOOL=ON \
-            -DCMAKE_EXE_LINKER_FLAGS="-L. -Lrtgui -L/usr/local/lib -L/usr/local/opt/llvm/lib -Wl,-rpath -Wl,/usr/local/opt/llvm/lib -L/usr/local/opt/gdk-pixbuf/lib -L/usr/local/opt/libiconv/lib -L/usr/local/opt/libffi/lib -L/usr/local/opt/libffi/lib -L/usr/local/opt/libxml2/lib -L/usr/local/opt/expat/lib" \
+            -DCMAKE_EXE_LINKER_FLAGS="-L. -Lrtgui -L/usr/local/lib -Wl,-rpath -Wl,/usr/local/lib -L/usr/local/opt/gdk-pixbuf/lib -L/usr/local/opt/libiconv/lib -L/usr/local/opt/libffi/lib -L/usr/local/opt/libffi/lib -L/usr/local/opt/libxml2/lib -L/usr/local/opt/expat/lib" \
             -DCACHE_NAME_SUFFIX="${RAW_THERAPEE_MAJOR}.${RAW_THERAPEE_MINOR}-${REF}" \
             -DPROC_TARGET_NUMBER="1" \
             -DPROC_LABEL="generic processor" \
@@ -39,15 +39,15 @@ jobs:
             -DLENSFUNDBDIR="share/lensfun" \
             -DCMAKE_C_COMPILER="/usr/bin/clang" \
             -DCMAKE_CXX_COMPILER="/usr/bin/clang++" \
-            -DCMAKE_C_FLAGS="-I/usr/local/opt/llvm/include -I/usr/local/opt/llvm/include/c++/v1/ -arch x86_64 -Wno-pass-failed -Wno-deprecated-register -Wno-unused-command-line-argument" \
-            -DCMAKE_CXX_FLAGS="-I/usr/local/opt/llvm/include -I/usr/local/opt/llvm/include/c++/v1/ -arch x86_64 -Wno-pass-failed -Wno-deprecated-register -Wno-unused-command-line-argument" \
-            -DOpenMP_C_FLAGS="${C_FLAGS} -fopenmp=libomp" \
-            -DOpenMP_CXX_FLAGS="${C_FLAGS} -fopenmp=libomp" \
+            -DCMAKE_C_FLAGS="-arch x86_64 -Wno-pass-failed -Wno-deprecated-register -Wno-unused-command-line-argument" \
+            -DCMAKE_CXX_FLAGS="-arch x86_64 -Wno-pass-failed -Wno-deprecated-register -Wno-unused-command-line-argument" \
+            -DOpenMP_C_FLAGS="${C_FLAGS} -Xpreprocessor -fopenmp=libomp" \
+            -DOpenMP_CXX_FLAGS="${C_FLAGS} -Xpreprocessor -fopenmp=libomp" \
             -DOpenMP_C_LIB_NAMES="libomp" \
             -DOpenMP_CXX_LIB_NAMES="libomp" \
             -DOpenMP_libomp_LIBRARY="/usr/local/lib/libomp.dylib" \
-            -DCMAKE_AR="/usr/local/opt/llvm/bin/llvm-ar" \
-            -DCMAKE_RANLIB="/usr/local/opt/llvm/bin/llvm-ranlib" \
+            -DCMAKE_AR="/usr/bin/ar" \
+            -DCMAKE_RANLIB="/usr/bin/ranlib" \
             -DCMAKE_OSX_DEPLOYMENT_TARGET="10.15" \
             ..
           make --jobs
