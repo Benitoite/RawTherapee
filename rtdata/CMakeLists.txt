@@ -62,7 +62,6 @@ if(APPLE)
         CMAKE_BUILD_TYPE="${CMAKE_BUILD_TYPE}"
         GTK_PREFIX="${GTK_PREFIX}")
         list(APPEND MACOSX_BUNDLE_COMMAND PROC_BIT_DEPTH=64)
-    endif()
     list(APPEND MACOSX_BUNDLE_COMMAND sh "${PROJECT_SOURCE_DIR}/tools/osx/macosx_bundle.sh")
 
     add_custom_target(macosx_bundle
