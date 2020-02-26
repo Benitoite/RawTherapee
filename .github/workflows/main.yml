@@ -31,14 +31,14 @@ jobs:
           cmake \
             -DCMAKE_BUILD_TYPE="release" \
             -DCMAKE_VERBOSE_MAKEFILE:BOOL=ON \
-            -DCMAKE_EXE_LINKER_FLAGS="-L/usr/local/lib -L/usr/local/opt/llvm/lib -Wl,-rpath -Wl,/usr/local/opt/llvm/lib -L/usr/local/opt/gdk-pixbuf/lib -L/usr/local/opt/libiconv/lib -L/usr/local/opt/libffi/lib -L/usr/local/opt/libffi/lib -L/usr/local/opt/libxml2/lib -L/usr/local/opt/expat/lib" \
+            -DCMAKE_EXE_LINKER_FLAGS=". -Lrtgui -L/usr/local/lib -L/usr/local/opt/llvm/lib -Wl,-rpath -Wl,/usr/local/opt/llvm/lib -L/usr/local/opt/gdk-pixbuf/lib -L/usr/local/opt/libiconv/lib -L/usr/local/opt/libffi/lib -L/usr/local/opt/libffi/lib -L/usr/local/opt/libxml2/lib -L/usr/local/opt/expat/lib" \
             -DCACHE_NAME_SUFFIX="${RAW_THERAPEE_MAJOR}.${RAW_THERAPEE_MINOR}-${REF}" \
             -DPROC_TARGET_NUMBER="1" \
             -DPROC_LABEL="generic processor" \
             -DWITH_LTO="OFF" \
             -DLENSFUNDBDIR="share/lensfun" \
-            -DCMAKE_C_COMPILER="/usr/local/opt/llvm/bin/clang" \
-            -DCMAKE_CXX_COMPILER="/usr/local/opt/llvm/bin/clang++" \
+            -DCMAKE_C_COMPILER="/usr/bin/clang" \
+            -DCMAKE_CXX_COMPILER="/usr/bin/clang++" \
             -DCMAKE_C_FLAGS="-I/usr/local/opt/llvm/include -I/usr/local/opt/llvm/include/c++/v1/ -arch x86_64 -Wno-pass-failed -Wno-deprecated-register -Wno-unused-command-line-argument" \
             -DCMAKE_CXX_FLAGS="-I/usr/local/opt/llvm/include -I/usr/local/opt/llvm/include/c++/v1/ -arch x86_64 -Wno-pass-failed -Wno-deprecated-register -Wno-unused-command-line-argument" \
             -DOpenMP_C_FLAGS="${C_FLAGS} -fopenmp=libomp" \
