@@ -537,6 +537,7 @@ if(OPTION_OMP)
             "${CMAKE_CXX_FLAGS}"
             "${OpenMP_CXX_FLAGS}"
             -Werror=unknown-pragmas)
+        string(REGEX REPLACE "\n$" "" CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}") # strip any newline characters
     endif()
 endif()
 
