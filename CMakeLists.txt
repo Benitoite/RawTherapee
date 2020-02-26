@@ -531,8 +531,12 @@ set(CMAKE_CXX_FLAGS
 if(OPTION_OMP)
     find_package(OpenMP)
     if(OPENMP_FOUND)
+        string(REGEX REPLACE "\n$" "" OpenMP_C_FLAGS "${OpenMP_C_FLAGS}") # strip any newline characters
+        string(REGEX REPLACE "\n$" "" OpenMP_CXX_FLAGS "${OpenMP_CXX_FLAGS}") # strip any newline characters
         set(CMAKE_CXX_FLAGS
-            "${CMAKE_CXX_FLAGS} ${OpenMP_CXX_FLAGS} -Werror=unknown-pragmas")
+            "${CMAKE_CXX_FLAGS}"
+            "${OpenMP_CXX_FLAGS}"
+            -Werror=unknown-pragmas)
     endif()
 endif()
 
