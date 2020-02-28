@@ -26,6 +26,7 @@
 #include <sstream>
 #include <stdint.h>
 #include <tiff.h>
+#include <time.h>
 
 #include <glib/gstdio.h>
 #include <glib/gunicode.h>
