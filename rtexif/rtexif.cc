@@ -2418,7 +2418,7 @@ void ExifManager::parseCIFF (int length, TagDirectory* root)
     }
 
     if (timestamp != time (nullptr)) {
-        struct tm* tim = localtime (&timestamp);
+        struct tm* tim = localtime_r (&timestamp);
         strftime (buffer, 20, "%Y:%m:%d %H:%M:%S", tim);
         t = new Tag (exif, lookupAttrib (exifAttribs, "DateTimeOriginal"));
         t->initString (buffer);
