@@ -2370,7 +2370,7 @@ void ExifManager::parseCIFF (int length, TagDirectory* root)
         }
 
         if ((type | 0x4000) == 0x580e) {
-            timestamp = mktime (gmtime_r (&timestamp));
+            timestamp = mktime (gmtime_r (&timestamp, NULL));
         }
 
         fseek (f, nextPos, SEEK_SET);
@@ -2419,7 +2419,7 @@ void ExifManager::parseCIFF (int length, TagDirectory* root)
     }
 
     if (timestamp != time (nullptr)) {
-        struct tm* tim = localtime_r (&timestamp);
+        struct tm* tim = localtime_r (&timestamp, NULL);
         strftime (buffer, 20, "%Y:%m:%d %H:%M:%S", tim);
         t = new Tag (exif, lookupAttrib (exifAttribs, "DateTimeOriginal"));
         t->initString (buffer);
