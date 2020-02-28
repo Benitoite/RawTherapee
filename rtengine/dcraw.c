@@ -10049,7 +10049,7 @@ int CLASS main (int argc, const char **argv)
     }
     if (identify_only && verbose && make[0]) {
       printf (_("\nFilename: %s\n"), ifname);
-      printf (_("Timestamp: %s"), ctime(&timestamp));
+      printf (_("Timestamp: %s"), ctime_r(&timestamp));
       printf (_("Camera: %s %s\n"), make, model);
       if (artist[0])
 	printf (_("Owner: %s\n"), artist);
