@@ -2369,7 +2369,7 @@ void ExifManager::parseCIFF (int length, TagDirectory* root)
         }
 
         if ((type | 0x4000) == 0x580e) {
-            timestamp = mktime (gmtime (&timestamp));
+            timestamp = mktime (gmtime_r (&timestamp));
         }
 
         fseek (f, nextPos, SEEK_SET);
