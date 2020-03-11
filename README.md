@@ -1,3 +1,9 @@
+# ART: Another RawTherapee
+
+![Another RawTherapee](https://bitbucket.org/kd6kxr/art/raw/ce7537c3f720bb23ed794bd841d30252c75365d7/rtdata/images/png/ART-logo-64.png)
+
+
+## Docker Image Instructions:
 MacOS:
 
 1. In first of two terminals:
@@ -19,3 +25,11 @@ Windows:
 *Replace 192.168.0.3 with your ip address.
 
 * Mounts your home directory to `/hi` and starts up the ART application
+
+<hr>
+
+# A(nother) RT
+
+ART is a fork of RawTherapee, a powerful cross-platform raw photo processing program. **This is not an official RawTherapee repository!**, and there is **no support whatsoever** for this version. [ART Code Repository](https:/bitbucket.org/agriggio/ART)
+
+If you are looking for the RawTherapee code, please go to the official repo at [GitHub](https://github.com/Beep6581/RawTherapee).
