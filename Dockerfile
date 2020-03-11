@@ -13,28 +13,28 @@ ENV LC_ALL C.UTF-8
 
 #   clone source code, checkout dev branch
 
-RUN mkdir -p ~/programs && git clone http://github.com/Beep6581/RawTherapee.git ~/programs/code-rawtherapee && cd ~/programs/code-rawtherapee && git checkout dev
+RUN mkdir -p ~/programs && git clone http://bitbucket.org/agriggio/ART.git ~/programs/code-ART && cd ~/programs/code-ART && git checkout master
 
 #   update lensfun data
 RUN cd ~/programs && curl -o lensfun-update-data https://raw.githubusercontent.com/Benitoite/lensfun/patch-1/apps/lensfun-update-data && chmod +x lensfun-update-data && ./lensfun-update-data
 
 #   configure build system and compile
 
-RUN cd ~/programs/code-rawtherapee && mkdir build && cd build && cmake \
+RUN cd ~/programs/code-ART && mkdir build && cd build && cmake \
     -DCMAKE_BUILD_TYPE="release"  \
     -DCACHE_NAME_SUFFIX="5-dev" \
     -DPROC_TARGET_NUMBER="1" \
     -DBUILD_BUNDLE="ON" \
-    -DBUNDLE_BASE_INSTALL_DIR="$HOME/programs/rawtherapee" \
+    -DBUNDLE_BASE_INSTALL_DIR="$HOME/programs/ART" \
     -DOPTION_OMP="ON" \
     -DWITH_LTO="ON" \
     -DWITH_PROF="OFF" \
     -DWITH_SAN="OFF" \
     -DWITH_SYSTEM_KLT="OFF" \
     ..
-RUN cd ~/programs/code-rawtherapee/build && make -j$(nproc --all) && make install
+RUN cd ~/programs/code-ART/build && make -j$(nproc --all) && make install
 
 #   set the entrypoint command
 
 LABEL maintainer="kd6kxr@gmail.com"
-CMD echo "This is a test..." && ~/programs/rawtherapee/rawtherapee && echo "THATS ALL FOLKS!!!"
+CMD echo "This is a test..." && ~/programs/ART/art && echo "THATS ALL FOLKS!!!"
