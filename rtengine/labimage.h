@@ -29,7 +29,7 @@ private:
     void allocLab(size_t w, size_t h);
 
 public:
-    int W, H;
+    long long int W, H;
     float * data;
     float** L;
     float** a;
