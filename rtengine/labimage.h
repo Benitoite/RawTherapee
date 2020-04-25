@@ -29,13 +29,13 @@ private:
     void allocLab(size_t w, size_t h);
 
 public:
-    long long int W, H;
+    long long W, H;
     float * data;
     float** L;
     float** a;
     float** b;
 
-    LabImage (int w, int h, bool initZero = false, bool multiThread = true);
+    LabImage (long long w, long long h, bool initZero = false, bool multiThread = true);
     ~LabImage ();
 
     //Copies image data in Img into this instance.
