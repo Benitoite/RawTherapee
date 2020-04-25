@@ -35,7 +35,7 @@ public:
     float** a;
     float** b;
 
-    LabImage (int w, int h);
+    LabImage (int w, int h, bool initZero = false, bool multiThread = true);
     ~LabImage ();
 
     //Copies image data in Img into this instance.
@@ -43,6 +43,7 @@ public:
     void getPipetteData (float &L, float &a, float &b, int posX, int posY, int squareSize);
     void deleteLab();
     void reallocLab();
+    void clear(bool multiThread = false);
 };
 
 }

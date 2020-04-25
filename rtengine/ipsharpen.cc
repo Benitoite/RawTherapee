@@ -244,6 +244,107 @@ BENCHFUN
     delete blurbuffer;
 }
 
+void ImProcFunctions::deconvsharpeningloc (float** luminance, float** tmp, int W, int H, float** loctemp, int damp, double radi, int ite, int amo, int contrast, double blurrad)
+{
+    // BENCHFUN
+
+    if (amo < 1) {
+        return;
+    }
+
+    float *tmpI[H] ALIGNED16;
+
+    tmpI[0] = new float[W * H];
+
+    for (int i = 1; i < H; i++) {
+        tmpI[i] = tmpI[i - 1] + W;
+    }
+
+    for (int i = 0; i < H; i++) {
+        for (int j = 0; j < W; j++) {
+            tmpI[i][j] = luminance[i][j];
+        }
+    }
+
+    // calculate contrast based blend factors to reduce sharpening in regions with low contrast
+    JaggedArray<float> blend(W, H);
+    float contras = contrast / 100.f;
+    buildBlendMask(luminance, blend, W, H, contras, 1.f);
+    JaggedArray<float> blur(W, H);
+    
+    if (blurrad >= 0.25) {
+#ifdef _OPENMP
+        #pragma omp parallel
+#endif
+        {
+            gaussianBlur(tmpI, blur, W, H, blurrad);
+#ifdef _OPENMP
+            #pragma omp for
+#endif
+            for (int i = 0; i < H; ++i) {
+                for (int j = 0; j < W; ++j) {
+                    blur[i][j] = intp(blend[i][j], luminance[i][j], std::max(blur[i][j], 0.0f));
+                }
+            }
+        }
+    }
+
+    float damping = (float) damp / 5.0;
+    bool needdamp = damp > 0;
+    double sigma = radi / scale;
+    const float amount = (float) amo / 100.f;
+
+    if (sigma < 0.26f) {
+        sigma = 0.26f;
+    }
+
+    int itera = ite;
+
+#ifdef _OPENMP
+    #pragma omp parallel
+#endif
+    {
+        for (int k = 0; k < itera; k++) {
+            if (!needdamp) {
+                // apply gaussian blur and divide luminance by result of gaussian blur
+            //    gaussianBlur (tmpI, tmp, W, H, sigma, nullptr, GAUSS_DIV, luminance);
+                gaussianBlur(tmpI, tmp, W, H, sigma, false, GAUSS_DIV, luminance);
+            } else {
+                // apply gaussian blur + damping
+                gaussianBlur (tmpI, tmp, W, H, sigma);
+                dcdamping (tmp, luminance, damping, W, H);
+            }
+
+            gaussianBlur (tmp, tmpI, W, H, sigma, false, GAUSS_MULT);
+        } // end for
+
+
+#ifdef _OPENMP
+        #pragma omp for
+#endif
+
+        for (int i = 0; i < H; i++)
+            for (int j = 0; j < W; j++) {
+                loctemp[i][j] = intp(blend[i][j] * amount, max(tmpI[i][j], 0.0f), luminance[i][j]);
+            }
+            
+        if (blurrad >= 0.25) {
+#ifdef _OPENMP
+        #pragma omp for
+#endif
+            for (int i = 0; i < H; ++i) {
+                for (int j = 0; j < W; ++j) {
+                    loctemp[i][j] = intp(blend[i][j], loctemp[i][j], max(blur[i][j], 0.0f));
+                }
+            }
+        }
+            
+    } // end parallel
+
+    delete [] tmpI[0];
+
+}
+
 void ImProcFunctions::sharpening (LabImage* lab, const procparams::SharpeningParams &sharpenParam, bool showMask)
 {
 

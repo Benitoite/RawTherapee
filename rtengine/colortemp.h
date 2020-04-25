@@ -54,7 +54,7 @@ public:
     explicit ColorTemp (double e) : temp(-1.), green(-1.), equal (e), method("Custom") {}
     ColorTemp (double t, double g, double e, const std::string &m);
     ColorTemp (double mulr, double mulg, double mulb, double e);
-    static void tempxy(bool separated, int &repref, float **Tx, float **Ty, float **Tz, float **Ta, float **Tb, float **TL, double *TX, double *TY, double *TZ, const procparams::WBParams & wbpar);
+    static void tempxy(bool separated, int repref, float **Tx, float **Ty, float **Tz, float **Ta, float **Tb, float **TL, double *TX, double *TY, double *TZ, const procparams::WBParams & wbpar);
 
     void update (const double rmul, const double gmul, const double bmul, const double equal, const double tempBias=0.0)
     {
@@ -367,7 +367,14 @@ public:
     static const double Colorlab_19_n69_spect[97];
     static const double Colorlab_n80_10_spect[97];
     static const double Colorlab_n80_26_spect[97];
-
+    static const double Colorlab_n80_5_9_5_9spect[97];
+//    static const double Colorlab_n57_5_6_9spect[97];
+    
+    /*
+    static const double JDC468_greyc14_66_spect[97];
+    static const double JDC468_greym13_325_spect[97];
+    static const double JDC468_greyf26_156_spect[97];
+    */
     static void spectrum_to_xyz_daylight  (double _m1, double _m2, double &x, double &y, double &z);
     static void spectrum_to_xyz_blackbody (double _temp, double &x, double &y, double &z);
     static void spectrum_to_xyz_preset    (const double* spec_intens, double &x, double &y, double &z);

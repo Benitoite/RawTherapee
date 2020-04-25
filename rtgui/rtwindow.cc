@@ -1081,6 +1081,11 @@ void RTWindow::updateFBToolBarVisibility (bool showFilmStripToolBar)
     fpanel->fileCatalog->updateFBToolBarVisibility (showFilmStripToolBar);
 }
 
+void RTWindow::updateShowtooltipVisibility (bool showtooltip)
+{
+    fpanel->fileCatalog->updateShowtooltipVisibility (showtooltip);
+}
+
 void RTWindow::updateHistogramPosition (int oldPosition, int newPosition)
 {
     if (epanel) {

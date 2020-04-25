@@ -45,6 +45,9 @@ LUTf Color::igammatab_srgb;
 LUTf Color::igammatab_srgb1;
 LUTf Color::gammatab_srgb;
 LUTf Color::gammatab_srgb1;
+LUTf Color::gammatab_srgb327;
+LUTf Color::gammatab_bt709;
+LUTf Color::igammatab_bt709;
 
 LUTf Color::denoiseGammaTab;
 LUTf Color::denoiseIGammaTab;
@@ -130,9 +133,12 @@ void Color::init ()
     gammatabThumb(maxindex, 0);
 
     igammatab_srgb(maxindex, 0);
+    igammatab_bt709(maxindex, 0);
     igammatab_srgb1(maxindex, 0);
     gammatab_srgb(maxindex, 0);
+    gammatab_bt709(maxindex, 0);
     gammatab_srgb1(maxindex, 0);
+    gammatab_srgb327(32768, 0);
 
     denoiseGammaTab(maxindex, 0);
     denoiseIGammaTab(maxindex, 0);
@@ -199,6 +205,18 @@ void Color::init ()
         #pragma omp section
 #endif
         {
+            for (int i = 0; i < 32768; i++)
+            {
+                gammatab_srgb327[i] = gamma2(i / 32767.0);
+            }
+
+            gammatab_srgb327 *= 32767.f;
+            //  gamma2curve.share(gammatab_srgb, LUT_CLIP_BELOW | LUT_CLIP_ABOVE); // shares the buffer with gammatab_srgb but has different clip flags
+        }
+#ifdef _OPENMP
+        #pragma omp section
+#endif
+        {
             for (int i = 0; i < maxindex; i++)
             {
                 igammatab_srgb[i] = igammatab_srgb1[i] = igamma2 (i / 65535.0);
@@ -206,6 +224,7 @@ void Color::init ()
 
             igammatab_srgb *= 65535.f;
         }
+
 #ifdef _OPENMP
         #pragma omp section
 #endif
@@ -280,6 +299,22 @@ void Color::init ()
                 }
 
                 break;
+        }
+
+#ifdef _OPENMP
+        #pragma omp section
+#endif
+
+        for (int i = 0; i < maxindex; i++) {
+            gammatab_bt709[i] = 65535.0 * gamma709(i / 65535.0);
+        }
+
+#ifdef _OPENMP
+        #pragma omp section
+#endif
+
+        for (int i = 0; i < maxindex; i++) {
+            igammatab_bt709[i] = 65535.0 * igamma709(i / 65535.0);
         }
 
 #ifdef _OPENMP
@@ -941,12 +976,12 @@ void Color::rgbxyz (float r, float g, float b, float &x, float &y, float &z, con
     z = ((xyz_rgb[2][0] * r + xyz_rgb[2][1] * g + xyz_rgb[2][2] * b)) ;
 }
 
-void Color::rgbxyY(float r, float g, float b, float &x, float &y, float &Y, float &xx, float &yy, float &zz, const double xyz_rgb[3][3])
+void Color::rgbxyY(float r, float g, float b, float &x, float &y, float &Y, const float xyz_rgb[3][3])
 {
-    xx = ((xyz_rgb[0][0] * r + xyz_rgb[0][1] * g + xyz_rgb[0][2] * b)) ;
-    yy = ((xyz_rgb[1][0] * r + xyz_rgb[1][1] * g + xyz_rgb[1][2] * b)) ;
-    zz = ((xyz_rgb[2][0] * r + xyz_rgb[2][1] * g + xyz_rgb[2][2] * b)) ;
-    float som = xx + yy + zz;
+    const float xx = xyz_rgb[0][0] * r + xyz_rgb[0][1] * g + xyz_rgb[0][2] * b;
+    const float yy = xyz_rgb[1][0] * r + xyz_rgb[1][1] * g + xyz_rgb[1][2] * b;
+    const float zz = xyz_rgb[2][0] * r + xyz_rgb[2][1] * g + xyz_rgb[2][2] * b;
+    const float som = xx + yy + zz;
     x = xx / som;
     y = yy / som;
     Y = yy / 65535.f;

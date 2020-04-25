@@ -20,12 +20,15 @@
 
 #include <set>
 #include <vector>
+#if defined __has_include
 #if __has_include(<gtkmm/enums.h>)
 #include <gtkmm/enums.h>
 #else
 #include <gtkmm-3.0/gtkmm/enums.h>
 #endif
-
+#else
+#include <gtkmm/enums.h>
+#endif
 #include "../rtengine/settings.h"
 #include <exception>
 
@@ -279,12 +282,13 @@ public:
     //std::vector<int> crvOpen;
     std::vector<int> baBehav;
     rtengine::Settings rtSettings;
-
+    bool showtooltip;
     std::vector<Glib::ustring> favoriteDirs;
     std::vector<Glib::ustring> renameTemplates;
     bool renameUseTemplates;
     bool internalThumbIfUntouched;
     bool overwriteOutputFile;
+    int complexity;
 
     std::vector<double> thumbnailZoomRatios;
     bool overlayedFileNames;
@@ -406,6 +410,7 @@ public:
     Glib::ustring lastRetinexDir;
     Glib::ustring lastDenoiseCurvesDir;
     Glib::ustring lastWaveletCurvesDir;
+    Glib::ustring lastlocalCurvesDir;
     Glib::ustring lastPFCurvesDir;
     Glib::ustring lastHsvCurvesDir;
     Glib::ustring lastToneCurvesDir;

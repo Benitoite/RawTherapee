@@ -162,12 +162,15 @@ public:
     static LUTf igammatab_srgb;
     static LUTf igammatab_srgb1;
     static LUTf gammatab_srgb;
+    static LUTf gammatab_srgb327;
     static LUTf gammatab_srgb1;
+    static LUTf gammatab_bt709;
 
     static LUTf denoiseGammaTab;
     static LUTf denoiseIGammaTab;
 
     static LUTf igammatab_24_17;
+    static LUTf igammatab_bt709;
     static LUTf gammatab_24_17a;
     static LUTf gammatab_13_2;
     static LUTf igammatab_13_2;
@@ -602,7 +605,7 @@ public:
     * @param xyz_rgb[3][3] transformation matrix to use for the conversion
     */
     static void rgbxyz (float r, float g, float b, float &x, float &y, float &z, const double xyz_rgb[3][3]);
-    static void rgbxyY(float r, float g, float b, float &x, float &y, float &Y, float &xx, float &yy, float &zz, const double xyz_rgb[3][3]);
+    static void rgbxyY(float r, float g, float b, float &x, float &y, float &Y, const float xyz_rgb[3][3]);
     static void rgbxyz (float r, float g, float b, float &x, float &y, float &z, const float xyz_rgb[3][3]);
 #ifdef __SSE2__
     static void rgbxyz (vfloat r, vfloat g, vfloat b, vfloat &x, vfloat &y, vfloat &z, const vfloat xyz_rgb[3][3]);
@@ -1150,23 +1153,25 @@ public:
     }
 
 
-    /*
+/*
     * @brief Get the gamma value for Gamma=2.2 Slope=4.5
     * @param x red, green or blue channel's value [0 ; 1]
     * @return the gamma modified's value [0 ; 1]
     *
+*/
     static inline double gamma709     (double x) {
                                             return x <= 0.0176 ? x*4.5 : 1.0954*exp(log(x)/2.2)-0.0954;
                                     }
-
+/*
     * @brief Get the inverse gamma value for Gamma=2.2 Slope=4.5
     * @param x red, green or blue channel's value [0 ; 1]
     * @return the inverse gamma modified's value [0 ; 1]
     *
+*/
     static inline double igamma709    (double x) {
                                         return x <= 0.0795 ? x/4.5 : exp(log((x+0.0954)/1.0954)*2.2);
                                     }
-    */
+
 
 
 
@@ -1493,6 +1498,57 @@ public:
     static void skinred ( double J, double h, double sres, double Sp, float dred, float protect_red, int sk, float rstprotection, float ko, double &s);
     static void skinredfloat ( float J, float h, float sres, float Sp, float dred, float protect_red, int sk, float rstprotection, float ko, float &s);
 //  static void scaleredcdbl ( float skinprot, float param, float limit, float HH, float deltaHH, float &scale,float &scaleext);
+
+    static inline void pregamutlab(float lum, float hue, float &chr) //big approximation to limit gamut (Prophoto) before good gamut procedure for locallab chroma, to avoid crash
+    {
+        if (lum >= 95.0f) {
+            if (hue > 1.5f && hue < 2.f) {
+                chr = 120.f;
+            } else if (hue > 0.7f && hue <= 1.5f) {
+                chr = 60.f;
+            } else {
+                chr = 40.f;
+            }
+        }   else if (lum > 75.f) {
+            if (hue > 1.f && hue < 3.14f) {
+                chr = 130.f;
+            } else if (hue > -0.4f && hue <= 1.f) {
+                chr = 80.f;
+            } else if (hue > -3.15f && hue < -2.f) {
+                chr = 80.f;
+            } else {
+                chr = 60.f;
+            }
+
+        } else if (lum > 35.f) {
+            chr = 100.f;
+        }   else if (lum > 20.f) {
+            if (hue < -1.f && hue > -2.f) {
+                chr = 120.f;
+            } else {
+                chr = 80.f;
+            }
+        }   else if (lum > 7.f) {
+            if (hue < -1.f && hue > -1.8f) {
+                chr = 120.f;
+            } else {
+                chr = 60.f;
+            }
+
+        }   else {
+            if (hue < -1.f && hue > -1.6f) {
+                chr = 80.f;
+            } else {
+                chr = 40.f;
+            }
+
+        }
+
+        //      if(lum < 4.f) {
+        //          chr = 0.1f;
+        //      }
+    }
+
 
     static inline void SkinSatCbdl (float lum, float hue, float chrom, float skinprot, float &scale, bool neg, float b_l, float t_l, float t_r)
     {

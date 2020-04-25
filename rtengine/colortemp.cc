@@ -33,7 +33,7 @@
 namespace rtengine
 {
 
-static const double cie_colour_match_jd[97][3] = {//350nm to 830nm   5 nm J.Desmis 2° Standard Observer.
+static const double cie_colour_match_jd2[97][3] = {//350nm to 830nm   5 nm J.Desmis 2° Standard Observer.
     {0.0000000, 0.000000, 0.000000}, {0.0000000, 0.000000, 0.000000}, {0.0001299, 0.0003917, 0.0006061},
     {0.0002321, 0.000006965, 0.001086}, {0.0004149, 0.00001239, 0.001946}, {0.0007416, 0.00002202, 0.003846},
     {0.001368, 0.000039, 0.006450001}, {0.002236, 0.000064, 0.01054999}, {0.004243, 0.000120, 0.02005001},
@@ -68,6 +68,108 @@ static const double cie_colour_match_jd[97][3] = {//350nm to 830nm   5 nm J.Desm
     {0.000003581652, 0.0000012934, 0.000000}, {0.000002522525, 0.00000091093, 0.000000}, {0.000001776509, 0.00000064153, 0.000000},
     {0.000001251141, 0.00000045181, 0.000000}
 };
+
+
+static double cie_colour_match_jd[97][3] = {//350nm to 830nm   5 nm J.Desmis 10° Standard Observer.
+{0.000000000000, 0.000000000000, 0.000000000000},
+{0.000000000000, 0.000000000000, 0.000000000000},
+{0.000000122200, 0.000000013398, 0.000000535027},
+{0.000000919270, 0.000000100650, 0.000004028300},
+{0.000005958600, 0.000000651100, 0.000026143700},
+{0.000033266000, 0.000003625000, 0.000146220000},
+{0.000159952000, 0.000017364000, 0.000704776000},
+{0.000662440000, 0.000071560000, 0.002927800000},
+{0.002361600000, 0.000253400000, 0.010482200000},
+{0.007242300000, 0.000768500000, 0.032344000000},
+{0.019109700000, 0.002004400000, 0.086010900000},
+{0.043400000000, 0.004509000000, 0.197120000000},
+{0.084736000000, 0.008756000000, 0.389366000000},
+{0.140638000000, 0.014456000000, 0.656760000000},
+{0.204492000000, 0.021391000000, 0.972542000000},
+{0.264737000000, 0.029497000000, 1.282500000000},
+{0.314679000000, 0.038676000000, 1.553480000000},
+{0.357719000000, 0.049602000000, 1.798500000000},
+{0.383734000000, 0.062077000000, 1.967280000000},
+{0.386726000000, 0.074704000000, 2.027300000000},
+{0.370702000000, 0.089456000000, 1.994800000000},
+{0.342957000000, 0.106256000000, 1.900700000000},
+{0.302273000000, 0.128201000000, 1.745370000000},
+{0.254085000000, 0.152761000000, 1.554900000000},
+{0.195618000000, 0.185190000000, 1.317560000000},
+{0.132349000000, 0.219940000000, 1.030200000000},
+{0.080507000000, 0.253589000000, 0.772125000000},
+{0.041072000000, 0.297665000000, 0.570060000000},
+{0.016172000000, 0.339133000000, 0.415254000000},
+{0.005132000000, 0.395379000000, 0.302356000000},
+{0.003816000000, 0.460777000000, 0.218502000000},
+{0.015444000000, 0.531360000000, 0.159249000000},
+{0.037465000000, 0.606741000000, 0.112044000000},
+{0.071358000000, 0.685660000000, 0.082248000000},
+{0.117749000000, 0.761757000000, 0.060709000000},
+{0.172953000000, 0.823330000000, 0.043050000000},
+{0.236491000000, 0.875211000000, 0.030451000000},
+{0.304213000000, 0.923810000000, 0.020584000000},
+{0.376772000000, 0.961988000000, 0.013676000000},
+{0.451584000000, 0.982200000000, 0.007918000000},
+{0.529826000000, 0.991761000000, 0.003988000000},
+{0.616053000000, 0.999110000000, 0.001091000000},
+{0.793832000000, 0.982380000000, 0.000000000000},
+{0.878655000000, 0.955552000000, 0.000000000000},
+{0.951162000000, 0.915175000000, 0.000000000000},
+{1.014160000000, 0.868934000000, 0.000000000000},
+{1.074300000000, 0.825623000000, 0.000000000000},
+{1.118520000000, 0.777405000000, 0.000000000000},
+{1.134300000000, 0.720353000000, 0.000000000000},
+{1.123990000000, 0.658341000000, 0.000000000000},
+{1.089100000000, 0.593878000000, 0.000000000000},
+{1.030480000000, 0.527963000000, 0.000000000000},
+{0.950740000000, 0.461834000000, 0.000000000000},
+{0.856297000000, 0.398057000000, 0.000000000000},
+{0.754930000000, 0.339554000000, 0.000000000000},
+{0.647467000000, 0.283493000000, 0.000000000000},
+{0.535110000000, 0.228254000000, 0.000000000000},
+{0.431567000000, 0.179828000000, 0.000000000000},
+{0.343690000000, 0.140211000000, 0.000000000000},
+{0.268329000000, 0.107633000000, 0.000000000000},
+{0.204300000000, 0.081187000000, 0.000000000000},
+{0.152568000000, 0.060281000000, 0.000000000000},
+{0.112210000000, 0.044096000000, 0.000000000000},
+{0.081260600000, 0.031800400000, 0.000000000000},
+{0.057930000000, 0.022601700000, 0.000000000000},
+{0.040850800000, 0.015905100000, 0.000000000000},
+{0.028623000000, 0.011130300000, 0.000000000000},
+{0.019941300000, 0.007748800000, 0.000000000000},
+{0.013842000000, 0.005375100000, 0.000000000000},
+{0.009576880000, 0.003717740000, 0.000000000000},
+{0.006605200000, 0.002564560000, 0.000000000000},
+{0.004552630000, 0.001768470000, 0.000000000000},
+{0.003144700000, 0.001222390000, 0.000000000000},
+{0.002174960000, 0.000846190000, 0.000000000000},
+{0.001505700000, 0.000586440000, 0.000000000000},
+{0.001044760000, 0.000407410000, 0.000000000000},
+{0.000727450000, 0.000284041000, 0.000000000000},
+{0.000508258000, 0.000198730000, 0.000000000000},
+{0.000356380000, 0.000139550000, 0.000000000000},
+{0.000250969000, 0.000098428000, 0.000000000000},
+{0.000177730000, 0.000069819000, 0.000000000000},
+{0.000126390000, 0.000049737000, 0.000000000000},
+{0.000090151000, 0.000035540500, 0.000000000000},
+{0.000064525800, 0.000025486000, 0.000000000000},
+{0.000046339000, 0.000018338400, 0.000000000000},
+{0.000033411700, 0.000013249000, 0.000000000000},
+{0.000024209000, 0.000009619600, 0.000000000000},
+{0.000017611500, 0.000007012800, 0.000000000000},
+{0.000012855000, 0.000005129800, 0.000000000000},
+{0.000009413630, 0.000003764730, 0.000000000000},
+{0.000006913000, 0.000002770810, 0.000000000000},
+{0.000005093470, 0.000002046130, 0.000000000000},
+{0.000003767100, 0.000001516770, 0.000000000000},
+{0.000002795310, 0.000001128090, 0.000000000000},
+{0.000002082000, 0.000000842160, 0.000000000000},
+{0.000001553140, 0.000000629700, 0.000000000000}
+};
+
+
 
 ColorTemp::ColorTemp (double t, double g, double e, const std::string &m) : temp(t), green(g), equal(e), method(m)
 {
@@ -2408,7 +2510,66 @@ const double ColorTemp::Colorlab_n80_26_spect[97] = {
     -0.2047, -0.205,    -0.2069, -0.208,    -0.2099, -0.21, -0.2115, -0.21, -0.2106, -0.209,    -0.2086,
     0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0
 };
+/*
+//0,1767000	0,2207000	0,3142000	0,5269000	0,7018000	0,7605000	0,7580000	0,7366000	0,7182000	0,6929000	0,6661000	0,6542000	
+//0,6420000	0,6085000	0,5752000	0,5728000	0,5723000	0,5318000	0,4982000	0,5226000	0,5670000	0,5929000	0,5977000	0,5975000	
+//0,6002000	0,6065000	0,6177000	0,6352000	0,6526000	0,6623000	0,6633000	0,6593000	0,6517000	0,6479000	0,6607000	0,6908000																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																							
 
+const double ColorTemp::JDC468_greyc14_66_spect[97] = {
+    0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
+    0.1767, 0.19, 0.2207, 0.25, 0.3142, 0.40, 0.5269, 0.63, 0.7018, 0.73, 0.7605, 0.76, 0.7580, 0.74, 0.7366, 0.725, 0.7182, 0.705, 0.6929, 0.68, 0.6661, 0.66, 0.6542, 0.65,
+    0.642, 0.62, 0.6085, 0.585, 0.5752, 0.573, 0.5728, 0.573, 0.5723, 0.555, 0.5318, 0.51, 0.4982, 0.51, 0.5226, 0.54, 0.5670, 0.58, 0.5929, 0.594, 0.5977, 0.597, 0.5975, 0.6,
+    0.6002, 0.602, 0.6065, 0.61, 0.6177, 0.62, 0.6352, 0.64, 0.6526, 0.66, 0.6623, 0.662, 0.6633, 0.66, 0.6593, 0.653, 0.6517, 0.65, 0.6479, 0.65, 0.6607, 0.69, 0.6908,
+    0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0
+};
+//0,1325000	0,1637000	0,2222000	0,3492000	0,4523000	0,4897000	0,4918000	0,4840000	0,4761000	0,4638000	0,4538000	0,4582000
+//	0,4588000	0,4360000	0,4091000	0,4101000	0,4128000	0,3785000	0,3494000	0,3720000	0,4122000	0,4339000	0,4362000	0,4355000
+//	0,4395000	0,4475000	0,4606000	0,4807000	0,5006000	0,5125000	0,5145000	0,5112000	0,5029000	0,4992000	0,5150000	0,5526000																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																							
+
+const double ColorTemp::JDC468_greym13_325_spect[97] = {
+    0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
+    0.1325, 0.15, 0.1637, 0.2, 0.2222, 0.28, 0.3492, 0.40, 0.4523, 0.47, 0.4897, 0.49, 0.4918, 0.49, 0.4840, 0.48, 0.4761, 0.47, 0.4638, 0.46, 0.4538, 0.455, 0.4582, 0.458,
+    0.4588, 0.45, 0.4360, 0.42, 0.4091, 0.41, 0.4101, 0.411, 0.4128, 0.405, 0.3785, 0.36, 0.3494, 0.36, 0.3720, 0.41, 0.4122, 0.425, 0.4339, 0.435, 0.4362, 0.597, 0.4355, 0.437,
+    0.4395, 0.44, 0.4475, 0.45, 0.4606, 0.47, 0.4807, 0.49, 0.5006, 0.51, 0.5125, 0.513, 0.5145, 0.512, 0.5112, 0.51, 0.5029, 0.5, 0.4992, 0.51, 0.5150, 0.53, 0.5526,
+    0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0
+};
+
+//0,0823000	0,1036000	0,1337000	0,1966000	0,2468000	0,2679000	0,2728000	0,2726000	0,2724000	0,2698000	0,2705000	0,2810000
+//	0,2879000	0,2756000	0,2586000	0,2601000	0,2617000	0,2357000	0,2124000	0,2241000	0,2471000	0,2581000	0,2569000	0,2548000
+//	0,2579000	0,2653000	0,2765000	0,2941000	0,3126000	0,3230000	0,3238000	0,3189000	0,3091000	0,3043000	0,3200000	0,3579000																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																							
+
+const double ColorTemp::JDC468_greyf26_156_spect[97] = {
+    0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
+    0.0823, 0.1, 0.1036, 0.11, 0.1337, 0.16, 0.1966, 0.22, 0.2468, 0.255, 0.2679, 0.27, 0.2728, 0.273, 0.2726, 0.273, 0.2724, 0.271, 0.2698, 0.27, 0.2705, 0.275, 0.2810, 0.285,
+    0.2879, 0.28, 0.2756, 0.26, 0.2586, 0.26, 0.2601, 0.261, 0.2617, 0.25, 0.2357, 0.22, 0.2124, 0.22, 0.2241, 0.23, 0.2471, 0.25, 0.2581, 0.278, 0.2569, 0.255, 0.2548, 0.255,
+    0.2579, 0.26, 0.2653, 0.27, 0.2765, 0.28, 0.2941, 0.30, 0.3126, 0.32, 0.3230, 0.323, 0.3238, 0.32, 0.3189, 0.31, 0.3091, 0.302, 0.3043, 0.31, 0.3200, 0.34, 0.3579,
+    0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0
+};
+*/
+//A1	0.0912	0.1228	0.1712	0.2978	0.3713	0.4241	0.4861	0.5255	0.5355	0.5363	0.5237	0.5251	
+// 0.5722	0.6554	0.6936	0.6675	0.6203	0.5651	0.5116	0.4825	0.4714	0.4866	0.5320	0.5729	
+// 0.5968	0.6069	0.6131	0.6198	0.6285	0.6325	0.6316	0.6282	0.6227	0.6196	0.6215	0.6337
+
+const double ColorTemp::Colorlab_n80_5_9_5_9spect[97] = {
+    0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
+    0.0912, 0.1, 0.1228, 0.15, 0.1712, 0.2, 0.2978, 0.32, 0.3713, 0.41, 0.4241, 0.44, 0.4861, 0.51, 0.5255, 0.53, 0.5355, 0.534, 0.5363, 0.53, 0.5237, 0.524, 0.5251, 0.56,
+    0.5722, 0.6, 0.6554, 0.67, 0.6936, 0.67, 0.6675, 0.65, 0.6203, 0.6, 0.5651, 0.54, 0.5116, 0.5, 0.4825, 0.48, 0.4714, 0.48, 0.4866, 0.5, 0.5320, 0.55, 0.5729, 0.58,
+    0.5968, 0.6, 0.6069, 0.61, 0.6131, 0.615, 0.6198, 0.62, 0.6285, 0.63, 0.6325, 0.632, 0.6316, 0.63, 0.6282, 0.625, 0.6227, 0.62, 0.6196, 0.62, 0.6215, 0.63, 0.6337,
+    0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0
+};
+/*
+//A2	0.0385	0.0514	0.0711	0.1229	0.1528	0.1744	0.1999	0.2163	0.2209	0.2216	0.2167	0.2185	
+//0.2414	0.2813	0.3012	0.2922	0.2734	0.2511	0.2292	0.2173	0.2127	0.2183	0.2354	0.2508	
+//0.2599	0.2637	0.2662	0.2689	0.2725	0.2742	0.2738	0.2724	0.2701	0.2689	0.2697	0.2747
+
+const double ColorTemp::Colorlab_n57_5_6_9spect[97] = {
+    0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
+    0.0385, 0.04, 0.0514, 0.06, 0.0711, 0.1, 0.1229, 0.14, 0.1528, 0.16, 0.1744, 0.18, 0.1999, 0.2, 0.2163, 0.22, 0.2209, 0.221, 0.2216, 0.22, 0.2167, 0.216, 0.2185, 0.23,
+    0.2414, 0.26, 0.2813, 0.3, 0.3012, 0.3, 0.2922, 0.28, 0.2734, 0.26, 0.2511, 0.24, 0.2292, 0.22, 0.2173, 0.215, 0.2127, 0.215, 0.2183, 0.22, 0.2354, 0.24, 0.2508, 0.255,
+    0.2599, 0.26, 0.2637, 0.263, 0.2662, 0.267, 0.2689, 0.27, 0.2725, 0.273, 0.2742, 0.274, 0.2738, 0.273, 0.2724, 0.271, 0.2701, 0.27, 0.2689, 0.269, 0.2697, 0.27, 0.2747,
+    0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0
+};
+*/
 /*
  *      Name:   XYZtoCorColorTemp.c
  *
@@ -3210,8 +3371,8 @@ void ColorTemp::temp2mul (double temp, double green, double equal, double& rmul,
 //calculate spectral data for blackbody at temp!
 double ColorTemp::blackbody_spect(double wavelength, double temperature)
 {
-    double wlm = wavelength * 1e-9;   /* Wavelength in meters */
-    return (3.7417715247e-16 / pow(wlm, 5)) /              //3.7417..= c1 = 2*Pi*h*c2  where h=Planck constant, c=velocity of light
+    const double wlm = wavelength * 1e-9;   /* Wavelength in meters */
+    return (3.7417715247e-16 / rtengine::pow5(wlm)) /              //3.7417..= c1 = 2*Pi*h*c2  where h=Planck constant, c=velocity of light
            (xexp(1.438786e-2 / (wlm * temperature)) - 1.0); //1.4387..= c2 = h*c/k  where k=Boltzmann constant
 }
 
@@ -3230,6 +3391,7 @@ this values are often called xBar yBar zBar and are characteristics of a color /
 values cie_colour_match[][3] = 2° Standard Observer x2, y2, z2
 E.g. for 380nm: x2=0.001368  y2=0.000039  z2=0.006451  round in J.Walker to 0.0014  0.0000 0.0065 above
 I have increase precision used by J.Walker  and pass to 350nm to 830nm
+And also add 10°  standard observer
 */
 
 void ColorTemp::spectrum_to_xyz_daylight(double _m1, double _m2, double &x, double &y, double &z)
@@ -3288,6 +3450,7 @@ void ColorTemp::spectrum_to_xyz_preset(const double* spec_intens, double &x, dou
     values cie_colour_match[][3] = 2° Standard Observer x2, y2, z2
     E.g. for 380nm: x2=0.001368  y2=0.000039  z2=0.006451  round in J.Walker to 0.0014  0.0000 0.0065 above
     I have increased the precision used by J.Walker and pass from 350nm to 830nm
+    And also add standard observer 10°
     */
     for (i = 0, lambda = 350.; lambda < 830.1; i++, lambda += 5.) {
         double Me = get_spectral_color(lambda, spec_intens);
@@ -3337,62 +3500,38 @@ void ColorTemp::spectrum_to_color_xyz_preset(const double* spec_color, const dou
 void ColorTemp::spectrum_to_color_xyz_daylight(const double* spec_color, double _m1, double _m2, double &xx, double &yy, double &zz)
 {
     int i;
-    double lambda, X = 0, Y = 0, Z = 0, Yo = 0;
+    double lambda, X = 0, Y = 0, Z = 0;
 
     for (i = 0, lambda = 350; lambda < 830.1; i++, lambda += 5) {
-
-        double Me;
-        double Mc;
-
-        Me = get_spectral_color(lambda, spec_color);
-        Mc = daylight_spect(lambda, _m1, _m2);
+        const double Me = spec_color[i];
+        const double Mc = daylight_spect(lambda, _m1, _m2);
         X += Mc * cie_colour_match_jd[i][0] * Me;
         Y += Mc * cie_colour_match_jd[i][1] * Me;
         Z += Mc * cie_colour_match_jd[i][2] * Me;
     }
 
-    for (i = 0, lambda = 350; lambda < 830.1; i++, lambda += 5) {
-
-        double Ms;
-
-        Ms = daylight_spect(lambda, _m1, _m2);
-        Yo += cie_colour_match_jd[i][1] * Ms;
-    }
-
-    xx = X / Yo;
-    yy = Y / Yo;
-    zz = Z / Yo;
+    xx = X / Y;
+    yy = 1.0;
+    zz = Z / Y;
 }
 
 //calculate XYZ from spectrum data (color) and illuminant : J.Desmis december 2011
 void ColorTemp::spectrum_to_color_xyz_blackbody(const double* spec_color, double _temp, double &xx, double &yy, double &zz)
 {
     int i;
-    double lambda, X = 0, Y = 0, Z = 0, Yo = 0;
+    double lambda, X = 0, Y = 0, Z = 0;
 
     for (i = 0, lambda = 350; lambda < 830.1; i++, lambda += 5) {
-
-        double Me;
-        double Mc;
-
-        Me = get_spectral_color(lambda, spec_color);
-        Mc = blackbody_spect(lambda, _temp);
+        const double Me = spec_color[i];
+        const double Mc = blackbody_spect(lambda, _temp);
         X += Mc * cie_colour_match_jd[i][0] * Me;
         Y += Mc * cie_colour_match_jd[i][1] * Me;
         Z += Mc * cie_colour_match_jd[i][2] * Me;
     }
 
-    for (i = 0, lambda = 350; lambda < 830.1; i++, lambda += 5) {
-
-        double Ms;
-
-        Ms = blackbody_spect(lambda, _temp);
-        Yo += cie_colour_match_jd[i][1] * Ms;
-    }
-
-    xx = X / Yo;
-    yy = Y / Yo;
-    zz = Z / Yo;
+    xx = X / Y;
+    yy = 1.0;
+    zz = Z / Y;
 }
 
 double ColorTemp::daylight_spect(double wavelength, double m1, double m2)
@@ -3424,7 +3563,7 @@ double ColorTemp::daylight_spect(double wavelength, double m1, double m2)
 // we can change step for temperature and increase number  for T > 7500K if necessary
 //these values Temp, x, y are references for all calculations and very precise.
 //copyright J.Desmis august  2017 and june 2018
-void ColorTemp::tempxy(bool separated, int &repref, float **Tx, float **Ty, float **Tz, float **Ta, float **Tb, float **TL, double *TX, double *TY, double *TZ, const procparams::WBParams & wbpar)
+void ColorTemp::tempxy(bool separated, int repref, float **Tx, float **Ty, float **Tz, float **Ta, float **Tb, float **TL, double *TX, double *TY, double *TZ, const procparams::WBParams & wbpar)
 {
     const double* spec_colorforxcyc[] = {//color references
         JDC468_BluH10_spect, JDC468_BluD6_spect, ColorchechCyaF3_spect, JDC468_BluM5_spect, // 0 3
@@ -3473,7 +3612,10 @@ void ColorTemp::tempxy(bool separated, int &repref, float **Tx, float **Ty, floa
         J570_NeuQ1_spect, J570_NeuS7_spect,
         J570_NeuV10_spect, J570_NeuW18_spect, J570_NeuZ14_spect, //189
         J570_NeuC18_spect, J570_NeuD17_spect, J570_NeuJ11_spect, J570_NeuL4_spect, Colorlab_n72_n2_spect,
-        Colorlab_10_n70_spect, Colorlab_n33_n70_spect, Colorlab_n8_n74_spect, Colorlab_19_n69_spect, Colorlab_n80_10_spect, Colorlab_n80_26_spect
+        Colorlab_10_n70_spect, Colorlab_n33_n70_spect, Colorlab_n8_n74_spect, Colorlab_19_n69_spect, Colorlab_n80_10_spect, Colorlab_n80_26_spect,
+        Colorlab_n80_5_9_5_9spect //, Colorlab_n57_5_6_9spect
+
+        /*JDC468_greyc14_66_spect, JDC468_greym13_325_spect, JDC468_greyf26_156_spect*/
     };
 
 
@@ -3483,7 +3625,7 @@ void ColorTemp::tempxy(bool separated, int &repref, float **Tx, float **Ty, floa
         double ZZ;
     } WbTxyz;
     //probbaly can be "passed" with rawimagesource.cc but I don't know how to do.
-    WbTxyz Txyz[118] = {//temperature Xwb Zwb 118 values  x wb and y wb are calculated after
+    constexpr WbTxyz Txyz[118] = {//temperature Xwb Zwb 118 values - same table as in Rawimagesource.cc  x wb and y wb are calculated after
         {2001., 1.273842, 0.145295},
         {2101., 1.244008, 0.167533},
         {2201., 1.217338, 0.190697},
@@ -3612,68 +3754,36 @@ void ColorTemp::tempxy(bool separated, int &repref, float **Tx, float **Ty, floa
         double Zref;
     } XYZref;
     XYZref Refxyz[N_c + 1];
-    typedef struct XYZrefcat02 {
-        double Xrefcat;
-        double Yrefcat;
-        double Zrefcat;
-    } XYZrefcat02;
-    XYZrefcat02 Refxyzcat02[N_c + 1];
 
     for (int i = 0; i < N_c; i++) {
         Refxyz[i].Xref = 0.f;
         Refxyz[i].Yref = 0.f;
         Refxyz[i].Zref = 0.f;
-        Refxyzcat02[i].Xrefcat = 0.f;
-        Refxyzcat02[i].Yrefcat = 0.f;
-        Refxyzcat02[i].Zrefcat = 0.f;
     }
 
-
-    struct chrom {
-        float chroab;
-        float chroa;
-        float chrob;
-        int nn;
-        float L;
-        bool operator()(const chrom& lchro, const chrom& rchro)
-        {
-            return lchro.chroab < rchro.chroab;
+    if (settings->verbose) {
+        if (settings->itcwb_stdobserver10 == false) {
+            printf("Use standard observer 2°\n");
+        } else {
+            printf("Use standard observer 10°\n");
         }
+    }
 
-    } ;
-
- //   chrom wbchro[N_c + 1];
-
-    double tempw = 5000.;
+    if (settings->itcwb_stdobserver10 == false) {
+        for (int i = 0; i < 97; i++) {
+            cie_colour_match_jd[i][0] = cie_colour_match_jd2[i][0];
+            cie_colour_match_jd[i][1] = cie_colour_match_jd2[i][1];;
+            cie_colour_match_jd[i][2] = cie_colour_match_jd2[i][2];
+        }
+    }
 
     if (separated) {
-        tempw = Txyz[repref].Tem;
-        // tempw = 5004.;
+        const double tempw = Txyz[repref].Tem;
 
         if (tempw <= INITIALBLACKBODY) {
-            //   float aa = 0.f;
-            //   float bb = 0.f;
-
             for (int i = 0; i < N_c; i++) {
                 spectrum_to_color_xyz_blackbody(spec_colorforxcyc[i], tempw, TX[i], TY[i], TZ[i]);
-                /*                float XX = TX[i] * 65535.f;
-                                float YY = TY[i] * 65535.f;
-                                float ZZ = TZ[i] * 65535.f;
-                                float L, a, b;
-                                Color::XYZ2Lab(XX, YY, ZZ, L, a, b);//only to see Lab values in console
-                                printf("N=%i L=%f a=%f b=%f\n", i, L / 327.68f, a / 327.68f, b / 327.68f);
-                                aa += (a / 327.68f);
-                                bb += (b / 327.68f);
-                */
             }
-
-            /*
-                        aa /= N_c;
-                        bb /= N_c;
-                        printf("aa=%f bb=%f\n", aa, bb);
-            */
-            //  }
-
         } else {
             double m11, m22, x_DD, y_DD, interm2;
 
@@ -3689,97 +3799,21 @@ void ColorTemp::tempxy(bool separated, int &repref, float **Tx, float **Ty, floa
             interm2 = (0.0241 + 0.2562 * x_DD - 0.734 * y_DD);
             m11 = (-1.3515 - 1.7703 * x_DD + 5.9114 * y_DD) / interm2;
             m22 = (0.03 - 31.4424 * x_DD + 30.0717 * y_DD) / interm2;
-       //     float aa = 0.f;
-        //    float bb = 0.f;
 
             for (int i = 0; i < N_c; i++) {
                 spectrum_to_color_xyz_daylight(spec_colorforxcyc[i], m11, m22, TX[i], TY[i], TZ[i]);
-
-/*                float XX = TX[i] * 65535.f;
-                float YY = TY[i] * 65535.f;
-                float ZZ = TZ[i] * 65535.f;
-                float L, a, b;
-                Color::XYZ2Lab(XX, YY, ZZ, L, a, b);//only to see Lab values in console
-                //     printf("N=%i L=%f a=%f b=%f\n", i, L / 327.68f, a / 327.6 8f, b / 327.68f);
-                aa += (a / 327.68f);
-                bb += (b / 327.68f);
-                wbchro[i].chroab = (sqrt(SQR(a) + SQR(b))) / 327.68f;
-                wbchro[i].chroa = a / 327.68f;
-                wbchro[i].chrob = b / 327.68f;
-                wbchro[i].nn = i;
-*/
-
-
             }
-/*
-            std::sort(wbchro, wbchro + N_c + 1, wbchro[0]);
-            float ab5 = 0.f;
-            int n5 = 0;
-            float ab15 = 0.f;
-            int n15 = 0;
-            float ab30 = 0.f;
-            int n30 = 0;
-            float ab50 = 0.f;
-            int n50 = 0;
-            float ab70 = 0.f;
-            int n70 = 0;
-            float ab120 = 0.f;
-            int n120 = 0;
-
-            for (int i = 0; i < N_c; i++) {
-                if (wbchro[i].chroab < 5.f) {
-                    ab5 += (wbchro[i].chroa + wbchro[i].chrob);
-                    n5++;
-                } else if (wbchro[i].chroab < 15.f) {
-                    ab15 += (wbchro[i].chroa + wbchro[i].chrob);
-                    n15++;
-                } else if (wbchro[i].chroab < 30.f) {
-                    ab30 += (wbchro[i].chroa + wbchro[i].chrob);
-                    n30++;
-                } else if (wbchro[i].chroab < 50.f) {
-                    ab50 += (wbchro[i].chroa + wbchro[i].chrob);
-                    n50++;
-                } else if (wbchro[i].chroab < 70.f) {
-                    ab70 += (wbchro[i].chroa + wbchro[i].chrob);
-                    n70++;
-                } else if (wbchro[i].chroab < 120.f) {
-                    ab120 += (wbchro[i].chroa + wbchro[i].chrob);
-                    n120++;
-                }
-
-                printf("N=%i nn=%i chr=%f cha=%f chb=%f\n", i, wbchro[i].nn, wbchro[i].chroab, wbchro[i].chroa, wbchro[i].chrob);
-            }
-
-            printf("ab5=%f n5=%i\n", ab5 / n5, n5);
-            printf("ab15=%f n15=%i\n", ab15 / n15, n15);
-            printf("ab30=%f n30=%i\n", ab30 / n30, n30);
-            printf("ab50=%f n50=%i\n", ab50 / n50, n50);
-            printf("ab70=%f n70=%i\n", ab70 / n70, n70);
-            printf("ab120=%f n120=%i\n", ab120 / n120, n120);
-            aa /= N_c;
-            bb /= N_c;
-            printf("aa=%f bb=%f\n", aa, bb);
-            //very low 15 --, 16 -+, 17 + -, 18 +-, 20 ++, 22 -+, 73 ++, 98 ++, 99 -+, 101 -+, 129 ++, 130 -+, 131 --,
-            //low 8 +-, 9 --, 10 --, 12 --, 19 -+, 21 -+, 24 -+, 25 ++, 27 ++, 30 ++, 33++, 34 ++, 36 ++, 37++,38 +-,
-            */
         }
-    }
-
-    if (!separated) {
-       // std::string wbcat02Method = wbpar.wbcat02Method;
-        std::string wbcat02Method = "none";
-
+    } else {
         for (int tt = 0; tt < N_t; tt++) {
-            tempw = Txyz[tt].Tem;
+            const double tempw = Txyz[tt].Tem;
 
             if (tempw <= INITIALBLACKBODY) {
-
                 for (int i = 0; i < N_c; i++) {
                     spectrum_to_color_xyz_blackbody(spec_colorforxcyc[i], tempw, Refxyz[i].Xref, Refxyz[i].Yref, Refxyz[i].Zref);
                 }
-
             } else {
-                double m11, m22, x_DD, y_DD, interm2;
+                double x_DD;
 
                 if (tempw <= 7000) {
                     x_DD = -4.6070e9 / (tempw * tempw * tempw) + 2.9678e6 / (tempw * tempw) + 0.09911e3 / tempw + 0.244063;
@@ -3787,80 +3821,22 @@ void ColorTemp::tempxy(bool separated, int &repref, float **Tx, float **Ty, floa
                     x_DD = -2.0064e9 / (tempw * tempw * tempw) + 1.9018e6 / (tempw * tempw) + 0.24748e3 / tempw + 0.237040;
                 }
 
-                y_DD = -3.0 * x_DD * x_DD + 2.87 * x_DD - 0.275;
+                const double y_DD = -3.0 * x_DD * x_DD + 2.87 * x_DD - 0.275;
                 //calculate D -daylight in function of s0, s1, s2 and temp ==> x_D y_D
                 //S(lamda)=So(lambda)+m1*s1(lambda)+m2*s2(lambda)
-                interm2 = (0.0241 + 0.2562 * x_DD - 0.734 * y_DD);
-                m11 = (-1.3515 - 1.7703 * x_DD + 5.9114 * y_DD) / interm2;
-                m22 = (0.03 - 31.4424 * x_DD + 30.0717 * y_DD) / interm2;
+                const double interm2 = (0.0241 + 0.2562 * x_DD - 0.734 * y_DD);
+                const double m11 = (-1.3515 - 1.7703 * x_DD + 5.9114 * y_DD) / interm2;
+                const double m22 = (0.03 - 31.4424 * x_DD + 30.0717 * y_DD) / interm2;
 
                 for (int i = 0; i < N_c; i++) {
                     spectrum_to_color_xyz_daylight(spec_colorforxcyc[i], m11, m22, Refxyz[i].Xref, Refxyz[i].Yref, Refxyz[i].Zref);
                 }
             }
 
-//CAT02
-
-            float CAM02BB00 = 1.0, CAM02BB01 = 1.0, CAM02BB02 = 1.0, CAM02BB10 = 1.0, CAM02BB11 = 1.0, CAM02BB12 = 1.0, CAM02BB20 = 1.0, CAM02BB21 = 1.0, CAM02BB22 = 1.0; //for CIECAT02
-            float Xwb = Txyz[tt].XX;
-            float Ywb = 1.;
-            float Zwb = Txyz[tt].ZZ;
-
-            if (wbcat02Method == "icam") {//not used
-                icieCAT02float(Xwb, Ywb, Zwb, CAM02BB00, CAM02BB01, CAM02BB02, CAM02BB10, CAM02BB11, CAM02BB12, CAM02BB20, CAM02BB21, CAM02BB22, 1.0);
-            }
-
-            if (wbcat02Method == "cam") {
-
-                cieCAT02float(Xwb, Ywb, Zwb, CAM02BB00, CAM02BB01, CAM02BB02, CAM02BB10, CAM02BB11, CAM02BB12, CAM02BB20, CAM02BB21, CAM02BB22, 1.0);
-            }
-
-            if (wbcat02Method == "none") {
-
-                for (int i = 0; i < N_c; i++) {
-                    Refxyzcat02[i].Xrefcat = CAM02BB00 * Refxyz[i].Xref + CAM02BB01 * Refxyz[i].Yref + CAM02BB02 * Refxyz[i].Zref ;
-                    Refxyzcat02[i].Yrefcat = CAM02BB10 * Refxyz[i].Xref + CAM02BB11 * Refxyz[i].Yref + CAM02BB12 * Refxyz[i].Zref ;
-                    Refxyzcat02[i].Zrefcat = CAM02BB20 * Refxyz[i].Xref + CAM02BB21 * Refxyz[i].Yref + CAM02BB22 * Refxyz[i].Zref;
-                }
-            }
-
-//end CAT02
-
             for (int i = 0; i < N_c; i++) {
-                /*    float X = 65535.f * Refxyzcat02[i].Xrefcat;
-                    float Y = 65535.f * Refxyzcat02[i].Yrefcat;
-                    float Z = 65535.f * Refxyzcat02[i].Zrefcat;
-                    float L, a, b;
-                    Color::XYZ2Lab(X, Y, Z, L, a, b);
-
-                    double som = (Refxyzcat02[i].Xrefcat + Refxyzcat02[i].Yrefcat +  Refxyzcat02[i].Zrefcat);
-                    L /= 327.68f;
-                    a /= 327.68f;
-                    b /= 327.68f;
-                    Ta[i][tt] = a;
-                    Tb[i][tt] = b;
-                    TL[i][tt] = L;
-                    TX[i][tt] = X;
-                    TY[i][tt] = Y;
-                    TZ[i][tt] = Z;
-                    */
-                //som = 1.;
-//                    Tx[i][tt] = (float) Refxyz[i].Xref;
-//                    Ty[i][tt] = (float) Refxyz[i].Yref;
-//                    Tz[i][tt] = (float) Refxyz[i].Zref;
-
-//                if (wbpar.wbcat02Method == "none") {
-                if (wbcat02Method == "none") {
-
-                    Tx[i][tt] = (float) Refxyz[i].Xref;
-                    Ty[i][tt] = (float) Refxyz[i].Yref;
-                    Tz[i][tt] = (float) Refxyz[i].Zref;
-                } else {
-                    Tx[i][tt] = (float) Refxyzcat02[i].Xrefcat;
-                    Ty[i][tt] = (float) Refxyzcat02[i].Yrefcat;
-                    Tz[i][tt] = (float) Refxyzcat02[i].Zrefcat;
-                }
-
+                Tx[i][tt] = Refxyz[i].Xref;
+                Ty[i][tt] = Refxyz[i].Yref;
+                Tz[i][tt] = Refxyz[i].Zref;
             }
         }
     }
