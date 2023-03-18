@@ -23,6 +23,7 @@
 #include <string>
 #include <utility>
 #include <vector>
+#include <iostream>
 
 #include <fcntl.h>
 #include <glib/gstdio.h>
@@ -39,7 +40,7 @@
 #include "color.h"
 #include "iccjpeg.h"
 #include "imagedata.h"
-#include "imageio.h"
+#include "imageio"
 #include "jpeg.h"
 #include "procparams.h"
 #include "rt_math.h"
