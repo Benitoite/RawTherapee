@@ -155,8 +155,9 @@ fi
 
 # In: OSX_CONTINUOUS:BOOL=ON
 # Out: ON
-OSX_CONTINUOUS="$(cmake .. -L -N | grep OSX_CONTINUOUS)"; NIGHTLY="${OSX_CONTINUOUS#*=}" && CONTINUOUS="${OSX_CONTINUOUS#*=}"
+OSX_CONTINUOUS="$(cmake .. -L -N | grep OSX_CONTINUOUS)"; CONTINUOUS="${OSX_CONTINUOUS#*=}"
 if [[ -n $CONTINUOUS ]]; then
+    NIGHTLY="${OSX_CONTINUOUS#*=}"
     echo "Continuous/generically-named zip is ON."
 fi
 
@@ -319,7 +320,7 @@ if [[ -n $UNIVERSAL_URL ]]; then
     curl -L ${UNIVERSAL_URL} -o univ.zip
     msg "Extracting app."
     unzip univ.zip -d univapp
-    hdiutil attach -mountpoint ./RawTherapeeuniv univapp/*dmg
+    hdiutil attach -mountpoint ./RawTherapeeuniv univapp/*folder/*dmg
     if [[ $arch = "arm64" ]]; then
         cp -R RawTherapee.app RawTherapee-arm64.app
         minimum_arm64_version=$(f=$(cat RawTherapee-arm64.app/Contents/Resources/AboutThisBuild.txt | grep mmacosx-version); echo "${f#*min=}" | cut -d ' ' -f1)
@@ -360,9 +361,13 @@ fi
 if [[ -n $CODESIGNID ]]; then
     msg "Codesigning Application."
     iconv -f UTF-8 -t ASCII "${PROJECT_SOURCE_DATA_DIR}"/rt.entitlements > "${CMAKE_BUILD_TYPE}"/rt.entitlements
-#    mv "${EXECUTABLE}"-cli "${LIB}"
-    codesign --force --deep --timestamp --strict -v -s "${CODESIGNID}" -i com.rawtherapee.RawTherapee-cli "${APP}"/Contents/MacOS/rawtherapee-cli
-    codesign --force --deep --timestamp --strict -v -s "${CODESIGNID}" -i com.rawtherapee.RawTherapee -o runtime --entitlements "${CMAKE_BUILD_TYPE}"/rt.entitlements "${APP}"
+    for frame in ${APP}/Contents/Frameworks/* ; do
+        echo $frame
+        codesign --force --timestamp --strict -v -s "${CODESIGNID}" -i com.rawtherapee.RawTherapee -o runtime --entitlements "${CMAKE_BUILD_TYPE}"/rt.entitlements $frame
+    done
+    codesign --force --timestamp --strict -v -s "${CODESIGNID}" -i com.rawtherapee.RawTherapee-cli -o runtime --entitlements "${CMAKE_BUILD_TYPE}"/rt.entitlements "${APP}"/Contents/MacOS/rawtherapee-cli
+    codesign --force --timestamp --strict -v -s "${CODESIGNID}" -i com.rawtherapee.RawTherapee -o runtime --entitlements "${CMAKE_BUILD_TYPE}"/rt.entitlements "${APP}"/Contents/MacOS/rawtherapee
+    codesign --force --timestamp --strict -v -s "${CODESIGNID}" -i com.rawtherapee.RawTherapee -o runtime --entitlements "${CMAKE_BUILD_TYPE}"/rt.entitlements "${APP}"
     spctl -a -vvvv "${APP}"
 fi
 
@@ -436,7 +441,7 @@ function CreateDmg {
     # Sign disk image
     if [[ -n $CODESIGNID ]]; then
         msg "Signing disk image"
-        codesign --deep --force -v -s "${CODESIGNID}" --timestamp "${dmg_name}.dmg"
+        codesign --force -v -s "${CODESIGNID}" --timestamp "${dmg_name}.dmg"
     fi
     
     # Notarize the dmg
