@@ -361,6 +361,7 @@ fi
 if [[ -n $CODESIGNID ]]; then
     msg "Codesigning Application."
     iconv -f UTF-8 -t ASCII "${PROJECT_SOURCE_DATA_DIR}"/rt.entitlements > "${CMAKE_BUILD_TYPE}"/rt.entitlements
+    plutil -convert xml1 "${CMAKE_BUILD_TYPE}"/rt.entitlements
     for frame in ${APP}/Contents/Frameworks/* ; do
         echo $frame
         codesign --force --timestamp --strict -v -s "${CODESIGNID}" -i com.rawtherapee.RawTherapee -o runtime --entitlements "${CMAKE_BUILD_TYPE}"/rt.entitlements $frame
