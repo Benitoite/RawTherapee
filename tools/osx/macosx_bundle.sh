@@ -371,6 +371,18 @@ if [[ -n $CODESIGNID ]]; then
         echo $frame
         codesign --preserve-metadata=identifier --digest-algorithm=sha1,sha256 --force --timestamp --strict -v -s "${CODESIGNID}" -i com.rawtherapee.RawTherapee -o runtime --entitlements "${CMAKE_BUILD_TYPE}"/rt.entitlements $frame
     done
+    for resource in ${APP}/Contents/Resources/* ; do
+        echo $resource
+        if [ ! -d $resource ]
+            codesign --preserve-metadata=identifier --digest-algorithm=sha1,sha256 --force --timestamp --strict -v -s "${CODESIGNID}" -i com.rawtherapee.RawTherapee -o runtime --entitlements "${CMAKE_BUILD_TYPE}"/rt.entitlements $resource
+        else
+            if [ ! -d $subresource ]
+                for subresource in ${APP}/Contents/Resources/$resource/* ; do
+                    codesign --preserve-metadata=identifier --digest-algorithm=sha1,sha256 --force --timestamp --strict -v -s "${CODESIGNID}" -i com.rawtherapee.RawTherapee -o runtime --entitlements "${CMAKE_BUILD_TYPE}"/rt.entitlements $subresource
+                done
+            fi
+        fi    
+    done
     codesign --preserve-metadata=identifier --digest-algorithm=sha1,sha256 --force --timestamp --strict -v -s "${CODESIGNID}" -i com.rawtherapee.RawTherapee -o runtime --entitlements "${CMAKE_BUILD_TYPE}"/rt.entitlements "${APP}"/Contents/MacOS/rawtherapee-cli
     codesign --preserve-metadata=identifier --digest-algorithm=sha1,sha256 --force --timestamp --strict -v -s "${CODESIGNID}" -i com.rawtherapee.RawTherapee -o runtime --entitlements "${CMAKE_BUILD_TYPE}"/rt.entitlements "${APP}"/Contents/MacOS/rawtherapee
     codesign --preserve-metadata=identifier --digest-algorithm=sha1,sha256 --force --timestamp --strict -v -s "${CODESIGNID}" -i com.rawtherapee.RawTherapee -o runtime --entitlements "${CMAKE_BUILD_TYPE}"/rt.entitlements "${APP}"
