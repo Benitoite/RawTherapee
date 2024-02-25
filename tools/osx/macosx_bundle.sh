@@ -375,7 +375,7 @@ if [[ -n $CODESIGNID ]]; then
         echo $resource
         if [ ! -d $resource ]
             codesign --preserve-metadata=identifier --digest-algorithm=sha1,sha256 --force --timestamp --strict -v -s "${CODESIGNID}" -i com.rawtherapee.RawTherapee -o runtime --entitlements "${CMAKE_BUILD_TYPE}"/rt.entitlements $resource
-        elif [ ! -d $subresource ]
+        else [ ! -d $subresource ]
             for subresource in ${APP}/Contents/Resources/$resource/* ; do
                 codesign --preserve-metadata=identifier --digest-algorithm=sha1,sha256 --force --timestamp --strict -v -s "${CODESIGNID}" -i com.rawtherapee.RawTherapee -o runtime --entitlements "${CMAKE_BUILD_TYPE}"/rt.entitlements $subresource
             done
