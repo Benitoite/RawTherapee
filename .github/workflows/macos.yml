@@ -215,7 +215,7 @@ jobs:
           brew install smokris/getwindowid/getwindowid     
           cd build 
           sudo cp -R RawTherapee.app /Applications
-          osascript -e 'tell application "RawTherapee" to activate'
+          sudo osascript -e 'tell application "RawTherapee" to activate'
           tell application "System Events" to keystroke return
           sleep 5
           getwindowid Finder --list
