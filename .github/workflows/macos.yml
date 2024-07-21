@@ -212,11 +212,10 @@ jobs:
           zsh -c 'echo "Build completed in $(printf "%0.2f" $(($[$(date +%s)-$(cat build/stamp)]/$((60.))))) minutes"'
       - name: Test-launch the app
         run: |
-          sudo su
           cd build 
-          cp -R RawTherapee.app /Applications
-          open -a RawTherapee
-          sleep 5
+          sudo cp -R RawTherapee.app /Applications
+          sudo open -a RawTherapee
+          sleep 10
           osascript -e 'tell application "Finder"' -e 'get the name of every process whose visible is true' -e 'end tell'
           osascript -e 'tell application "RawTherapee" to if it is running then quit'
       - name: Publish artifacts
