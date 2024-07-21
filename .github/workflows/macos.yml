@@ -215,7 +215,7 @@ jobs:
           brew install smokris/getwindowid/getwindowid     
           cd build 
           sudo cp -R RawTherapee.app /Applications
-          sudo xattr -d com.apple.quarantine /Applications/RawTherapee.app
+          sudo xattr -r -d com.apple.quarantine /Applications/RawTherapee.app
           sudo open -a RawTherapee
           sleep 5
           getwindowid Finder --list
