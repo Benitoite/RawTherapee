@@ -216,7 +216,7 @@ jobs:
           cd build 
           sudo cp -R RawTherapee.app /Applications
           sudo xattr -r -d com.apple.quarantine /Applications/RawTherapee.app
-          sudo open -a RawTherapee
+          sudo osascript -e 'tell application "RawTherapee" to activate'
           sleep 5
           getwindowid Finder --list
           getwindowid RawTherapee --list
