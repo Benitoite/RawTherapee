@@ -212,18 +212,10 @@ jobs:
           date -u
           zsh -c 'echo "Build completed in $(printf "%0.2f" $(($[$(date +%s)-$(cat build/stamp)]/$((60.))))) minutes"'
       - name: Test-launch the app
-        run: |
-          brew install smokris/getwindowid/getwindowid     
-          cd build 
-          sudo cp -R RawTherapee.app /Applications
-          sudo xattr -r -d com.apple.quarantine /Applications/RawTherapee.app
+        run: |    
+          sudo cp -R build/RawTherapee.app /Applications
           XDG_CONFIG_DIRS=/Applications/RawTherapee.app/Contents/Resources/share/gtk-3.0 XDG_CONFIG_HOME=/Applications/RawTherapee.app/Contents/Resources/share XDG_DATA_DIRS=/Applications/RawTherapee.app/Contents/Resources/share/gtk-3.0 GTK_PATH=/Applications/RawTherapee.app/Contents/Resources/share/gtk-3.0 GTK_IM_MODULE_FILE=/Applications/RawTherapee.app/Contents/Resources/etc/gtk-3.0/gtk.immodules XDG_DATA_HOME=/Applications/RawTherapee.app/Contents/Resources/share GSETTINGS_SCHEMA_DIR=/Applications/RawTherapee.app/Contents/Resources/share/glib-2.0/schemas GDK_PIXBUF_MODULE_FILE=/Applications/RawTherapee.app/Contents/Resources/etc/gtk-3.0/gdk-pixbuf.loaders GDK_PIXBUF_MODULEDIR=/Applications/RawTherapee.app/Contents/Frameworks LIBDIR=/Applications/RawTherapee.app/Contents/Frameworks DATADIR=/Applications/RawTherapee.app/Contents/Resources GDK_RENDERING=similar GTK_OVERLAY_SCROLLING=0 /Applications/RawTherapee.app/Contents/MacOS/rawtherapee
-          sudo osascript -e 'tell application "RawTherapee" to activate'
-          sudo osascript -e ‘tell application "System Events”' -e 'if (exists process "SecurityAgent") then' -e 'tell process "SecurityAgent”' -e 'activate' -e 'set frontmost to true' -e 'end tell' -e 'tell window 1 of process "SecurityAgent”' -e 'click button "Always Allow”' -e 'end tell' -e 'end if' -e 'end tell'
           sleep 5
-          getwindowid Finder --list
-          getwindowid RawTherapee --list
-          screencapture ~/Desktop/screenshot.png
           osascript -e 'tell application "Finder"' -e 'get the name of every process whose visible is true' -e 'end tell'
           osascript -e 'tell application "RawTherapee" to if it is running then quit'
       - name: Publish artifacts
