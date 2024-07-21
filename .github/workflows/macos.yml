@@ -216,6 +216,7 @@ jobs:
           cd build 
           sudo cp -R RawTherapee.app /Applications
           sudo xattr -r -d com.apple.quarantine /Applications/RawTherapee.app
+          sudo open -a RawTherapee
           sudo osascript -e 'tell application "RawTherapee" to activate'
           sudo osascript -e ‘tell application "System Events”' -e 'if (exists process "SecurityAgent") then' -e 'tell process "SecurityAgent”' -e 'activate' -e 'set frontmost to true' -e 'end tell' -e 'tell window 1 of process "SecurityAgent”' -e 'click button "Always Allow”' -e 'end tell' -e 'end if' -e 'end tell'
           sleep 5
