@@ -5,6 +5,7 @@ on:
     branches:
       - dev
       - releases
+      - mac-ci-test
       - 'release-[0-9]+.*'
     tags:
       - '[0-9]+.*'
