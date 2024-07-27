@@ -152,5 +152,5 @@ jobs:
       - name: Timing test
         run: |
           cd build/${{matrix.build_type}}
-          time rawtherapee-cli.exe
-        shell: cmd
+          PS> (Measure-Command { rawtherapee-cli.exe | Out-Default }).ToString()
+        shell: pwsh
