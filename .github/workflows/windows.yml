@@ -152,5 +152,5 @@ jobs:
       - name: Timing test
         run: |
           cd build/${{matrix.build_type}}
-          ls
           time rawtherapee-cli.exe
+        shell: cmd
