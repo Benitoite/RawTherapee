@@ -43,5 +43,8 @@ set(PROC_TARGET_9_FLAGS "-march=amdfam10" CACHE STRING "Processor-9 flags")
 set(PROC_TARGET_10_LABEL sandybridge-ivybridge CACHE STRING "Processor set-10 label")
 set(PROC_TARGET_10_FLAGS "-march=sandybridge -mtune=ivybridge" CACHE STRING "Processors set-10 flags")
 
+set(PROC_TARGET_11_LABEL skylake-raptorlake CACHE STRING "Processor set-11 label")
+set(PROC_TARGET_11_FLAGS "-march=skylake -mtune=raptorlake" CACHE STRING "Processors set-11 flags")
+
 #set(PROC_TARGET__LABEL procLabel CACHE STRING "Processor- label")
 #set(PROC_TARGET__FLAGS "procFlags" CACHE STRING "Processor- flags")
