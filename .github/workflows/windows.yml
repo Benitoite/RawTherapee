@@ -3,6 +3,7 @@ on:
   push:
     branches:
       - dev
+      - fastwin
       - releases
       - 'release-[0-9]+.*'
     tags:
@@ -10,6 +11,7 @@ on:
   pull_request:
     branches:
       - dev
+      - fastwin
       - releases
       - 'release-[0-9]+.*'
   workflow_dispatch:
@@ -226,7 +228,7 @@ jobs:
 
       - name: Publish artifacts
         uses: softprops/action-gh-release@v2
-        if: ${{github.ref_type == 'tag' || github.ref_name == 'dev'}}
+        if: ${{github.ref_type == 'tag' || github.ref_name == 'dev' || github.ref_name == 'fastwin'}}
         with:
           tag_name: nightly-github-actions
           files: |
