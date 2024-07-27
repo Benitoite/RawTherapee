@@ -75,7 +75,7 @@ jobs:
             -DCMAKE_BUILD_TYPE='${{matrix.build_type}}' \
             -DCACHE_NAME_SUFFIX="$CACHE_SUFFIX" \
             -DPROC_TARGET_NUMBER="11" \
-            -DWITH_LTO="ON" \
+            -DWITH_LTO="OFF" \
             -DLENSFUNDBDIR="share/lensfun" \
             -S . -B build
 
