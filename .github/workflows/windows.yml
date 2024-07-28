@@ -156,9 +156,9 @@ jobs:
           ls .\raw-test
           $t=0
           $n=5
-          $x = 0; for ($i = 0; $i -lt $n; $i++) { $x+=(Measure-Command { .\rawtherapee-cli.exe | grep TotalMilliseconds).Split(' ')[2] } }; $t+=($x/$n)
-          $x = 0; for ($i = 0; $i -lt $n; $i++) { $x+=(Measure-Command { .\rawtherapee-cli.exe -j -s -Y -c .\raw-test\typewriter.CR2 | grep TotalMilliseconds).Split(' ')[2] } }; $t+=($x/$n)
-          $x = 0; for ($i = 0; $i -lt $n; $i++) { $x+=(Measure-Command { .\rawtherapee-cli.exe -j -s -Y -c .\raw-test\naturalbridges.CR2 | grep TotalMilliseconds).Split(' ')[2] } }; $t+=($x/$n)
-          $x = 0; for ($i = 0; $i -lt $n; $i++) { $x+=(Measure-Command { .\rawtherapee-cli.exe -j -s -Y -c .\raw-test\beachcabin.ARW | grep TotalMilliseconds).Split(' ')[2] } }; $t+=($x/$n)
+          $x = 0; for ($i = 0; $i -lt $n; $i++) { $x+=(Measure-Command { .\rawtherapee-cli.exe } | grep TotalMilliseconds).Split(' ')[2] }; $t+=($x/$n)
+          $x = 0; for ($i = 0; $i -lt $n; $i++) { $x+=(Measure-Command { .\rawtherapee-cli.exe -j -s -Y -c .\raw-test\typewriter.CR2 } | grep TotalMilliseconds).Split(' ')[2] }; $t+=($x/$n)
+          $x = 0; for ($i = 0; $i -lt $n; $i++) { $x+=(Measure-Command { .\rawtherapee-cli.exe -j -s -Y -c .\raw-test\naturalbridges.CR2 } | grep TotalMilliseconds).Split(' ')[2] }; $t+=($x/$n)
+          $x = 0; for ($i = 0; $i -lt $n; $i++) { $x+=(Measure-Command { .\rawtherapee-cli.exe -j -s -Y -c .\raw-test\beachcabin.ARW } | grep TotalMilliseconds).Split(' ')[2] }; $t+=($x/$n)
           echo $t
         shell: pwsh
