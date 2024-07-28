@@ -87,7 +87,7 @@ jobs:
       - name: Build RawTherapee
         run: |
           echo "Running CMake install."
-          cmake --build build --target install
+          cmake --build build --target install -j 4 
 
       - name: Include Lensfun
         run: |
@@ -154,7 +154,9 @@ jobs:
           cd build/${{matrix.build_type}}
           git clone https://github.com/Benitoite/raw-test .\raw-test
           ls .\raw-test
-          $n=3
-          for ($i = 0; $i -lt $n; $i++) { (Measure-Command { .\rawtherapee-cli.exe | Out-Default }).ToString() }
-          for ($i = 0; $i -lt $n; $i++) { (Measure-Command { .\rawtherapee-cli.exe -j -s -Y -c .\raw-test\typewriter.CR2 | Out-Default }).ToString() }
+          $n=5
+          for ($i = 0; $i -lt $n; $i++) { (Measure-Command { .\rawtherapee-cli.exe -w | Out-Default }).ToString() }
+          for ($i = 0; $i -lt $n; $i++) { (Measure-Command { .\rawtherapee-cli.exe -w -j -s -Y -c .\raw-test\typewriter.CR2 | Out-Default }).ToString() }
+          for ($i = 0; $i -lt $n; $i++) { (Measure-Command { .\rawtherapee-cli.exe -w -j -s -Y -c .\raw-test\naturalbridges.CR2 | Out-Default }).ToString() }
+          for ($i = 0; $i -lt $n; $i++) { (Measure-Command { .\rawtherapee-cli.exe -w -j -s -Y -c .\raw-test\beachcabin.ARW | Out-Default }).ToString() }
         shell: pwsh
