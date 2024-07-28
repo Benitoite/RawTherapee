@@ -155,5 +155,5 @@ jobs:
           git clone https://github.com/Benitoite/raw-test .\raw-test
           ls .\raw-test
           (Measure-Command { .\rawtherapee-cli.exe | Out-Default }).ToString()
-          (Measure-Command { .\rawtherapee-cli.exe -s .\raw-test\typewirter.CR2 | Out-Default }).ToString()
+          (Measure-Command { .\rawtherapee-cli.exe -j -s -c .\raw-test\typewirter.CR2 | Out-Default }).ToString()
         shell: pwsh
