@@ -76,7 +76,7 @@ jobs:
             -G "Ninja" \
             -DCMAKE_BUILD_TYPE='${{matrix.build_type}}' \
             -DCACHE_NAME_SUFFIX="$CACHE_SUFFIX" \
-            -DPROC_TARGET_NUMBER="10" \
+            -DPROC_TARGET_NUMBER="1" \
             -DWITH_LTO="OFF" \
             -DLENSFUNDBDIR="share/lensfun" \
             -S . -B build
