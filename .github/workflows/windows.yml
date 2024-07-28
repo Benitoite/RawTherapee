@@ -3,7 +3,7 @@ on:
   push:
     branches:
       - dev
-      - genericwin
+      - midwin
       - releases
       - 'release-[0-9]+.*'
     tags:
@@ -11,7 +11,7 @@ on:
   pull_request:
     branches:
       - dev
-      - genericwin
+      - midwin
       - releases
       - 'release-[0-9]+.*'
   workflow_dispatch:
@@ -150,7 +150,7 @@ jobs:
           echo -e '[Settings]\ngtk-button-images=1' > "$BUILD_DIR/share/gtk-3.0/settings.ini"
 
       - name: Create installer
-        if: ${{matrix.build_type == 'release' && (github.ref_type == 'tag' || github.ref_name == 'dev' || github.ref_name == 'genericwin')}}
+        if: ${{matrix.build_type == 'release' && (github.ref_type == 'tag' || github.ref_name == 'dev' || github.ref_name == 'midwin')}}
         working-directory: build/${{matrix.build_type}}
         shell: pwsh
         run: |
@@ -200,14 +200,14 @@ jobs:
           path: build\${{env.ARTIFACT_NAME}}
 
       - name: Upload installer
-        if: ${{matrix.build_type == 'release' && (github.ref_type == 'tag' || github.ref_name == 'dev' || github.ref_name == 'genericwin')}}
+        if: ${{matrix.build_type == 'release' && (github.ref_type == 'tag' || github.ref_name == 'dev' || github.ref_name == 'midwin')}}
         uses: actions/upload-artifact@v4
         with:
           name: ${{env.ARTIFACT_NAME}}.exe
           path: build\${{env.ARTIFACT_NAME}}.exe
 
       - name: Prepare for publishing
-        if: ${{github.ref_type == 'tag' || github.ref_name == 'dev' || github.ref_name == 'genericwin'}}
+        if: ${{github.ref_type == 'tag' || github.ref_name == 'dev' || github.ref_name == 'midwin'}}
         run: |
           echo "Setting publish name."
           PUBLISH_NAME="RawTherapee_${REF_NAME_FILTERED}_win64_${{matrix.build_type}}"
@@ -228,7 +228,7 @@ jobs:
 
       - name: Publish artifacts
         uses: softprops/action-gh-release@v2
-        if: ${{github.ref_type == 'tag' || github.ref_name == 'dev' || github.ref_name == 'genericwin'}}
+        if: ${{github.ref_type == 'tag' || github.ref_name == 'dev' || github.ref_name == 'midwin'}}
         with:
           tag_name: nightly-github-actions
           files: |
@@ -237,7 +237,7 @@ jobs:
 
       - name: Publish installer
         uses: softprops/action-gh-release@v2
-        if: ${{matrix.build_type == 'release' && (github.ref_type == 'tag' || github.ref_name == 'dev' || github.ref_name == 'genericwin')}}
+        if: ${{matrix.build_type == 'release' && (github.ref_type == 'tag' || github.ref_name == 'dev' || github.ref_name == 'midwin')}}
         with:
           tag_name: nightly-github-actions
           files: build/${{env.PUBLISH_NAME}}.exe
