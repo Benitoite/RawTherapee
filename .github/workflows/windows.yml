@@ -3,7 +3,7 @@ on:
   push:
     branches:
       - dev
-      - wintimergeneric
+      - wintimermid
       - releases
       - 'release-[0-9]+.*'
     tags:
@@ -11,7 +11,7 @@ on:
   pull_request:
     branches:
       - dev
-      - wintimergeneric
+      - wintimermid
       - releases
       - 'release-[0-9]+.*'
   workflow_dispatch:
@@ -76,7 +76,7 @@ jobs:
             -G "Ninja" \
             -DCMAKE_BUILD_TYPE='${{matrix.build_type}}' \
             -DCACHE_NAME_SUFFIX="$CACHE_SUFFIX" \
-            -DPROC_TARGET_NUMBER="1" \
+            -DPROC_TARGET_NUMBER="10" \
             -DWITH_LTO="OFF" \
             -DLENSFUNDBDIR="share/lensfun" \
             -S . -B build
