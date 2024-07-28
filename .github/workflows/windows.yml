@@ -155,7 +155,7 @@ jobs:
           git clone https://github.com/Benitoite/raw-test .\raw-test
           $processor = Get-ComputerInfo -Property CsProcessors
           $num = ($processor.CsProcessors | grep NumberOfLogicalProcessors).Split(' ')[2]
-          $mhz = ($processor.CsProcessors | grep MaxClockSpeed).Split(' ')[2]
+          $mhz = ($processor.CsProcessors | grep MaxClockSpeed).Split(' ')[-1]
           $proc = (cat .\AboutThisBuild.txt | grep Processor)
           echo "================================"
           echo "Available threads = $num  /  Max CPU speed = $mhz MHz  /  Processor = $proc"
