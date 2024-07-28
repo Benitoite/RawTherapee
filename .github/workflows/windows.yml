@@ -152,5 +152,8 @@ jobs:
       - name: Timing test
         run: |
           cd build/${{matrix.build_type}}
+          git clone https://github.com/Benitoite/raw-test .\raw-test
+          ls .\raw-test
           (Measure-Command { .\rawtherapee-cli.exe | Out-Default }).ToString()
+          (Measure-Command { .\rawtherapee-cli.exe -s .\raw-test\typewirter.CR2 | Out-Default }).ToString()
         shell: pwsh
