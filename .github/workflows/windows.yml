@@ -156,5 +156,5 @@ jobs:
           ls .\raw-test
           $n=3
           for ($i = 0; $i -lt $n; $i++) { (Measure-Command { .\rawtherapee-cli.exe | Out-Default }).ToString() }
-          for ($i = 0; $i -lt $n; $i++) { (Measure-Command { .\rawtherapee-cli.exe -j -s -c .\raw-test\typewriter.CR2 | Out-Default }).ToString() }
+          for ($i = 0; $i -lt $n; $i++) { (Measure-Command { .\rawtherapee-cli.exe -j -s -Y -c .\raw-test\typewriter.CR2 | Out-Default }).ToString() }
         shell: pwsh
