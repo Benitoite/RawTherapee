@@ -154,6 +154,7 @@ jobs:
           cd build/${{matrix.build_type}}
           git clone https://github.com/Benitoite/raw-test .\raw-test
           ls .\raw-test
-          (Measure-Command { .\rawtherapee-cli.exe | Out-Default }).ToString()
-          (Measure-Command { .\rawtherapee-cli.exe -j -s -c .\raw-test\typewirter.CR2 | Out-Default }).ToString()
+          $n=3
+          for ($i = 0; $i -lt $n; $i++) { (Measure-Command { .\rawtherapee-cli.exe | Out-Default }).ToString() }
+          for ($i = 0; $i -lt $n; $i++) { (Measure-Command { .\rawtherapee-cli.exe -j -s -c .\raw-test\typewriter.CR2 | Out-Default }).ToString() }
         shell: pwsh
