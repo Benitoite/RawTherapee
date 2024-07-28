@@ -151,6 +151,6 @@ jobs:
 
       - name: Timing test
         run: |
-          cd .\build\release
+          "cd .\build\release"
           git clone https://github.com/Benitoite/raw-test .\raw-test; $processor = Get-ComputerInfo -Property CsProcessors; $num = ($processor.CsProcessors | grep NumberOfLogicalProcessors).Split(' ')[2]; $name = ($processor.CsProcessors | grep Name).Split(':')[-1]; $mhz = ($processor.CsProcessors | grep Max).Split(':')[-1]; $proc = (cat .\AboutThisBuild.txt | grep Processor); echo "================================"; echo "Available threads = $num  /  CPU =$name  / $mhz MHz  /  Target = $proc"; for ($threads = 2; $threads -le $num; $threads *= 2) { $env:OMP_NUM_THREADS=$threads; $t = 0; $n = 5; $x = 0; for ($i = 0; $i -lt $n; $i++) { $x+=(Measure-Command { .\rawtherapee-cli.exe -j -s -Y -c .\raw-test\typewriter.CR2 } | grep TotalMilliseconds).Split(' ')[2] }; $t+=($x/$n); $x = 0; for ($i = 0; $i -lt $n; $i++) { $x+=(Measure-Command { .\rawtherapee-cli.exe -j -s -Y -c .\raw-test\naturalbridges.CR2 } | grep TotalMilliseconds).Split(' ')[2] }; $t+=($x/$n); $x = 0; for ($i = 0; $i -lt $n; $i++) { $x+=(Measure-Command { .\rawtherapee-cli.exe -j -s -Y -c .\raw-test\beachcabin.ARW } | grep TotalMilliseconds).Split(' ')[2] }; $t+=($x/$n); echo "$([int]$t) total milliseconds elapsed (average of $n runs) using OMP_NUM_THREADS = $threads" }; echo "================================"        shell: pwsh
 
