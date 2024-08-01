@@ -17,8 +17,9 @@ jobs:
           ls
           cd RawTherapee*
           ls
-          hdiutil attach -quiet -nobrowse -noverify -noautoopen *dmg
+          yes | hdiutil attach -quiet -nobrowse -noverify -noautoopen *dmg
           ls /Volumes
+          cd /Volumes/RawTherapee*
           cp -r RawTherapee.app /Applications
           open -a "RawTherapee"
           osascript -e 'tell application "Finder"' -e 'get the name of every process whose visible is true' -e 'end tell'
