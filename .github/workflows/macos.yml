@@ -208,7 +208,7 @@ jobs:
         run: |
           sudo cp -R /Users/runner/work/RawTherapee/RawTherapee/build/RawTherapee.app /Applications
           ls /Applications
-          XDG_CONFIG_DIRS=/Applications/RawTherapee.app/Contents/Resources/share/gtk-3.0 XDG_CONFIG_HOME=/Applications/RawTherapee.app/Contents/Resources/share XDG_DATA_DIRS=/Applications/RawTherapee.app/Contents/Resources/share/gtk-3.0 GTK_PATH=/Applications/RawTherapee.app/Contents/Resources/share/gtk-3.0 GTK_IM_MODULE_FILE=/Applications/RawTherapee.app/Contents/Resources/etc/gtk-3.0/gtk.immodules XDG_DATA_HOME=/Applications/RawTherapee.app/Contents/Resources/share GSETTINGS_SCHEMA_DIR=/Applications/RawTherapee.app/Contents/Resources/share/glib-2.0/schemas GDK_PIXBUF_MODULE_FILE=/Applications/RawTherapee.app/Contents/Resources/etc/gtk-3.0/gdk-pixbuf.loaders GDK_PIXBUF_MODULEDIR=/Applications/RawTherapee.app/Contents/Frameworks LIBDIR=/Applications/RawTherapee.app/Contents/Frameworks DATADIR=/Applications/RawTherapee.app/Contents/Resources GDK_RENDERING=similar GTK_OVERLAY_SCROLLING=0 /Applications/RawTherapee.app/Contents/MacOS/rawtherapee &
+          open -a /Applications/RawTherapee.app
           sleep 5
           osascript -e 'tell application "Finder"' -e 'get the name of every process whose visible is true' -e 'end tell'
           osascript -e 'tell application "RawTherapee" to if it is running then quit'
