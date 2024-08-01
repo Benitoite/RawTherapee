@@ -22,7 +22,7 @@ jobs:
           ls
           sudo cp -r RawTherapee.app /Applications
           ls /Applications
+          sudo spctl --master-disable
           open -a /Applications/RawTherapee.app
-          osascript -e 'click "Open Anyway"'
           osascript -e 'tell application "Finder"' -e 'get the name of every process whose visible is true' -e 'end tell'
           osascript -e 'tell application "RawTherapee" to if it is running then quit'
