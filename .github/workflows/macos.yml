@@ -5,28 +5,7 @@ on:
       - minitest
   pull_request:
   workflow_dispatch:
-
-jobs:
-  armtest:
-    runs-on: macos-14
-    steps:
-      - name: Test-launch the app
-        run: |
-          curl -L https://rawtherapee.com/shared/builds/mac/RawTherapee_macOS_13.3_Universal_5.10.zip -o rt.zip
-          unzip rt.zip
-          ls
-          cd RawTherapee*
-          ls
-          yes qy | hdiutil attach *dmg
-          ls /Volumes
-          cd /Volumes/RawTherapee*
-          ls
-          sudo cp -r RawTherapee.app /Applications
-          ls /Applications
-          open -a -W /Applications/RawTherapee.app
-          osascript -e 'tell application "Finder"' -e 'get the name of every process whose visible is true' -e 'end tell'
-          osascript -e 'tell application "RawTherapee" to if it is running then quit'
-
+  
   armtest2:
     runs-on: macos-14
     steps:
