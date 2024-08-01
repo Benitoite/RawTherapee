@@ -43,9 +43,6 @@ jobs:
           cp $PP_PATH ~/Library/MobileDevice/Provisioning\ Profiles
           
       - name: test app
-        env:
-          IDENT: ${{ env.IDENT }}
-          NOTARY: ${{ env.NOTARY }}
         run: |
           curl -L https://github.com/Benitoite/RawTherapee/releases/download/nightly-github-actions/RawTherapee_dev_macOS_arm64_Release.zip -o rt.zip
           unzip rt.zip
@@ -60,25 +57,25 @@ jobs:
           iconv -f UTF-8 -t ASCII 1ci.entitlements > ci.entitlements
           plutil -convert xml1 ci.entitlements
           for frame in /Applications/RawTherapee.app/Contents/Frameworks/* ; do
-              sudo codesign --preserve-metadata=identifier -o runtime --digest-algorithm=sha1,sha256 --strict --timestamp --force -v -s "$IDENT" -i com.rawtherapee.RawTherapee --entitlements ci.entitlements $frame
+              sudo codesign --preserve-metadata=identifier -o runtime --digest-algorithm=sha1,sha256 --strict --timestamp --force -v -s "${{ env.IDENT }}" -i com.rawtherapee.RawTherapee --entitlements ci.entitlements $frame
           done
           for resource in /Applications/RawTherapee.app/Contents/Resources/* ; do
               if [ ! -d $resource ]; then
-                  sudo codesign --preserve-metadata=identifier -o runtime --digest-algorithm=sha1,sha256 --strict --timestamp --force -v -s "$IDENT" -i com.rawtherapee.RawTherapee --entitlements ci.entitlements $resource
+                  sudo codesign --preserve-metadata=identifier -o runtime --digest-algorithm=sha1,sha256 --strict --timestamp --force -v -s "${{ env.IDENT }}" -i com.rawtherapee.RawTherapee --entitlements ci.entitlements $resource
               else
                   for subresource in /Applications/RawTherapee.app/Contents/Resources/$(basename $resource)/* ; do
                       if [ ! -d $subresource ]; then
-                          sudo codesign --preserve-metadata=identifier -o runtime --digest-algorithm=sha1,sha256 --strict --timestamp --force -v -s "$IDENT" -i com.rawtherapee.RawTherapee --entitlements ci.entitlements $subresource
+                          sudo codesign --preserve-metadata=identifier -o runtime --digest-algorithm=sha1,sha256 --strict --timestamp --force -v -s "${{ env.IDENT }}" -i com.rawtherapee.RawTherapee --entitlements ci.entitlements $subresource
                       fi
                   done
               fi
           done
-          sudo codesign --preserve-metadata=identifier -o runtime --digest-algorithm=sha1,sha256 --strict --timestamp --force -v -s "$IDENT" -i com.rawtherapee.RawTherapee --entitlements ci.entitlements /Applications/RawTherapee.app/Contents/MacOS/rawtherapee-cli
-          sudo codesign --preserve-metadata=identifier -o runtime --digest-algorithm=sha1,sha256 --strict --timestamp --force -v -s "$IDENT" -i com.rawtherapee.RawTherapee --entitlements ci.entitlements /Applications/RawTherapee.app/Contents/MacOS/rawtherapee
-          sudo codesign --preserve-metadata=identifier -o runtime --digest-algorithm=sha1,sha256 --strict --timestamp --force -v -s "$IDENT" -i com.rawtherapee.RawTherapee --entitlements ci.entitlements /Applications/RawTherapee.app
+          sudo codesign --preserve-metadata=identifier -o runtime --digest-algorithm=sha1,sha256 --strict --timestamp --force -v -s "${{ env.IDENT }}" -i com.rawtherapee.RawTherapee --entitlements ci.entitlements /Applications/RawTherapee.app/Contents/MacOS/rawtherapee-cli
+          sudo codesign --preserve-metadata=identifier -o runtime --digest-algorithm=sha1,sha256 --strict --timestamp --force -v -s "${{ env.IDENT }}" -i com.rawtherapee.RawTherapee --entitlements ci.entitlements /Applications/RawTherapee.app/Contents/MacOS/rawtherapee
+          sudo codesign --preserve-metadata=identifier -o runtime --digest-algorithm=sha1,sha256 --strict --timestamp --force -v -s "${{ env.IDENT }}" -i com.rawtherapee.RawTherapee --entitlements ci.entitlements /Applications/RawTherapee.app
           ditto -c -k --sequesterRsrc --keepParent /Applications/RawTherapee.app rtapp.zip
           echo "Uploading..."
-          sudo xcrun notarytool submit rtapp.zip "$NOTARY" --wait
+          sudo xcrun notarytool submit rtapp.zip "${{ env.NOTARY }}" --wait
           sudo xcrun stapler staple /Applications/RawTherapee.app
           open -a /Applications/RawTherapee.app
           sleep 5
