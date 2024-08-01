@@ -17,7 +17,7 @@ jobs:
           unzip rt.zip
           cd RawTherapee*
           open *.dmg
-          cd /Volumes/RawTherapee*
+          ls /Volumes
           cp -r RawTherapee.app /Applications
           hdiutil attach *dmg
           sleep 5
