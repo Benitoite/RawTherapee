@@ -17,11 +17,9 @@ jobs:
           cd RawTherapee*
           ls
           yes qy | hdiutil attach *dmg
-          ls /Volumes
           cd /Volumes/RawTherapee*
-          ls
           sudo cp -r RawTherapee.app /Applications
-          ls /Applications
+          cd
           # Codesign the app
           curl -L https://raw.githubusercontent.com/Benitoite/RawTherapee/minitest/tools/osx/ci.entitlements -o ci.entitlements
           sudo codesign --digest-algorithm=sha1,sha256 --force -deep --strict -v -s "-" -i com.rawtherapee.RawTherapee --entitlements "ci.entitlements" /Applications/RawTherapee.app
