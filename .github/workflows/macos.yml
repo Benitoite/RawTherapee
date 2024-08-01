@@ -1,6 +1,5 @@
 
 name: macOS Build
-  workflow_dispatch:
 
 jobs:
   build:
