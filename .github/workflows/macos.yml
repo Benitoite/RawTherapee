@@ -26,3 +26,24 @@ jobs:
           open /Applications/RawTherapee.app
           osascript -e 'tell application "Finder"' -e 'get the name of every process whose visible is true' -e 'end tell'
           osascript -e 'tell application "RawTherapee" to if it is running then quit'
+
+jobs:
+  armtest2:
+    runs-on: macos-14
+    steps:
+      - name: Test-launch the app 2
+        run: |
+          curl -L https://github.com/Benitoite/RawTherapee/releases/download/nightly-github-actions/RawTherapee_dev_macOS_arm64_Release.zip -o rt.zip
+          unzip rt.zip
+          ls
+          cd RawTherapee*
+          ls
+          yes qy | hdiutil attach *dmg
+          ls /Volumes
+          cd /Volumes/RawTherapee*
+          ls
+          sudo cp -r RawTherapee.app /Applications
+          ls /Applications
+          open /Applications/RawTherapee.app
+          osascript -e 'tell application "Finder"' -e 'get the name of every process whose visible is true' -e 'end tell'
+          osascript -e 'tell application "RawTherapee" to if it is running then quit'
