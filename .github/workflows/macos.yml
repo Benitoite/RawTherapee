@@ -1,9 +1,9 @@
 
 name: macOS Build
-  on:
-    push:
-      branches:
-        - minitest
+on:
+  push:
+    branches:
+      - dev
 jobs:
   build:
     runs-on: macos-14
