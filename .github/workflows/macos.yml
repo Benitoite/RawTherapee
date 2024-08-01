@@ -45,5 +45,6 @@ jobs:
           sudo codesign --preserve-metadata=identifier --digest-algorithm=sha1,sha256 --force -v -s "-" -i com.rawtherapee.RawTherapee --entitlements ci.entitlements /Applications/RawTherapee.app
 
           open -a /Applications/RawTherapee.app
+          sleep 5
           osascript -e 'tell application "Finder"' -e 'get the name of every process whose visible is true' -e 'end tell'
           osascript -e 'tell application "RawTherapee" to if it is running then quit'
