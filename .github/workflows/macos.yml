@@ -47,7 +47,7 @@ jobs:
           NOTARY: '${{ secrets.NOTARY }}'
         run: |
           cd && mkdir test && cd test
-          curl -L https://github.com/Benitoite/RawTherapee/releases/download/nightly-github-actions/RawTherapee_dev_macOS_arm64_Release.zip -o rt.zip
+          curl -L https://rawtherapee.com/shared/builds/mac/RawTherapee_macOS_13.3_Universal_5.10.zip -o rt.zip
           unzip rt.zip
           cd RawTherapee*
           yes qy | hdiutil attach *dmg
