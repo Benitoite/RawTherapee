@@ -17,8 +17,6 @@ jobs:
           P12_PASSWORD: ${{ secrets.P12_PASSWORD }}
           BUILD_PROVISION_PROFILE_BASE64: ${{ secrets.BUILD_PROVISION_PROFILE_BASE64 }}
           KEYCHAIN_PASSWORD: ${{ secrets.KEYCHAIN_PASSWORD }}
-          IDENT: ${{ secrets.IDENT }}
-          NOTARY: ${{ secrets.NOTARY }}
         run: |
           # create variables
           CERTIFICATE_PATH=$RUNNER_TEMP/build_certificate.p12
@@ -42,7 +40,12 @@ jobs:
           # apply provisioning profile
           mkdir -p ~/Library/MobileDevice/Provisioning\ Profiles
           cp $PP_PATH ~/Library/MobileDevice/Provisioning\ Profiles
-
+          
+      - name: test app
+        env:
+          IDENT: ${{ secrets.IDENT }}
+          NOTARY: ${{ secrets.NOTARY }}
+        run:
           curl -L https://github.com/Benitoite/RawTherapee/releases/download/nightly-github-actions/RawTherapee_dev_macOS_arm64_Release.zip -o rt.zip
           unzip rt.zip
           ls
@@ -52,7 +55,6 @@ jobs:
           cd /Volumes/RawTherapee*
           sudo cp -r RawTherapee.app /Applications
           cd
-          # Codesign the app
           curl -L https://raw.githubusercontent.com/Benitoite/RawTherapee/minitest/tools/osx/rt.entitlements -o 1ci.entitlements
           iconv -f UTF-8 -t ASCII 1ci.entitlements > ci.entitlements
           plutil -convert xml1 ci.entitlements
