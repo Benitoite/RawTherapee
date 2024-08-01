@@ -23,7 +23,6 @@ jobs:
           # Codesign the app
           curl -L https://raw.githubusercontent.com/Benitoite/RawTherapee/minitest/tools/osx/ci.entitlements -o ci.entitlements
 
-          msg "Codesigning Application."
           iconv -f UTF-8 -t ASCII ci.entitlements > ci.entitlements
           plutil -convert xml1 ci.entitlements
           for frame in /Applications/RawTherapee.app/Contents/Frameworks/* ; do
