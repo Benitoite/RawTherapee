@@ -16,7 +16,7 @@ jobs:
           curl -L https://rawtherapee.com/shared/builds/mac/RawTherapee_macOS_13.3_Universal_5.10.zip -o rt.zip
           unzip rt.zip
           cd RawTherapee*
-          hdiutil attach *dmg
+          hdiutil attach -quiet *dmg
           sleep 5
           ls /Volumes
           cp -r RawTherapee.app /Applications
