@@ -43,7 +43,7 @@ jobs:
           
       - name: test app
         env: 
-          IDENT: '"Developer ID Application: Richard Barber (5SJ86G6Q2R)"'
+          IDENT: 'Developer ID Application: Richard Barber (5SJ86G6Q2R)'
           NOTARY: ${{ secrets.NOTARY }}
         run: |
           cd && mkdir test && cd test
