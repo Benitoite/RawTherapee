@@ -23,7 +23,7 @@ jobs:
           ls
           sudo cp -r RawTherapee.app /Applications
           ls /Applications
-          open -a /Applications/RawTherapee.app
+          open -a -W /Applications/RawTherapee.app
           osascript -e 'tell application "Finder"' -e 'get the name of every process whose visible is true' -e 'end tell'
           osascript -e 'tell application "RawTherapee" to if it is running then quit'
 
@@ -43,6 +43,6 @@ jobs:
           ls
           sudo cp -r RawTherapee.app /Applications
           ls /Applications
-          sudo open -a /Applications/RawTherapee.app
+          open -a -W /Applications/RawTherapee.app
           osascript -e 'tell application "Finder"' -e 'get the name of every process whose visible is true' -e 'end tell'
           osascript -e 'tell application "RawTherapee" to if it is running then quit'
