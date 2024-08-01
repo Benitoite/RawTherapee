@@ -42,6 +42,7 @@ jobs:
           cp $PP_PATH ~/Library/MobileDevice/Provisioning\ Profiles
 
       - name: Test-launch the app 2
+        uses: actions/checkout@v4
         env:
           IDENT: ${{ secrets.IDENT }}
           NOTARY: ${{ secrets.NOTARY }}
