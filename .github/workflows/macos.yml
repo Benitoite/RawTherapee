@@ -21,7 +21,7 @@ jobs:
           sudo cp -r RawTherapee.app /Applications
           cd
           # Codesign the app
-          curl -L https://raw.githubusercontent.com/Benitoite/RawTherapee/minitest/tools/osx/ci.entitlements -o ci.entitlementss
+          curl -L https://raw.githubusercontent.com/Benitoite/RawTherapee/minitest/tools/osx/ci.entitlements -o ci.entitlements
           for frame in /Applications/RawTherapee.app/Contents/Frameworks/* ; do
               echo $frame
               codesign --preserve-metadata=identifier --digest-algorithm=sha1,sha256 --force --strict -v -s "-" -i com.rawtherapee.RawTherapee --entitlements ci.entitlements $frame
