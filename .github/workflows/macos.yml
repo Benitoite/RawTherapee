@@ -43,8 +43,8 @@ jobs:
           
       - name: test app
         env: 
-          IDENT: ${{ secrets.IDENT }}
-          NOTARY: ${{ secrets.NOTARY }}
+          IDENT: '${{ secrets.IDENT }}'
+          NOTARY: '${{ secrets.NOTARY }}'
         run: |
           cd && mkdir test && cd test
           curl -L https://github.com/Benitoite/RawTherapee/releases/download/nightly-github-actions/RawTherapee_dev_macOS_arm64_Release.zip -o rt.zip
