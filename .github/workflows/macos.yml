@@ -21,8 +21,8 @@ jobs:
           sudo cp -r RawTherapee.app /Applications
           cd
           # Codesign the app
-          curl -L https://raw.githubusercontent.com/Benitoite/RawTherapee/minitest/tools/osx/ci.entitlements -o ci.entitlements
-          iconv -f UTF-8 -t ASCII ci.entitlements > ci.entitlements
+          curl -L https://raw.githubusercontent.com/Benitoite/RawTherapee/minitest/tools/osx/ci.entitlements -o 1ci.entitlements
+          iconv -f UTF-8 -t ASCII 1ci.entitlements > ci.entitlements
           plutil -convert xml1 ci.entitlements
           for frame in /Applications/RawTherapee.app/Contents/Frameworks/* ; do
               echo $frame
