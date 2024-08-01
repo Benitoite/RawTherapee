@@ -14,14 +14,12 @@ jobs:
       - name: Test-launch the app
         run: |
           curl -L https://rawtherapee.com/shared/builds/mac/RawTherapee_macOS_13.3_Universal_5.10.zip -o rt.zip
-          ls
           unzip rt.zip
-          ls
           cd RawTherapee*
           open *.dmg
           cd /Volumes/RawTherapee*
           cp -r RawTherapee.app /Applications
-          open -a RawTherapee
+          hdiutil attach *dmg
           sleep 5
           osascript -e 'tell application "Finder"' -e 'get the name of every process whose visible is true' -e 'end tell'
           osascript -e 'tell application "RawTherapee" to if it is running then quit'
