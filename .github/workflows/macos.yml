@@ -17,7 +17,7 @@ jobs:
           ls
           cd RawTherapee*
           ls
-          yes qy | hdiutil attach -quiet *dmg
+          yes qy | hdiutil attach *dmg
           ls /Volumes
           cd /Volumes/RawTherapee*
           cp -r RawTherapee.app /Applications
