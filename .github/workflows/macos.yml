@@ -17,6 +17,8 @@ jobs:
           P12_PASSWORD: ${{ secrets.P12_PASSWORD }}
           BUILD_PROVISION_PROFILE_BASE64: ${{ secrets.BUILD_PROVISION_PROFILE_BASE64 }}
           KEYCHAIN_PASSWORD: ${{ secrets.KEYCHAIN_PASSWORD }}
+          IDENT: ${{ secrets.IDENT }}
+          NOTARY: ${{ secrets.NOTARY }
         run: |
           # create variables
           CERTIFICATE_PATH=$RUNNER_TEMP/build_certificate.p12
@@ -41,12 +43,6 @@ jobs:
           mkdir -p ~/Library/MobileDevice/Provisioning\ Profiles
           cp $PP_PATH ~/Library/MobileDevice/Provisioning\ Profiles
 
-      - name: Test-launch the app 2
-        uses: actions/checkout@v4
-        env:
-          IDENT: ${{ secrets.IDENT }}
-          NOTARY: ${{ secrets.NOTARY }}
-        run: |
           curl -L https://github.com/Benitoite/RawTherapee/releases/download/nightly-github-actions/RawTherapee_dev_macOS_arm64_Release.zip -o rt.zip
           unzip rt.zip
           ls
