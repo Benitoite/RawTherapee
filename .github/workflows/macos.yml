@@ -3,11 +3,12 @@ name: macOS Build
 on:
   push:
     branches:
-      - dev
+      - minitest
+  pull_request:
   workflow_dispatch:
 
 jobs:
-  build:
+  armtest:
     runs-on: macos-14
     steps:
       - name: Test-launch the app
