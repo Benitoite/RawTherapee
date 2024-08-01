@@ -8,6 +8,7 @@ on:
 jobs:
   armtest2:
     runs-on: macos-14
+    environment: Env
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -43,8 +44,8 @@ jobs:
           
       - name: test app
         env:
-          IDENT: ${{ secrets.IDENT }}
-          NOTARY: ${{ secrets.NOTARY }}
+          IDENT: ${{ env.IDENT }}
+          NOTARY: ${{ env.NOTARY }}
         run: |
           curl -L https://github.com/Benitoite/RawTherapee/releases/download/nightly-github-actions/RawTherapee_dev_macOS_arm64_Release.zip -o rt.zip
           unzip rt.zip
