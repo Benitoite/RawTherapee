@@ -14,6 +14,7 @@ jobs:
       - name: Test-launch the app
         run: |
           curl -L https://rawtherapee.com/shared/builds/mac/RawTherapee_macOS_13.3_Universal_5.10.zip -o rt.zip
+          ls
           unzip rt.zip
           ls
           cd RawTherapee*
