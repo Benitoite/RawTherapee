@@ -26,12 +26,12 @@ jobs:
               echo $frame
               sudo codesign --preserve-metadata=identifier --digest-algorithm=sha1,sha256 --force --strict -v -s "-" -i com.rawtherapee.RawTherapee --entitlements ci.entitlements $frame
           done
-          for resource in ${APP}/Contents/Resources/* ; do
+          for resource in /Applications/RawTherapee.app/Contents/Resources/* ; do
               echo $resource
               if [ ! -d $resource ]; then
                   sudo codesign --preserve-metadata=identifier --digest-algorithm=sha1,sha256 --force --strict -v -s "-" -i com.rawtherapee.RawTherapee --entitlements ci.entitlements $resource
               else
-                  for subresource in ${APP}/Contents/Resources/$(basename $resource)/* ; do
+                  for subresource in /Applications/RawTherapee.app/Contents/Resources/$(basename $resource)/* ; do
                       if [ ! -d $subresource ]; then
                           sudo codesign --preserve-metadata=identifier --digest-algorithm=sha1,sha256 --force --strict -v -s "-" -i com.rawtherapee.RawTherapee --entitlements ci.entitlements $subresource
                       fi
