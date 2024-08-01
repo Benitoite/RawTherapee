@@ -58,22 +58,22 @@ jobs:
           iconv -f UTF-8 -t ASCII 1ci.entitlements > ci.entitlements
           plutil -convert xml1 ci.entitlements
           for frame in /Applications/RawTherapee.app/Contents/Frameworks/* ; do
-              sudo codesign --preserve-metadata=identifier -o runtime --digest-algorithm=sha1,sha256 --strict --timestamp --force -v -s $IDENT -i com.rawtherapee.RawTherapee --entitlements ci.entitlements $frame
+              sudo codesign --preserve-metadata=identifier -o runtime --digest-algorithm=sha1,sha256 --strict --timestamp --force -v -s "$IDENT" -i com.rawtherapee.RawTherapee --entitlements ci.entitlements $frame
           done
           for resource in /Applications/RawTherapee.app/Contents/Resources/* ; do
               if [ ! -d $resource ]; then
-                  sudo codesign --preserve-metadata=identifier -o runtime --digest-algorithm=sha1,sha256 --strict --timestamp --force -v -s $IDENT -i com.rawtherapee.RawTherapee --entitlements ci.entitlements $resource
+                  sudo codesign --preserve-metadata=identifier -o runtime --digest-algorithm=sha1,sha256 --strict --timestamp --force -v -s "$IDENT" -i com.rawtherapee.RawTherapee --entitlements ci.entitlements $resource
               else
                   for subresource in /Applications/RawTherapee.app/Contents/Resources/$(basename $resource)/* ; do
                       if [ ! -d $subresource ]; then
-                          sudo codesign --preserve-metadata=identifier -o runtime --digest-algorithm=sha1,sha256 --strict --timestamp --force -v -s $IDENT -i com.rawtherapee.RawTherapee --entitlements ci.entitlements $subresource
+                          sudo codesign --preserve-metadata=identifier -o runtime --digest-algorithm=sha1,sha256 --strict --timestamp --force -v -s "$IDENT" -i com.rawtherapee.RawTherapee --entitlements ci.entitlements $subresource
                       fi
                   done
               fi
           done
-          sudo codesign --preserve-metadata=identifier -o runtime --digest-algorithm=sha1,sha256 --strict --timestamp --force -v -s $IDENT -i com.rawtherapee.RawTherapee --entitlements ci.entitlements /Applications/RawTherapee.app/Contents/MacOS/rawtherapee-cli
-          sudo codesign --preserve-metadata=identifier -o runtime --digest-algorithm=sha1,sha256 --strict --timestamp --force -v -s $IDENT -i com.rawtherapee.RawTherapee --entitlements ci.entitlements /Applications/RawTherapee.app/Contents/MacOS/rawtherapee
-          sudo codesign --preserve-metadata=identifier -o runtime --digest-algorithm=sha1,sha256 --strict --timestamp --force -v -s $IDENT -i com.rawtherapee.RawTherapee --entitlements ci.entitlements /Applications/RawTherapee.app
+          sudo codesign --preserve-metadata=identifier -o runtime --digest-algorithm=sha1,sha256 --strict --timestamp --force -v -s "$IDENT" -i com.rawtherapee.RawTherapee --entitlements ci.entitlements /Applications/RawTherapee.app/Contents/MacOS/rawtherapee-cli
+          sudo codesign --preserve-metadata=identifier -o runtime --digest-algorithm=sha1,sha256 --strict --timestamp --force -v -s "$IDENT" -i com.rawtherapee.RawTherapee --entitlements ci.entitlements /Applications/RawTherapee.app/Contents/MacOS/rawtherapee
+          sudo codesign --preserve-metadata=identifier -o runtime --digest-algorithm=sha1,sha256 --strict --timestamp --force -v -s "$IDENT" -i com.rawtherapee.RawTherapee --entitlements ci.entitlements /Applications/RawTherapee.app
           ditto -c -k --sequesterRsrc --keepParent /Applications/RawTherapee.app rtapp.zip
           echo "Uploading..."
           sudo xcrun notarytool submit rtapp.zip "$NOTARY" --wait
