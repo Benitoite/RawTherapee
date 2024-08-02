@@ -394,6 +394,7 @@ if [[ -n $NOTARY ]]; then
     ditto -c -k --sequesterRsrc --keepParent "${APP}" "${APP}.zip"
     echo "Uploading..."
     sudo xcrun notarytool submit "${APP}.zip" ${NOTARY} --wait
+    sudo xcrun stapler staple "${APP}"
 fi
 
 function CreateDmg {
