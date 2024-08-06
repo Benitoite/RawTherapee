@@ -107,6 +107,7 @@ jobs:
       - name: Test-launch the app
         run: |
           cd build
+          RawTherapee_*/rawtherapee-cli --version >> $GITHUB_STEP_SUMMARY
           sudo cp -R RawTherapee.app /Applications
           open -a RawTherapee
           sleep 5
@@ -210,6 +211,7 @@ jobs:
       - name: Test-launch the app
         run: |
           cd build
+          RawTherapee_*/rawtherapee-cli --version >> $GITHUB_STEP_SUMMARY
           sudo cp -R RawTherapee.app /Applications
           open -a RawTherapee
           sleep 5
