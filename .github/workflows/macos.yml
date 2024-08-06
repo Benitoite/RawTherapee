@@ -110,7 +110,7 @@ jobs:
           sudo cp -R RawTherapee.app /Applications
           open -a RawTherapee
           sleep 5
-          osascript -e 'tell application "Finder"' -e 'get the name of every process whose visible is true' -e 'end tell' >> $GITHUB_STEP_SUMMARY
+          echo "Applications running: $(osascript -e 'tell application "Finder"' -e 'get the name of every process whose visible is true' -e 'end tell')" >> $GITHUB_STEP_SUMMARY
           osascript -e 'tell application "RawTherapee" to if it is running then quit'
       - name: Publish artifacts
         uses: softprops/action-gh-release@v2
@@ -209,9 +209,12 @@ jobs:
           zsh -c 'echo "Build completed in $(printf "%0.2f" $(($[$(date +%s)-$(cat build/stamp)]/$((60.))))) minutes"' >> $GITHUB_STEP_SUMMARY
       - name: Test-launch the app
         run: |
-          cd build 
+          cd build
           sudo cp -R RawTherapee.app /Applications
-          time RawTherapee_*/rawtherapee-cli
+          open -a RawTherapee
+          sleep 5
+          echo "Applications running: $(osascript -e 'tell application "Finder"' -e 'get the name of every process whose visible is true' -e 'end tell')" >> $GITHUB_STEP_SUMMARY
+          osascript -e 'tell application "RawTherapee" to if it is running then quit'
       - name: Publish artifacts
         uses: softprops/action-gh-release@v2
         if: ${{github.ref_type == 'tag' || github.ref_name == 'dev'}}
