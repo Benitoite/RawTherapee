@@ -428,6 +428,7 @@ function CreateDmg {
     if [[ $FANCY_DMG == "ON" ]]; then
         echo "Building Fancy .dmg"
         magick ${PROJECT_SOURCE_DATA_DIR}/rtdmg-bkgd.png -pointsize 80 -fill Black -draw "text 14,1307 '${PROJECT_FULL_VERSION}'" -fill Salmon -draw "text 10,1300 '${PROJECT_FULL_VERSION}'" ./rtdmg-bkgd.png
+        magick ${PROJECT_SOURCE_DATA_DIR}/rtdmg-bkgd.png -pointsize 100 -fill Black -draw "text 24,606 '${MESSAGE}'" -fill Red -draw "text 20,600 '${MESSAGE}'" ./rtdmg-bkgd.png
         create-dmg \
         --background ./rtdmg-bkgd.png \
         --volname ${PROJECT_NAME}_${PROJECT_FULL_VERSION} \
