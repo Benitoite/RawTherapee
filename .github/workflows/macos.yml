@@ -114,7 +114,7 @@ jobs:
           open -a /Applications/RawTherapee.app
           sleep 5
           touch tester
-          osascript -e 'tell application "Finder"' -e 'get the name of every process whose visible is true' -e 'end tell' > tester
+          osascript -e 'tell application "Finder" to get the name of every process whose visible is true' > tester
           if [[ tester != 'Finder,rawtherapee' ]] ; then exit 1 ; fi
           echo "Applications running: ${tester}" >> $GITHUB_STEP_SUMMARY
           osascript -e 'tell application "RawTherapee" to if it is running then quit'
@@ -222,7 +222,7 @@ jobs:
           cd build
           sudo cp -R RawTherapee.app /Applications
           RawTherapee_*/rawtherapee-cli --version >> $GITHUB_STEP_SUMMARY       
-          osascript -e 'tell application "Finder"' -e 'get the name of every process whose visible is true' -e 'end tell' > tester
+          osascript -e 'tell application "Finder" to get the name of every process whose visible is true' > tester
           if [[ tester != 'Finder,rawtherapee' ]] ; then exit 1 ; fi
           echo "Applications running: ${tester}" >> $GITHUB_STEP_SUMMARY
           osascript -e 'tell application "RawTherapee" to if it is running then quit'
