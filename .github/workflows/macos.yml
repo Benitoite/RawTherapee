@@ -113,7 +113,7 @@ jobs:
         run: |
           cd build
           sudo cp -R RawTherapee.app /Applications
-          cd RawTherapee*folder && rawtherapee-cli --version >> $GITHUB_STEP_SUMMARY
+          cd RawTherapee*folder && ./rawtherapee-cli --version >> $GITHUB_STEP_SUMMARY
           open -a RawTherapee
           sleep 5
           echo "Applications running: $(osascript -e 'tell application "Finder"' -e 'get the name of every process whose visible is true' -e 'end tell')" >> $GITHUB_STEP_SUMMARY
@@ -227,7 +227,7 @@ jobs:
         run: |
           cd build
           sudo cp -R RawTherapee.app /Applications
-          cd RawTherapee*folder && rawtherapee-cli --version >> $GITHUB_STEP_SUMMARY
+          cd RawTherapee*folder && ./rawtherapee-cli --version >> $GITHUB_STEP_SUMMARY
           open -a RawTherapee
           sleep 5
           echo "Applications running: $(osascript -e 'tell application "Finder"' -e 'get the name of every process whose visible is true' -e 'end tell')" >> $GITHUB_STEP_SUMMARY
