@@ -84,7 +84,7 @@ jobs:
         run: |
           zsh
           date +%s > build/bundlestamp && date -u && cd build
-          export REF=${GITHUB_REF##*/} && sudo make macosx_bundle
+          export REF=${GITHUB_REF##*/} && export MESSAGE="Automated Build! WARNING: Not intended for end-user testing." && sudo make macosx_bundle
           export ARTIFACT=(RawTherapee*${CMAKE_BUILD_TYPE}.zip)
           echo "=== artifact: ${ARTIFACT}"
           # defining environment variables for next step as per
@@ -195,7 +195,7 @@ jobs:
         run: |
           zsh
           date +%s > build/bundlestamp && date -u && cd build
-          export REF=${GITHUB_REF##*/} && sudo make macosx_bundle
+          export REF=${GITHUB_REF##*/} && export MESSAGE="Automated Build! WARNING: Not intended for end-user testing." && sudo make macosx_bundle
           export ARTIFACT=(RawTherapee*${CMAKE_BUILD_TYPE}.zip)
           echo "=== artifact: ${ARTIFACT}"
           # defining environment variables for next step as per
