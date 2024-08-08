@@ -20,6 +20,8 @@ jobs:
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
+        with: 
+          fetch-tags: '0'
       - name: Install dependencies
         run: |
            date -u
@@ -138,6 +140,8 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+        with: 
+          fetch-tags: '0'
       - name: Install dependencies
         run: |
            date -u
