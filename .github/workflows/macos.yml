@@ -106,6 +106,7 @@ jobs:
         run: |
           date -u
           zsh -c 'echo "Build completed in $(printf "%0.2f" $(($[$(date +%s)-$(cat build/stamp)]/$((60.))))) minutes"' >> $GITHUB_STEP_SUMMARY
+
       - name: Test-launch the app
         run: |
           cd build
@@ -116,8 +117,8 @@ jobs:
           touch tester
           osascript -e 'tell application "Finder" to get the name of every process whose visible is true' > tester
           cat tester | read LINE
-          if [[ $LINE != 'Finder,rawtherapee' ]] ; then exit 1 ; fi
-          echo "Applications running: ${tester}" >> $GITHUB_STEP_SUMMARY
+          if [[ $LINE != *"rawtherapee"* ]] ; then exit 1 ; fi
+          echo "Applications running: ${LINE}" >> "$GITHUB_STEP_SUMMARY"
           osascript -e 'tell application "RawTherapee" to if it is running then quit'
       - name: Publish artifacts
         uses: softprops/action-gh-release@v2
@@ -127,6 +128,7 @@ jobs:
           files: |
             ${{env.ARTIFACT_PATH}}
             
+
   armbuild:
     runs-on: macos-14
     steps:
@@ -218,17 +220,21 @@ jobs:
         run: |
           date -u
           zsh -c 'echo "Build completed in $(printf "%0.2f" $(($[$(date +%s)-$(cat build/stamp)]/$((60.))))) minutes"' >> $GITHUB_STEP_SUMMARY
+
       - name: Test-launch the app
         run: |
           cd build
           sudo cp -R RawTherapee.app /Applications
-          RawTherapee_*/rawtherapee-cli --version >> $GITHUB_STEP_SUMMARY       
+          RawTherapee_*/rawtherapee-cli --version >> $GITHUB_STEP_SUMMARY
+          open -a /Applications/RawTherapee.app
+          sleep 5
           touch tester
           osascript -e 'tell application "Finder" to get the name of every process whose visible is true' > tester
           cat tester | read LINE
-          if [[ $LINE != 'Finder,rawtherapee' ]] ; then exit 1 ; fi
-          echo "Applications running: ${tester}" >> $GITHUB_STEP_SUMMARY
+          if [[ $LINE != *"rawtherapee"* ]] ; then exit 1 ; fi
+          echo "Applications running: ${LINE}" >> "$GITHUB_STEP_SUMMARY"
           osascript -e 'tell application "RawTherapee" to if it is running then quit'
+
       - name: Publish artifacts
         uses: softprops/action-gh-release@v2
         if: ${{github.ref_type == 'tag' || github.ref_name == 'dev'}}
