@@ -122,7 +122,7 @@ jobs:
       - name: Test the -cli
         run: |
           cd build
-          RawTherapee*folder/rawtherapee-cli --version >> $GITHUB_STEP_SUMMARY
+          echo "$(RawTherapee*folder/rawtherapee-cli --version)" >> $GITHUB_STEP_SUMMARY
 
       - name: Publish artifacts
         uses: softprops/action-gh-release@v2
@@ -240,7 +240,7 @@ jobs:
       - name: Test the -cli
         run: |
           cd build
-          RawTherapee*folder/rawtherapee-cli --version >> $GITHUB_STEP_SUMMARY
+          echo "$(RawTherapee*folder/rawtherapee-cli --version)" >> $GITHUB_STEP_SUMMARY
 
       - name: Publish artifacts
         uses: softprops/action-gh-release@v2
