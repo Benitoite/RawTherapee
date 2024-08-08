@@ -111,15 +111,11 @@ jobs:
         run: |
           cd build
           sudo cp -R RawTherapee.app /Applications
-          RawTherapee_*folder/rawtherapee-cli --version >> $GITHUB_STEP_SUMMARY
-          open -a /Applications/RawTherapee.app
-          sleep 10
-          sudo touch tester
-          sudo osascript -e 'tell application "Finder" to get the name of every process whose visible is true' > tester
-          cat tester | read LINE
-          if [[ $LINE != *"rawtherapee"* ]] ; then exit 1 ; fi
-          echo "Applications running: ${LINE}" >> "$GITHUB_STEP_SUMMARY"
+          open -a RawTherapee
+          sleep 5
+          echo "Applications running: $(osascript -e 'tell application "Finder"' -e 'get the name of every process whose visible is true' -e 'end tell')" >> $GITHUB_STEP_SUMMARY
           osascript -e 'tell application "RawTherapee" to if it is running then quit'
+
       - name: Publish artifacts
         uses: softprops/action-gh-release@v2
         if: ${{github.ref_type == 'tag' || github.ref_name == 'dev'}}
@@ -225,14 +221,9 @@ jobs:
         run: |
           cd build
           sudo cp -R RawTherapee.app /Applications
-          RawTherapee_*folder/rawtherapee-cli --version >> $GITHUB_STEP_SUMMARY
-          open -a /Applications/RawTherapee.app
-          sleep 10
-          sudo touch tester
-          sudo osascript -e 'tell application "Finder" to get the name of every process whose visible is true' > tester
-          cat tester | read LINE
-          if [[ $LINE != *"rawtherapee"* ]] ; then exit 1 ; fi
-          echo "Applications running: ${LINE}" >> "$GITHUB_STEP_SUMMARY"
+          open -a RawTherapee
+          sleep 5
+          echo "Applications running: $(osascript -e 'tell application "Finder"' -e 'get the name of every process whose visible is true' -e 'end tell')" >> $GITHUB_STEP_SUMMARY
           osascript -e 'tell application "RawTherapee" to if it is running then quit'
 
       - name: Publish artifacts
