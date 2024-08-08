@@ -114,6 +114,7 @@ jobs:
           open -a RawTherapee
           sleep 5
           echo "Applications running: $(osascript -e 'tell application "Finder"' -e 'get the name of every process whose visible is true' -e 'end tell')" >> $GITHUB_STEP_SUMMARY
+          osascript -e 'if application "RawTherapee" is not running then do shell script "exit 1"'
           osascript -e 'tell application "RawTherapee" to if it is running then quit'
 
       - name: Publish artifacts
@@ -224,6 +225,7 @@ jobs:
           open -a RawTherapee
           sleep 5
           echo "Applications running: $(osascript -e 'tell application "Finder"' -e 'get the name of every process whose visible is true' -e 'end tell')" >> $GITHUB_STEP_SUMMARY
+          osascript -e 'if application "RawTherapee" is not running then do shell script "exit 1"'
           osascript -e 'tell application "RawTherapee" to if it is running then quit'
 
       - name: Publish artifacts
