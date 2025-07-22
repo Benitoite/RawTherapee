@@ -288,11 +288,13 @@ mkdir -p "${ETC}"/gtk-3.0
 
 # Change a relative path for the SVG pixbufloader
 install_name_tool -delete_rpath @loader_path/../lib "${LIB}"/libpixbufloader_svg.so
-install_name_tool -change @rpath/librsvg-2.2.dylib "${PWD}"/"${LIB}"/librsvg-2.2.dylib  "${LIB}"/libpixbufloader_svg.so
+install_name_tool -change @rpath/librsvg-2.2.dylib "${LOCAL_PREFIX}"/lib/librsvg-2.2.dylib  "${LIB}"/libpixbufloader_svg.so
 ModifyLibrsvgInstallNames
+otool -L "${LIB}"/libpixbufloader_svg.so
 otool -L "${LIB}"/librsvg-2.2.dylib 
 otool -l "${LIB}"/librsvg-2.2.dylib 
-"${LOCAL_PREFIX}"/bin/gdk-pixbuf-query-loaders "${LIB}"/libpixbufloader*.so > "${ETC}"/gtk-3.0/gdk-pixbuf.loaders
+sudo codesign --sign - --force --preserve-metadata=entitlements,requirements,flags,runtime  "${LIB}"/libpixbuf*[^dylib]
+"${LOCAL_PREFIX}"/bin/gdk-pixbuf-query-loaders "${LIB}"/libpixbufloader*[^dylib] > "${ETC}"/gtk-3.0/gdk-pixbuf.loaders
 "${LOCAL_PREFIX}"/bin/gtk-query-immodules-3.0 "${LIB}"/im-* > "${ETC}"/gtk-3.0/gtk.immodules || "${LOCAL_PREFIX}"/bin/gtk-query-immodules "${LIB}"/im-* > "${ETC}"/gtk-3.0/gtk.immodules
 sed -i.bak -e "s|${PWD}/RawTherapee.app/Contents/|/Applications/RawTherapee.app/Contents/|" "${ETC}"/gtk-3.0/gdk-pixbuf.loaders "${ETC}/gtk-3.0/gtk.immodules"
 sed -i.bak -e "s|${LOCAL_PREFIX}/share/|/Applications/RawTherapee.app/Contents/Resources/share/|" "${ETC}"/gtk-3.0/gtk.immodules
