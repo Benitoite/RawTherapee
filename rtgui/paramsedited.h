@@ -369,6 +369,19 @@ struct SHParamsEdited {
     bool lab;
 };
 
+struct CGParamsEdited {
+    bool enabled;
+    bool th_c;
+    bool th_m;
+    bool th_y;
+    bool d_c;
+    bool d_m;
+    bool d_y;
+    bool pwr;
+    bool colorspace;
+    bool rolloff;
+};
+
 struct ToneEqualizerParamsEdited {
     bool enabled;
     std::array<bool, 6> bands;
@@ -397,6 +410,9 @@ struct CoarseTransformParamsEdited {
 
 struct CommonTransformParamsEdited {
     bool method;
+    bool scale;
+    bool scale_horizontally;
+    bool scale_vertically;
     bool autofill;
 };
 
@@ -406,6 +422,8 @@ struct RotateParamsEdited {
 
 struct DistortionParamsEdited {
     bool amount;
+    bool defish;
+    bool focal_length;
 };
 class LocallabParamsEdited
 {
@@ -442,6 +460,7 @@ public:
         bool transitgrad;
         bool hishow;
         bool activ;
+        bool avoidneg;
         bool blwh;
         bool recurs;
         bool laplac;
@@ -579,6 +598,22 @@ public:
         bool expshadhigh;
         bool complexshadhigh;
         bool shMethod;
+        bool ghsMethod;
+        bool ghsMode;
+        bool ghs_D;
+        bool ghs_slope;
+        bool ghs_chro;
+        bool ghs_B;
+        bool ghs_SP;
+        bool ghs_LP;
+        bool ghs_HP;
+        bool ghs_LC;
+        bool ghs_MID;
+        bool ghs_BLP;
+        bool ghs_HLP;
+        bool ghs_smooth;
+        bool ghs_inv;
+        
         bool multsh[7];
         bool highlights;
         bool h_tonalwidth;
@@ -708,6 +743,7 @@ public:
         bool nlpat;
         bool nlrad;
         bool nlgam;
+        bool nliter;
         bool sensiden;
         bool reparden;
         bool detailthr;
@@ -829,6 +865,7 @@ public:
         bool lcdarkness;
         bool lclightness;
         bool sigmalc;
+        bool offslc;
         bool levelwav;
         bool residcont;
         bool residsha;
@@ -880,6 +917,7 @@ public:
         bool wavgradl;
         bool wavcompre;
         bool origlc;
+        bool processwav;
         bool localcontMethod;
         bool localedgMethod;
         bool localneiMethod;
@@ -1016,11 +1054,11 @@ public:
         bool reparcie;
         bool sensicie;
         bool Autograycie;
-        bool forcejz;
-        bool forcebw;
+        bool sigybjz12;
         bool qtoj;
         bool jabcie;
         bool comprcieauto;
+        bool normcie12;
         bool normcie;
         bool gamutcie;
         bool bwcie;
@@ -1029,16 +1067,25 @@ public:
         bool satcie;
         bool logcieq;
         bool smoothcie;
+        bool smoothcietrc;
+        bool smoothcietrcrel;
         bool smoothcieyb;
         bool smoothcielum;
+        bool smoothciehigh;
+        bool smoothcielnk;
         bool logjz;
+        bool sigjz12;
         bool sigjz;
+        bool forcebw;
+        bool sigq12;
         bool sigq;
         bool chjzcie;
         bool sourceGraycie;
         bool sourceabscie;
         bool sursourcie;
         bool modecam;
+        bool modeQJ;
+        bool bwevMethod12;
         bool bwevMethod;
         bool modecie;
         bool saturlcie;
@@ -1081,6 +1128,9 @@ public:
         bool blackEvjz;
         bool whiteEvjz;
         bool targetjz;
+        bool sigmoidldacie12;
+        bool sigmoidthcie12;
+        bool sigmoidblcie12;
         bool sigmoidldacie;
         bool sigmoidthcie;
         bool sigmoidsenscie;
@@ -1089,11 +1139,19 @@ public:
         bool strcielog;
         bool comprcieth;
         bool gamjcie;
+        bool smoothcieth;
         bool slopjcie;
+        bool contsig;
+        bool skewsig;
+        bool whitsig;
         bool slopesmo;
+        bool slopesmoq;
         bool slopesmor;
         bool slopesmog;
         bool slopesmob;
+        bool kslopesmor;
+        bool kslopesmog;
+        bool kslopesmob;
         bool midtcie;
         bool redxl;
         bool redyl;
@@ -1120,9 +1178,14 @@ public:
         bool smoothciemet;
         bool primMethod;
         bool catMethod;
+        bool sigmoidldajzcie12;
+        bool sigmoidthjzcie12;
+        bool sigmoidbljzcie12;
+
         bool sigmoidldajzcie;
         bool sigmoidthjzcie;
         bool sigmoidbljzcie;
+
         bool contqcie;
         bool contsigqcie;
         bool colorflcie;
@@ -1291,6 +1354,29 @@ struct ResizeParamsEdited {
     bool allowUpscaling;
 };
 
+struct FramingParamsEdited {
+    bool enabled;
+    bool framingMethod;
+    bool aspectRatio;
+    bool orientation;
+    bool framedWidth;
+    bool framedHeight;
+    bool allowUpscaling;
+
+    bool borderSizingMethod;
+    bool basis;
+    bool relativeBorderSize;
+    bool minSizeEnabled;
+    bool minWidth;
+    bool minHeight;
+    bool absWidth;
+    bool absHeight;
+
+    bool borderRed;
+    bool borderGreen;
+    bool borderBlue;
+};
+
 class SpotParamsEdited
 {
 public:
@@ -1308,9 +1394,15 @@ struct ColorManagementParamsEdited {
 
     bool workingProfile;
     bool workingTRC;
-    bool workingTRCGamma;
-    bool workingTRCSlope;
+    bool wGamma;
+    bool wSlope;
     bool wmidtcie;
+    bool sigmatrc;
+    bool offstrc;
+    bool residtrc;
+    bool pyrwavtrc;
+    bool opacityCurveWLI;
+
     bool wsmoothcie;
     bool will;
     bool wprim;
@@ -1327,6 +1419,7 @@ struct ColorManagementParamsEdited {
     bool preser;
     bool fbw;
     bool trcExp;
+    bool wavExp;
     bool gamut;
     bool labgridcieALow;
     bool labgridcieBLow;
@@ -1531,6 +1624,7 @@ struct RAWParamsEdited {
         bool exBlack2;
         bool exBlack3;
         bool exTwoGreen;
+        bool Dehablack;
         bool dcbIterations;
         bool dcbEnhance;
         bool lmmseIterations;
@@ -1569,6 +1663,7 @@ struct RAWParamsEdited {
         bool exBlackRed;
         bool exBlackGreen;
         bool exBlackBlue;
+        bool Dehablackx;
 
         bool isUnchanged() const;
     };
@@ -1646,6 +1741,8 @@ struct ParamsEdited {
     FattalToneMappingParamsEdited fattal;
     ImpulseDenoiseParamsEdited impulseDenoise;
     SHParamsEdited sh;
+    CGParamsEdited cg;
+    
     ToneEqualizerParamsEdited toneEqualizer;
     CropParamsEdited crop;
     CoarseTransformParamsEdited coarse;
@@ -1662,6 +1759,7 @@ struct ParamsEdited {
     ChannelMixerParamsEdited chmixer;
     BlackWhiteParamsEdited blackwhite;
     ResizeParamsEdited resize;
+    FramingParamsEdited framing;
     SpotParamsEdited spot;
     ColorManagementParamsEdited icm;
     RAWParamsEdited raw;

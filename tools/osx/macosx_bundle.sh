@@ -221,7 +221,7 @@ ModifyInstallNames 2>&1
 cp ${LOCAL_PREFIX}/lib/libpng16.16.dylib "${CONTENTS}/Frameworks/libpng16.16.dylib"
 
 # Copy libjxl_cms to the app bundle
-cp ${LOCAL_PREFIX}/lib/libjxl_cms.0.10.dylib "${CONTENTS}/Frameworks/libjxl_cms.0.10.dylib"
+cp ${LOCAL_PREFIX}/lib/libjxl_cms.*.dylib "${CONTENTS}/Frameworks"
 
 # Copy graphite to Frameworks
 cp ${LOCAL_PREFIX}/lib/libgraphite2.3.dylib "${CONTENTS}/Frameworks"
@@ -269,7 +269,9 @@ done
 msg "Build GTK3 databases:"
 mkdir -p "${RESOURCES}"/share/gtk-3.0
 mkdir -p "${ETC}"/gtk-3.0
-"${LOCAL_PREFIX}"/bin/gdk-pixbuf-query-loaders "${LIB}"/libpixbufloader-*.so > "${ETC}"/gtk-3.0/gdk-pixbuf.loaders
+# Change a relative path for the SVG pixbufloader
+sudo install_name_tool -change @rpath/librsvg-2.2.dylib /Applications/RawTherapee.app/Contents/Frameworks/librsvg-2.2.dylib RawTherapee.app/Contents/Frameworks/libpixbufloader_svg.so
+"${LOCAL_PREFIX}"/bin/gdk-pixbuf-query-loaders "${LIB}"/libpixbufloader*.so > "${ETC}"/gtk-3.0/gdk-pixbuf.loaders
 "${LOCAL_PREFIX}"/bin/gtk-query-immodules-3.0 "${LIB}"/im-* > "${ETC}"/gtk-3.0/gtk.immodules || "${LOCAL_PREFIX}"/bin/gtk-query-immodules "${LIB}"/im-* > "${ETC}"/gtk-3.0/gtk.immodules
 sed -i.bak -e "s|${PWD}/RawTherapee.app/Contents/|/Applications/RawTherapee.app/Contents/|" "${ETC}"/gtk-3.0/gdk-pixbuf.loaders "${ETC}/gtk-3.0/gtk.immodules"
 sed -i.bak -e "s|${LOCAL_PREFIX}/share/|/Applications/RawTherapee.app/Contents/Resources/share/|" "${ETC}"/gtk-3.0/gtk.immodules
@@ -402,7 +404,6 @@ function CreateDmg {
 
     msg "Preparing disk image sources at ${srcDir}:"
     cp -R "${APP}" "${srcDir}"
-    cp "${RESOURCES}"/LICENSE "${srcDir}"
     ln -s /Applications "${srcDir}"
 
     # Web bookmarks
@@ -413,7 +414,7 @@ function CreateDmg {
     CreateWebloc       'Website' 'https://www.rawtherapee.com/'
     CreateWebloc 'Documentation' 'https://rawpedia.rawtherapee.com/'
     CreateWebloc         'Forum' 'https://discuss.pixls.us/c/software/rawtherapee'
-    CreateWebloc    'Report Bug' 'https://github.com/Beep6581/RawTherapee/issues/new'
+    CreateWebloc    'Report Bug' 'https://github.com/RawTherapee/RawTherapee/issues/new'
 
     # Disk image name
     if [[ -n $UNIVERSAL_URL ]]; then
@@ -428,21 +429,24 @@ function CreateDmg {
     msg "Creating disk image:"
     if [[ $FANCY_DMG == "ON" ]]; then
         echo "Building Fancy .dmg"
+        touch message
+        MESSAGE="$(cat message)"
+        magick ${PROJECT_SOURCE_DATA_DIR}/rtdmg-bkgd.png -pointsize 80 -fill Black -draw "text 14,1307 '${PROJECT_FULL_VERSION}'" -fill Salmon -draw "text 10,1300 '${PROJECT_FULL_VERSION}'" ./rtdmg-bkgd.png
+        magick ./rtdmg-bkgd.png -pointsize 90 -fill Black -gravity center -font Menlo-Bold -draw "text 5,120 \"$MESSAGE\"" -fill Red -gravity center -font Menlo-Bold -draw "text 1,124 \"$MESSAGE\"" ./rtdmg-bkgd.png
         create-dmg \
-        --background ${PROJECT_SOURCE_DATA_DIR}/rtdmg-bkgd.png \
+        --background ./rtdmg-bkgd.png \
         --volname ${PROJECT_NAME}_${PROJECT_FULL_VERSION} \
         --volicon ${PROJECT_SOURCE_DATA_DIR}/rtdmg.icns \
         --window-pos 72 72 \
-        --window-size 1000 689 \
+        --window-size 1000 692 \
         --text-size 16 \
         --icon-size 80 \
-        --icon LICENSE 810 0 \
-        --icon RawTherapee.app 250 178 \
-        --icon Applications 700 178 \
-        --icon Website.webloc 300 423 \
-        --icon Forum.webloc 420 423 \
-        --icon Report\ Bug.webloc 540 423 \
-        --icon Documentation.webloc 680 423 \
+        --icon RawTherapee.app 250 238 \
+        --icon Applications 700 238 \
+        --icon Website.webloc 300 487 \
+        --icon Forum.webloc 420 487 \
+        --icon Report\ Bug.webloc 540 487 \
+        --icon Documentation.webloc 680 487 \
         --no-internet-enable \
         --eula ${PROJECT_SOURCE_DATA_DIR}/../../LICENSE \
         --hdiutil-verbose \

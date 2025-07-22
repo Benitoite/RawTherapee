@@ -19,10 +19,10 @@
 
 #include "lockablecolorpicker.h"
 #include "options.h"
-#include "../rtengine/color.h"
-#include "../rtengine/improcfun.h"
-#include "../rtengine/rt_math.h"
-#include "../rtengine/utils.h"
+#include "rtengine/color.h"
+#include "rtengine/improcfun.h"
+#include "rtengine/rt_math.h"
+#include "rtengine/utils.h"
 #include "imagearea.h"
 #include "multilangmgr.h"
 #include "navigator.h"
@@ -119,7 +119,12 @@ void LockableColorPicker::updateBackBuffer ()
         newW = rtengine::max<int>((int)size + 2 * circlePadding, textWidth + 2 * textPadding);
         newH = (int)size + 2 * circlePadding + textHeight + 2 * textPadding;
 
+        int deviceScale = RTScalable::getScaleForWidget(iArea);
+        newW *= deviceScale;
+        newH *= deviceScale;
+
         setDrawRectangle(Cairo::FORMAT_ARGB32, 0, 0, newW, newH, true);
+        hidpi::setDeviceScale(getSurface(), deviceScale);
 
         Cairo::RefPtr<Cairo::Context> bbcr = BackBuffer::getContext();
 
