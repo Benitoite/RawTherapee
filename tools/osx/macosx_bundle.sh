@@ -50,6 +50,22 @@ function ModifyInstallNames {
     done
 }
 
+function ModifyLibrsvgInstallNames {
+    for x in "${LIB}"/librsvg*; do
+        msg "Modifying install names: ${x}"
+        {
+            # id
+            if [[ ${x:(-6)} == ".dylib" ]] || [[ f${x:(-3)} == ".so" ]]; then
+                install_name_tool -id "${PWD}"/"${LIB}"/$(basename ${x}) ${x} 2>/dev/null
+            fi
+            GetDependencies "${x}" | while read -r y
+            do
+                install_name_tool -change ${y} "${PWD}"/"${LIB}"/$(basename ${y}) ${x} 2>/dev/null
+            done
+        } | bash -v
+    done
+}
+
 # Source check
 if [[ ! -d $CMAKE_BUILD_TYPE ]]; then
     msgError "${PWD}/${CMAKE_BUILD_TYPE} folder does not exist. Please execute 'make install' first."
@@ -273,9 +289,9 @@ mkdir -p "${ETC}"/gtk-3.0
 # Change a relative path for the SVG pixbufloader
 install_name_tool -delete_rpath @loader_path/../lib "${LIB}"/libpixbufloader_svg.so
 install_name_tool -change @rpath/librsvg-2.2.dylib "${PWD}"/"${LIB}"/librsvg-2.2.dylib  "${LIB}"/libpixbufloader_svg.so
-
-otool -l "${LIB}"/libpixbufloader_svg.so
-
+ModifyLibrsvgInstallNames
+otool -L "${LIB}"/librsvg-2.2.dylib 
+otool -l "${LIB}"/librsvg-2.2.dylib 
 "${LOCAL_PREFIX}"/bin/gdk-pixbuf-query-loaders "${LIB}"/libpixbufloader*.so > "${ETC}"/gtk-3.0/gdk-pixbuf.loaders
 "${LOCAL_PREFIX}"/bin/gtk-query-immodules-3.0 "${LIB}"/im-* > "${ETC}"/gtk-3.0/gtk.immodules || "${LOCAL_PREFIX}"/bin/gtk-query-immodules "${LIB}"/im-* > "${ETC}"/gtk-3.0/gtk.immodules
 sed -i.bak -e "s|${PWD}/RawTherapee.app/Contents/|/Applications/RawTherapee.app/Contents/|" "${ETC}"/gtk-3.0/gdk-pixbuf.loaders "${ETC}/gtk-3.0/gtk.immodules"
