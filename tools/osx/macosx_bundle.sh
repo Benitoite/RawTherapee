@@ -269,15 +269,14 @@ done
 msg "Build GTK3 databases:"
 mkdir -p "${RESOURCES}"/share/gtk-3.0
 mkdir -p "${ETC}"/gtk-3.0
-DYLD_LIBRARY_PATH="$DYLD_LIBRARY_PATH:${LIB}" "${LOCAL_PREFIX}"/bin/gdk-pixbuf-query-loaders "${LIB}"/libpixbufloader*.so > "${ETC}"/gtk-3.0/gdk-pixbuf.loaders
+# Change a relative path for the SVG pixbufloader
+sudo install_name_tool -change @rpath/librsvg-2.2.dylib /Applications/RawTherapee.app/Contents/Frameworks/librsvg-2.2.dylib RawTherapee.app/Contents/Frameworks/libpixbufloader_svg.so
+"${LOCAL_PREFIX}"/bin/gdk-pixbuf-query-loaders "${LIB}"/libpixbufloader*.so > "${ETC}"/gtk-3.0/gdk-pixbuf.loaders
 "${LOCAL_PREFIX}"/bin/gtk-query-immodules-3.0 "${LIB}"/im-* > "${ETC}"/gtk-3.0/gtk.immodules || "${LOCAL_PREFIX}"/bin/gtk-query-immodules "${LIB}"/im-* > "${ETC}"/gtk-3.0/gtk.immodules
 sed -i.bak -e "s|${PWD}/RawTherapee.app/Contents/|/Applications/RawTherapee.app/Contents/|" "${ETC}"/gtk-3.0/gdk-pixbuf.loaders "${ETC}/gtk-3.0/gtk.immodules"
 sed -i.bak -e "s|${LOCAL_PREFIX}/share/|/Applications/RawTherapee.app/Contents/Resources/share/|" "${ETC}"/gtk-3.0/gtk.immodules
 sed -i.bak -e "s|${LOCAL_PREFIX}/|/Applications/RawTherapee.app/Contents/Frameworks/|" "${ETC}"/gtk-3.0/gtk.immodules
 rm "${ETC}"/*/*.bak
-
-# Change a relative path for the SVG pixbufloader
-sudo install_name_tool -change @rpath/librsvg-2.2.dylib /Applications/RawTherapee.app/Contents/Frameworks/librsvg-2.2.dylib RawTherapee.app/Contents/Frameworks/libpixbufloader_svg.so
 
 # Install names
 ModifyInstallNames 2>/dev/null
