@@ -114,6 +114,7 @@ jobs:
           date -u
           zsh -c 'echo "Build completed in $(printf "%0.2f" $(($[$(date +%s)-$(cat build/stamp)]/$((60.))))) minutes"' >> $GITHUB_STEP_SUMMARY
 
+
       - name: Test-launch the app
         run: |
           cd build
@@ -121,7 +122,6 @@ jobs:
           open -a /Applications/RawTherapee.app
           sleep 5
           echo "Applications running: $(osascript -e 'tell application "Finder" to get the name of every process whose visible is true')" >> $GITHUB_STEP_SUMMARY
-          osascript -e 'if application "RawTherapee" is not running then do shell script "exit 1"'
           osascript -e 'tell application "RawTherapee" to if it is running then quit'
 
       - name: Test the -cli
@@ -237,6 +237,7 @@ jobs:
           date -u
           zsh -c 'echo "Build completed in $(printf "%0.2f" $(($[$(date +%s)-$(cat build/stamp)]/$((60.))))) minutes"' >> $GITHUB_STEP_SUMMARY
 
+
       - name: Test-launch the app
         run: |
           cd build
@@ -251,6 +252,7 @@ jobs:
         run: |
           cd build
           echo "$(RawTherapee*folder/rawtherapee-cli --version)" >> $GITHUB_STEP_SUMMARY
+
 
       - name: Publish artifacts
         uses: softprops/action-gh-release@v2
