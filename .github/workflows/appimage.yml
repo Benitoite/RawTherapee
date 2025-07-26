@@ -288,7 +288,7 @@ jobs:
           git clone https://github.com/libjxl/libjxl.git
           cd libjxl
           git checkout v0.11.1
-          sh ./deps.sh
+          ./deps.sh
           cmake .. -DBUILD_TESTING=OFF
           sudo make -j$(nproc) install
 
