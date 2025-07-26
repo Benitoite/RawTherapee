@@ -385,7 +385,7 @@ jobs:
         with:
           key: appimage-tools-1
           path: |
-            ./build/linuxdeploy-x86_64.AppImage
+            ./build/linuxdeploy-arm64.AppImage
             ./build/linuxdeploy-plugin-gtk.sh
 
       - name: Download AppImage tools
@@ -394,7 +394,7 @@ jobs:
         run: |
           echo "Downloading linuxdeploy."
           LINUXDEPLOY_TAG='1-alpha-20240109-1'
-          curl --location "https://github.com/linuxdeploy/linuxdeploy/releases/download/${LINUXDEPLOY_TAG}/linuxdeploy-x86_64.AppImage" > linuxdeploy-x86_64.AppImage
+          curl --location "https://github.com/linuxdeploy/linuxdeploy/releases/download/${LINUXDEPLOY_TAG}/linuxdeploy-arm64.AppImage" > linuxdeploy-arm64.AppImage
           echo "Downloading GTK plugin for linuxdeploy."
           curl --location 'https://raw.githubusercontent.com/linuxdeploy/linuxdeploy-plugin-gtk/master/linuxdeploy-plugin-gtk.sh' \
             | sed 's/^\(export GTK_THEME\)/#\1/' \
@@ -425,7 +425,7 @@ jobs:
           echo "AppImage file name will be '$OUTPUT'."
 
           echo "Packaging AppImage."
-          ./linuxdeploy-x86_64.AppImage \
+          ./linuxdeploy-arm64.AppImage \
             --appimage-extract-and-run \
             --appdir AppDir \
             --plugin gtk \
