@@ -285,7 +285,7 @@ jobs:
         run: |
           echo "Installing makedeb..."
           curl -Ss -qgb "" -fLC - --retry 3 --retry-delay 3 -o makedeb.deb \
-            "https://github.com/makedeb/makedeb/releases/download/v16.1.0-beta1/makedeb-beta_16.1.0-beta1_amd64_focal.deb"
+            "https://github.com/makedeb/makedeb/releases/download/v16.1.0-beta1/makedeb-beta_16.1.0-beta1_arm64_focal.deb"
           DEBIAN_FRONTEND=noninteractive sudo dpkg -i makedeb.deb
 
       - name: Install libjxl
