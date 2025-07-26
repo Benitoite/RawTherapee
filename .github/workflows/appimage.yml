@@ -260,28 +260,7 @@ jobs:
             ${{env.PUBLISH_NAME}}.AppImage
             ${{env.PUBLISH_NAME}}-AppImage-AboutThisBuild.txt
 
-
-name: AppImage Build Arm64
-on:
-  push:
-    branches:
-      - dev
-      - releases
-      - 'release-[0-9]+.*'
-    tags:
-      - '[0-9]+.*'
-  pull_request:
-    branches:
-      - dev
-      - releases
-      - 'release-[0-9]+.*'
-  workflow_dispatch:
-
-env:
-  publish_pre_dev_labels: '[]'
-
-jobs:
-  build:
+  armbuild:
     runs-on: ubuntu-22.04-arm
     permissions:
       contents: write
