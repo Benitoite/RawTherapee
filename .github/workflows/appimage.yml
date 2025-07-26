@@ -261,7 +261,7 @@ jobs:
             ${{env.PUBLISH_NAME}}-AppImage-AboutThisBuild.txt
 
 
-name: AppImage Build (arm64)
+name: AppImage Build Arm64
 on:
   push:
     branches:
