@@ -393,8 +393,8 @@ jobs:
         working-directory: ./build
         run: |
           echo "Downloading linuxdeploy."
-          LINUXDEPLOY_TAG='1-alpha-20240109-1'
-          curl --location "https://github.com/linuxdeploy/linuxdeploy/releases/download/${LINUXDEPLOY_TAG}/linuxdeploy-arm64.AppImage" > linuxdeploy-arm64.AppImage
+          LINUXDEPLOY_TAG='1-alpha-20250213-2'
+          curl --location "https://github.com/linuxdeploy/linuxdeploy/releases/download/${LINUXDEPLOY_TAG}/linuxdeploy-aarch64.AppImage" > linuxdeploy-arm64.AppImage
           echo "Downloading GTK plugin for linuxdeploy."
           curl --location 'https://raw.githubusercontent.com/linuxdeploy/linuxdeploy-plugin-gtk/master/linuxdeploy-plugin-gtk.sh' \
             | sed 's/^\(export GTK_THEME\)/#\1/' \
