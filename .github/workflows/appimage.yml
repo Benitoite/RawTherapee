@@ -409,7 +409,7 @@ jobs:
             export VERSION="$(grep -m 1 '^Version: .*$' 'AboutThisBuild.txt' | sed 's/^Version: \(.\+\)$/\1/')"
             echo "Version is '$VERSION'."
             FILTERED_VERSION="$(echo "$VERSION" | sed 's/[^A-z0-9_.-]//g')"
-            ARTIFACT_NAME="RawTherapee_${REF_NAME_FILTERED}_${FILTERED_VERSION}_${{matrix.build_type}}"
+            ARTIFACT_NAME="RawTherapee_${REF_NAME_FILTERED}_${FILTERED_VERSION}_${{matrix.build_type}}-arm64"
           fi
           echo "Artifact name is '$ARTIFACT_NAME'."
 
