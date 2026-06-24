@@ -208,6 +208,7 @@ jobs:
           echo "REF_NAME_FILTERED=$REF_NAME_FILTERED" >> "$(cygpath -u $GITHUB_OUTPUT)"
 
           echo "Renaming artifact."
+          chmod -R u+w "./build/${{matrix.build_type}}"
           mv './build/${{matrix.build_type}}' "./build/$ARTIFACT_NAME"
           if [ -e './build/installer.exe' ]; then
             echo "Renaming installer."
