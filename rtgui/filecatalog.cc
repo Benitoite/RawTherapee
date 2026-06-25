@@ -2449,6 +2449,140 @@ bool FileCatalog::handleShortcutKey (GdkEventKey* event)
         }
     }
 
+#elif defined(__APPLE__)
+
+    //
+    // macOS number row hardware keycodes:
+    //
+    //   0 = 29
+    //   1 = 18
+    //   2 = 19
+    //   3 = 20
+    //   4 = 21
+    //   5 = 23
+    //   6 = 22
+    //   7 = 26
+    //
+    // Original RawTherapee shortcut behavior:
+    //
+    //   Shift+0..5        -> rating filters
+    //   Ctrl+Shift+0..5   -> color label filters
+    //
+
+    if (!alt && shift && !altgr) {
+        switch(event->hardware_keycode) {
+            case 29: // 0
+                if (ctrl) {
+                    categoryButtonToggled(bUnCLabeled, false);
+                } else {
+                    categoryButtonToggled(bUnRanked, false);
+                }
+                return true;
+
+            case 18: // 1
+                if (ctrl) {
+                    categoryButtonToggled(bCLabel[0], false);
+                } else {
+                    categoryButtonToggled(bRank[0], false);
+                }
+                return true;
+
+            case 19: // 2
+                if (ctrl) {
+                    categoryButtonToggled(bCLabel[1], false);
+                } else {
+                    categoryButtonToggled(bRank[1], false);
+                }
+                return true;
+
+            case 20: // 3
+                if (ctrl) {
+                    categoryButtonToggled(bCLabel[2], false);
+                } else {
+                    categoryButtonToggled(bRank[2], false);
+                }
+                return true;
+
+            case 21: // 4
+                if (ctrl) {
+                    categoryButtonToggled(bCLabel[3], false);
+                } else {
+                    categoryButtonToggled(bRank[3], false);
+                }
+                return true;
+
+            case 23: // 5
+                if (ctrl) {
+                    categoryButtonToggled(bCLabel[4], false);
+                } else {
+                    categoryButtonToggled(bRank[4], false);
+                }
+                return true;
+
+            case 22: // 6
+                if (!ctrl) {
+                    categoryButtonToggled(bEdited[0], false);
+                    return true;
+                }
+                break;
+
+            case 26: // 7
+                if (!ctrl) {
+                    categoryButtonToggled(bEdited[1], false);
+                    return true;
+                }
+                break;
+        }
+    }
+
+    if (!alt && !shift) {
+        switch(event->keyval) {
+            case GDK_KEY_Return:
+            case GDK_KEY_KP_Enter:
+                if (BrowsePath->is_focus()) {
+                    FileCatalog::buttonBrowsePathPressed ();
+                    return true;
+                }
+                break;
+        }
+    }
+
+    if (alt && !shift) {
+        switch(event->hardware_keycode) {
+            case 29: // 0
+                categoryButtonToggled(bUnCLabeled, false);
+                return true;
+
+            case 18: // 1
+                categoryButtonToggled(bCLabel[0], false);
+                return true;
+
+            case 19: // 2
+                categoryButtonToggled(bCLabel[1], false);
+                return true;
+
+            case 20: // 3
+                categoryButtonToggled(bCLabel[2], false);
+                return true;
+
+            case 21: // 4
+                categoryButtonToggled(bCLabel[3], false);
+                return true;
+
+            case 23: // 5
+                categoryButtonToggled(bCLabel[4], false);
+                return true;
+
+            case 22: // 6
+                categoryButtonToggled(bRecentlySaved[0], false);
+                return true;
+
+            case 26: // 7
+                categoryButtonToggled(bRecentlySaved[1], false);
+                return true;
+        }
+    }
+
 #else
 
     if (!alt && shift && !altgr) {
