@@ -38,6 +38,39 @@ Glib::RefPtr<Gtk::CssProvider> cssRT;
 
 #if defined(__APPLE__)
 
+static bool macosFocusIsTextEntryWidget(Gtk::Window* window)
+{
+    if (!window) {
+        return false;
+    }
+
+    Gtk::Widget* focus = window->get_focus();
+
+    if (!focus) {
+        return false;
+    }
+
+    GtkWidget* widget = focus->gobj();
+
+    if (!widget) {
+        return false;
+    }
+
+    // GtkEntry and GtkSpinButton both implement GtkEditable.
+    // This prevents global macOS shortcuts from stealing normal typing
+    // inside numeric/text parameter entry fields.
+    if (GTK_IS_EDITABLE(widget)) {
+        return true;
+    }
+
+    // Defensive: text views are not GtkEditable.
+    if (GTK_IS_TEXT_VIEW(widget)) {
+        return true;
+    }
+
+    return false;
+}
+
 static guint osx_key_snooper_id = 0;
 
 static gboolean
@@ -801,8 +834,13 @@ bool RTWindow::selectEditorPanel (const std::string &name)
     return false;
 }
 
-bool RTWindow::keyPressed (GdkEventKey* event)
+bool RTWindow::keyPressed(GdkEventKey* event)
 {
+#if defined(__APPLE__)
+    if (macosFocusIsTextEntryWidget(this)) {
+        return false;
+    }
+#endif
 
     bool ctrl = event->state & GDK_CONTROL_MASK;
     //bool shift = event->state & GDK_SHIFT_MASK;
