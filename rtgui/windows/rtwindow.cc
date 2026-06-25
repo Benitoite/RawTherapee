@@ -37,6 +37,73 @@ Glib::RefPtr<Gtk::CssProvider> cssForced;
 Glib::RefPtr<Gtk::CssProvider> cssRT;
 
 #if defined(__APPLE__)
+
+static guint osx_key_snooper_id = 0;
+
+static gboolean
+osx_is_number_row_0_to_5(const GdkEventKey* event)
+{
+    if (!event) {
+        return FALSE;
+    }
+
+    switch (event->hardware_keycode) {
+        case 18: // 1
+        case 19: // 2
+        case 20: // 3
+        case 21: // 4
+        case 23: // 5
+        case 29: // 0
+            return TRUE;
+
+        default:
+            break;
+    }
+
+    return FALSE;
+}
+
+static gint
+osx_key_snooper_cb(GtkWidget* grab_widget, GdkEventKey* event, gpointer data)
+{
+    RTWindow* const rtWin = static_cast<RTWindow*>(data);
+
+    if (!rtWin || !event) {
+        return FALSE;
+    }
+
+    // gtk_key_snooper sees both key-press and key-release.
+    // Never send key releases into RTWindow::keyPressed().
+    if (event->type != GDK_KEY_PRESS) {
+        return FALSE;
+    }
+
+    const guint macCommandMasks = GDK_MOD2_MASK | GDK_META_MASK | GDK_SUPER_MASK;
+
+    const bool macCmd = event->state & macCommandMasks;
+    const bool macAlt = event->state & GDK_MOD1_MASK;
+
+    const guint lowerKey = gdk_keyval_to_lower(event->keyval);
+
+    // Global Command+Q, regardless of focus.
+    if (macCmd && lowerKey == GDK_KEY_q) {
+        return rtWin->keyPressed(event) ? TRUE : FALSE;
+    }
+
+    // macOS number-row bridge.
+    //
+    // Catch these before a focused child widget eats them:
+    //   0..5
+    //   Shift+0..5
+    //   Ctrl+Shift+0..5
+    //   Command+0..5   -> translated later to Ctrl+Shift+0..5
+    if (!macAlt && osx_is_number_row_0_to_5(event)) {
+        return rtWin->keyPressed(event) ? TRUE : FALSE;
+    }
+
+    return FALSE;
+}
+
 static gboolean
 osx_should_quit_cb(GtkosxApplication *app, gpointer data)
 {
@@ -299,7 +366,13 @@ RTWindow::RTWindow ()
             osxApp,
             FALSE
         );
-
+        
+        if (!osx_key_snooper_id) {
+            osx_key_snooper_id = gtk_key_snooper_install(
+                osx_key_snooper_cb,
+                this
+            );
+        }
     }
 #endif
     versionStr = "RawTherapee " + App::VERSION;
@@ -481,6 +554,11 @@ RTWindow::~RTWindow()
 
     pldBridge = nullptr;
 #if defined(__APPLE__)
+    if (osx_key_snooper_id) {
+        gtk_key_snooper_remove(osx_key_snooper_id);
+        osx_key_snooper_id = 0;
+    }
+
     g_object_unref (osxApp);
 #endif
 
@@ -728,7 +806,8 @@ bool RTWindow::keyPressed (GdkEventKey* event)
 
     bool try_quit = false;
 #if defined(__APPLE__)
-    bool apple_cmd = event->state & GDK_MOD2_MASK;
+    const guint macCommandMasks = GDK_MOD2_MASK | GDK_META_MASK | GDK_SUPER_MASK;
+    bool apple_cmd = event->state & macCommandMasks;
 
     if (event->keyval == GDK_KEY_q && apple_cmd) {
         try_quit = true;
@@ -747,6 +826,159 @@ bool RTWindow::keyPressed (GdkEventKey* event)
             gtk_main_quit();
         }
     }
+#if defined(__APPLE__)
+    GdkEventKey fixedEvent = *event;
+
+    const bool opt     = fixedEvent.state & GDK_MOD1_MASK;
+    const bool cmdDown = fixedEvent.state & macCommandMasks;
+
+    if (opt || cmdDown) {
+        switch (fixedEvent.hardware_keycode) {
+            // Letters: normalize only for Option shortcuts.
+            case 0:  if (opt) fixedEvent.keyval = GDK_KEY_a; break;
+            case 11: if (opt) fixedEvent.keyval = GDK_KEY_b; break;
+            case 8:  if (opt) fixedEvent.keyval = GDK_KEY_c; break;
+            case 2:  if (opt) fixedEvent.keyval = GDK_KEY_d; break;
+            case 14: if (opt) fixedEvent.keyval = GDK_KEY_e; break;
+            case 3:  if (opt) fixedEvent.keyval = GDK_KEY_f; break;
+            case 5:  if (opt) fixedEvent.keyval = GDK_KEY_g; break;
+            case 4:  if (opt) fixedEvent.keyval = GDK_KEY_h; break;
+            case 34: if (opt) fixedEvent.keyval = GDK_KEY_i; break;
+            case 38: if (opt) fixedEvent.keyval = GDK_KEY_j; break;
+            case 40: if (opt) fixedEvent.keyval = GDK_KEY_k; break;
+            case 37: if (opt) fixedEvent.keyval = GDK_KEY_l; break;
+            case 46: if (opt) fixedEvent.keyval = GDK_KEY_m; break;
+            case 45: if (opt) fixedEvent.keyval = GDK_KEY_n; break;
+            case 31: if (opt) fixedEvent.keyval = GDK_KEY_o; break;
+            case 35: if (opt) fixedEvent.keyval = GDK_KEY_p; break;
+            case 12: if (opt) fixedEvent.keyval = GDK_KEY_q; break;
+            case 15: if (opt) fixedEvent.keyval = GDK_KEY_r; break;
+            case 1:  if (opt) fixedEvent.keyval = GDK_KEY_s; break;
+            case 17: if (opt) fixedEvent.keyval = GDK_KEY_t; break;
+            case 32: if (opt) fixedEvent.keyval = GDK_KEY_u; break;
+            case 9:  if (opt) fixedEvent.keyval = GDK_KEY_v; break;
+            case 13: if (opt) fixedEvent.keyval = GDK_KEY_w; break;
+            case 7:  if (opt) fixedEvent.keyval = GDK_KEY_x; break;
+            case 16: if (opt) fixedEvent.keyval = GDK_KEY_y; break;
+            case 6:  if (opt) fixedEvent.keyval = GDK_KEY_z; break;
+
+            // macOS function-key hardware codes.
+            case 122: fixedEvent.keyval = GDK_KEY_F1; break;
+            case 120: fixedEvent.keyval = GDK_KEY_F2; break;
+            case 99:  fixedEvent.keyval = GDK_KEY_F3; break;
+            case 118: fixedEvent.keyval = GDK_KEY_F4; break;
+            case 96:  fixedEvent.keyval = GDK_KEY_F5; break;
+            case 97:  fixedEvent.keyval = GDK_KEY_F6; break;
+            case 98:  fixedEvent.keyval = GDK_KEY_F7; break;
+            case 100: fixedEvent.keyval = GDK_KEY_F8; break;
+            case 101: fixedEvent.keyval = GDK_KEY_F9; break;
+            case 109: fixedEvent.keyval = GDK_KEY_F10; break;
+            case 103: fixedEvent.keyval = GDK_KEY_F11; break;
+            case 111: fixedEvent.keyval = GDK_KEY_F12; break;
+
+            default:
+                break;
+        }
+
+        event = &fixedEvent;
+    }
+
+    //
+    // macOS number-row direct bridge.
+    //
+    // Hardware codes:
+    //   1 = 18
+    //   2 = 19
+    //   3 = 20
+    //   4 = 21
+    //   5 = 23
+    //   0 = 29
+    //
+    // Desired behavior:
+    //   1..5              -> rating
+    //   Shift+1..5        -> rating
+    //   Command+1..5      -> color label
+    //   Ctrl+Shift+1..5   -> color label
+    //
+    if (fpanel && fpanel->fileCatalog) {
+        bool numberRow = false;
+
+        switch (event->hardware_keycode) {
+            case 18: // 1
+            case 19: // 2
+            case 20: // 3
+            case 21: // 4
+            case 23: // 5
+            case 29: // 0
+                numberRow = true;
+                break;
+
+            default:
+                break;
+        }
+
+        if (numberRow) {
+            const bool macCmd   = event->state & macCommandMasks;
+            const bool macCtrl  = event->state & GDK_CONTROL_MASK;
+            const bool macShift = event->state & GDK_SHIFT_MASK;
+            const bool macAlt   = event->state & GDK_MOD1_MASK;
+
+            // Command+0..5: leave as Command-number.
+            // FileCatalog will not steal it because Shift is not set.
+            // FileBrowser handles Command-number as color label.
+            if (macCmd && !macCtrl && !macShift && !macAlt) {
+                if (fpanel->fileCatalog->handleShortcutKey(event)) {
+                    return true;
+                }
+
+                return true;
+            }
+
+            // Ctrl+Shift+0..5: convert to fake Command+number.
+            // This prevents FileCatalog from stealing it as a filter shortcut.
+            if (!macCmd && macCtrl && macShift && !macAlt) {
+                GdkEventKey labelEvent = *event;
+
+                labelEvent.state &= ~GDK_CONTROL_MASK;
+                labelEvent.state &= ~GDK_SHIFT_MASK;
+                labelEvent.state &= ~GDK_MOD1_MASK;
+                labelEvent.state &= ~macCommandMasks;
+                labelEvent.state |= GDK_MOD2_MASK | GDK_META_MASK;
+
+                if (fpanel->fileCatalog->handleShortcutKey(&labelEvent)) {
+                    return true;
+                }
+
+                return true;
+            }
+
+            // Shift+0..5: convert to plain number.
+            // This prevents FileCatalog from stealing it as a filter shortcut.
+            if (!macCmd && !macCtrl && macShift && !macAlt) {
+                GdkEventKey ratingEvent = *event;
+
+                ratingEvent.state &= ~GDK_SHIFT_MASK;
+                ratingEvent.state &= ~GDK_MOD1_MASK;
+                ratingEvent.state &= ~macCommandMasks;
+
+                if (fpanel->fileCatalog->handleShortcutKey(&ratingEvent)) {
+                    return true;
+                }
+
+                return true;
+            }
+
+            // Plain 0..5: rating.
+            if (!macCmd && !macCtrl && !macShift && !macAlt) {
+                if (fpanel->fileCatalog->handleShortcutKey(event)) {
+                    return true;
+                }
+
+                return true;
+            }
+        }
+    }
+#endif
 
     if (event->keyval == GDK_KEY_F11) {
         toggle_fullscreen();
