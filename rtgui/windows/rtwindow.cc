@@ -18,6 +18,9 @@
  */
 
 #include <gtkmm.h>
+#if defined(__APPLE__)
+#include <gtkmacintegration/gtkosxapplication.h>
+#endif
 #include "rtwindow.h"
 #include "cachemanager.h"
 #include "preferences.h"
@@ -36,6 +39,17 @@
 
 Glib::RefPtr<Gtk::CssProvider> cssForced;
 Glib::RefPtr<Gtk::CssProvider> cssRT;
+
+static inline bool rtShortcutCtrl(const GdkEventKey* event)
+{
+#if defined(__APPLE__)
+    // On macOS, use Command for RawTherapee's top-level shortcuts.
+    // GTK/GDK reports Command as MOD2 with the Quartz backend.
+    return event->state & GDK_MOD2_MASK;
+#else
+    return event->state & GDK_CONTROL_MASK;
+#endif
+}
 
 #if defined(__APPLE__)
 static gboolean
@@ -211,7 +225,7 @@ RTWindow::RTWindow ()
         GtkWidget *menubar;
         menubar = gtk_menu_bar_new ();
         gtkosx_application_set_menu_bar (osxApp, GTK_MENU_SHELL (menubar));
-        gtkosx_application_set_use_quartz_accelerators (osxApp, FALSE);
+        gtkosx_application_set_use_quartz_accelerators (osxApp, TRUE);
         gtkosx_application_ready (osxApp);
     }
 #endif
@@ -632,34 +646,25 @@ bool RTWindow::selectEditorPanel (const std::string &name)
 
 bool RTWindow::keyPressed (GdkEventKey* event)
 {
-
-    bool ctrl = event->state & GDK_CONTROL_MASK;
-    //bool shift = event->state & GDK_SHIFT_MASK;
+    const bool shortcutCtrl = rtShortcutCtrl(event);
 
     bool try_quit = false;
-#if defined(__APPLE__)
-    bool apple_cmd = event->state & GDK_MOD2_MASK;
 
-    if (event->keyval == GDK_KEY_q && apple_cmd) {
+    if (event->keyval == GDK_KEY_q && shortcutCtrl) {
         try_quit = true;
     }
-
-#else
-
-    if (event->keyval == GDK_KEY_q && ctrl) {
-        try_quit = true;
-    }
-
-#endif
 
     if (try_quit) {
         if (!on_delete_event (nullptr)) {
             gtk_main_quit();
         }
+
+        return true;
     }
 
     if (event->keyval == GDK_KEY_F11) {
         toggle_fullscreen();
+        return true;
     }
 
     if (App::get().isSimpleEditor())
@@ -668,7 +673,7 @@ bool RTWindow::keyPressed (GdkEventKey* event)
         return epanel->handleShortcutKey (event);
     };
 
-    if (ctrl) {
+    if (shortcutCtrl) {
         switch (event->keyval) {
             case GDK_KEY_F2: // file browser panel
                 mainNB->set_current_page (mainNB->page_num (*fpanel));
@@ -678,14 +683,14 @@ bool RTWindow::keyPressed (GdkEventKey* event)
                 mainNB->set_current_page (mainNB->page_num (*bpanel));
                 return true;
 
-            case GDK_KEY_F4: //single tab mode, editor panel
+            case GDK_KEY_F4: // single tab mode, editor panel
                 if (isSingleTabMode() && epanel) {
                     mainNB->set_current_page (mainNB->page_num (*epanel));
                 }
 
                 return true;
 
-            case GDK_KEY_w: //multi-tab mode, close editor panel
+            case GDK_KEY_w: // multi-tab mode, close editor panel
                 if (!isSingleTabMode() &&
                         mainNB->get_current_page() != mainNB->page_num (*fpanel) &&
                         mainNB->get_current_page() != mainNB->page_num (*bpanel)) {
