@@ -1187,6 +1187,8 @@ bool FileBrowser::keyPressed (GdkEventKey* event)
     bool alt   = event->state & GDK_MOD1_MASK;
 #ifdef __WIN32__
     bool altgr = event->state & GDK_MOD2_MASK;
+#else
+    bool altgr = event->state & GDK_MOD5_MASK;
 #endif
 
     if ((event->keyval == GDK_KEY_C || event->keyval == GDK_KEY_c) && ctrl && shift) {
@@ -1330,6 +1332,110 @@ bool FileBrowser::keyPressed (GdkEventKey* event)
         case 0x35:  // 5-key
             requestColorLabel (5);
             return true;
+        }
+    }
+#elif defined(__APPLE__)
+
+    //
+    // macOS number row hardware keycodes:
+    //
+    //   0 = 29
+    //   1 = 18
+    //   2 = 19
+    //   3 = 20
+    //   4 = 21
+    //   5 = 23
+    //
+    // RawTherapee selected-thumbnail shortcuts:
+    //
+    //   0..5              -> rating
+    //   Shift+0..5        -> rating, converted to plain by RTWindow
+    //   Command+0..5      -> color label
+    //   Ctrl+Shift+0..5   -> color label, converted to fake Command by RTWindow
+    //
+
+    else if (!alt && !altgr) {
+        const guint macCommandMasks = GDK_MOD2_MASK | GDK_META_MASK | GDK_SUPER_MASK;
+        const bool macCmd = event->state & macCommandMasks;
+
+        if (macCmd && !ctrl && !shift) {
+            switch(event->hardware_keycode) {
+                case 29:
+                    requestColorLabel (0);
+                    return true;
+
+                case 18:
+                    requestColorLabel (1);
+                    return true;
+
+                case 19:
+                    requestColorLabel (2);
+                    return true;
+
+                case 20:
+                    requestColorLabel (3);
+                    return true;
+
+                case 21:
+                    requestColorLabel (4);
+                    return true;
+
+                case 23:
+                    requestColorLabel (5);
+                    return true;
+            }
+        } else if (!macCmd && !ctrl) {
+            switch(event->hardware_keycode) {
+                case 29:
+                    requestRanking (0);
+                    return true;
+
+                case 18:
+                    requestRanking (1);
+                    return true;
+
+                case 19:
+                    requestRanking (2);
+                    return true;
+
+                case 20:
+                    requestRanking (3);
+                    return true;
+
+                case 21:
+                    requestRanking (4);
+                    return true;
+
+                case 23:
+                    requestRanking (5);
+                    return true;
+            }
+        } else if (!macCmd && ctrl && shift) {
+            switch(event->hardware_keycode) {
+                case 29:
+                    requestColorLabel (0);
+                    return true;
+
+                case 18:
+                    requestColorLabel (1);
+                    return true;
+
+                case 19:
+                    requestColorLabel (2);
+                    return true;
+
+                case 20:
+                    requestColorLabel (3);
+                    return true;
+
+                case 21:
+                    requestColorLabel (4);
+                    return true;
+
+                case 23:
+                    requestColorLabel (5);
+                    return true;
+            }
         }
     }
 
