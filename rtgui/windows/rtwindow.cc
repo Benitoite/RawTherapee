@@ -95,9 +95,12 @@ osx_key_snooper_cb(GtkWidget* grab_widget, GdkEventKey* event, gpointer data)
     // Catch these before a focused child widget eats them:
     //   0..5
     //   Shift+0..5
+    //   Option+0..5
     //   Ctrl+Shift+0..5
-    //   Command+0..5   -> translated later to Ctrl+Shift+0..5
-    if (!macAlt && osx_is_number_row_0_to_5(event)) {
+    //   Command+Shift+0..5
+    //
+    // Option+0..5 is needed for FileCatalog color-label filter shortcuts.
+    if (osx_is_number_row_0_to_5(event)) {
         return rtWin->keyPressed(event) ? TRUE : FALSE;
     }
 
@@ -923,10 +926,9 @@ bool RTWindow::keyPressed (GdkEventKey* event)
             const bool macShift = event->state & GDK_SHIFT_MASK;
             const bool macAlt   = event->state & GDK_MOD1_MASK;
 
-            // Command+0..5: leave as Command-number.
-            // FileCatalog will not steal it because Shift is not set.
-            // FileBrowser handles Command-number as color label.
-            if (macCmd && !macCtrl && !macShift && !macAlt) {
+            // Option+0..5: color-label FILTER shortcuts.
+            // Route unchanged to FileCatalog.
+            if (!macCmd && !macCtrl && !macShift && macAlt) {
                 if (fpanel->fileCatalog->handleShortcutKey(event)) {
                     return true;
                 }
@@ -934,16 +936,40 @@ bool RTWindow::keyPressed (GdkEventKey* event)
                 return true;
             }
 
-            // Ctrl+Shift+0..5: convert to fake Command+number.
-            // This prevents FileCatalog from stealing it as a filter shortcut.
-            if (!macCmd && macCtrl && macShift && !macAlt) {
+            // Plain 0..5: apply rating to selected thumbnails.
+            //
+            // Route unchanged. FileCatalog will not consume it because Shift/Alt are not set,
+            // so it falls through to FileBrowser::keyPressed(), where plain 0..5 already
+            // calls requestRanking().
+            if (!macCmd && !macCtrl && !macShift && !macAlt) {
+                if (fpanel->fileCatalog->handleShortcutKey(event)) {
+                    return true;
+                }
+
+                return true;
+            }
+
+            // Shift+0..5: also rating FILTER shortcuts.
+            // Route unchanged to FileCatalog.
+            if (!macCmd && !macCtrl && macShift && !macAlt) {
+                if (fpanel->fileCatalog->handleShortcutKey(event)) {
+                    return true;
+                }
+
+                return true;
+            }
+
+            // Cmd+Shift+0..5: color LABEL assignment.
+            //
+            // FileBrowser already understands Ctrl+Shift+0..5 as color labels,
+            // so convert Command+Shift into Ctrl+Shift and let the normal path handle it.
+            if (macCmd && !macCtrl && macShift && !macAlt) {
                 GdkEventKey labelEvent = *event;
 
-                labelEvent.state &= ~GDK_CONTROL_MASK;
-                labelEvent.state &= ~GDK_SHIFT_MASK;
-                labelEvent.state &= ~GDK_MOD1_MASK;
                 labelEvent.state &= ~macCommandMasks;
-                labelEvent.state |= GDK_MOD2_MASK | GDK_META_MASK;
+                labelEvent.state &= ~GDK_MOD1_MASK;
+                labelEvent.state |= GDK_CONTROL_MASK;
+                labelEvent.state |= GDK_SHIFT_MASK;
 
                 if (fpanel->fileCatalog->handleShortcutKey(&labelEvent)) {
                     return true;
@@ -952,24 +978,10 @@ bool RTWindow::keyPressed (GdkEventKey* event)
                 return true;
             }
 
-            // Shift+0..5: convert to plain number.
-            // This prevents FileCatalog from stealing it as a filter shortcut.
-            if (!macCmd && !macCtrl && macShift && !macAlt) {
-                GdkEventKey ratingEvent = *event;
-
-                ratingEvent.state &= ~GDK_SHIFT_MASK;
-                ratingEvent.state &= ~GDK_MOD1_MASK;
-                ratingEvent.state &= ~macCommandMasks;
-
-                if (fpanel->fileCatalog->handleShortcutKey(&ratingEvent)) {
-                    return true;
-                }
-
-                return true;
-            }
-
-            // Plain 0..5: rating.
-            if (!macCmd && !macCtrl && !macShift && !macAlt) {
+            // Ctrl+Shift+0..5: color LABEL assignment.
+            // Route unchanged; FileCatalog should not steal this if you applied
+            // the macOS-only !ctrl guard in the rating-filter block.
+            if (!macCmd && macCtrl && macShift && !macAlt) {
                 if (fpanel->fileCatalog->handleShortcutKey(event)) {
                     return true;
                 }

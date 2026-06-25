@@ -2469,7 +2469,11 @@ bool FileCatalog::handleShortcutKey (GdkEventKey* event)
     //   Ctrl+Shift+0..5   -> color label filters
     //
 
+#if defined(__APPLE__)
+    if (!alt && shift && !altgr && !ctrl) {
+#else
     if (!alt && shift && !altgr) {
+#endif
         switch(event->hardware_keycode) {
             case 29: // 0
                 if (ctrl) {
@@ -2585,7 +2589,11 @@ bool FileCatalog::handleShortcutKey (GdkEventKey* event)
 
 #else
 
+#if defined(__APPLE__)
+    if (!alt && shift && !altgr && !ctrl) {
+#else
     if (!alt && shift && !altgr) {
+#endif
         switch(event->hardware_keycode) {
         case 0x13:
             categoryButtonToggled(bUnRanked, false);
