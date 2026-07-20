@@ -30,7 +30,7 @@ function GetDependencies {
 function CheckLink {
     GetDependencies "$1" | while read -r; do
         local dest="${LIB}/$(basename "${REPLY}")"
-        test -f "${dest}" || { ditto --arch "${arch}" "${REPLY}" "${dest}"; CheckLink "${dest}"; }
+        test -f "${dest}" || { cp -RL --arch "${arch}" "${REPLY}" "${dest}"; CheckLink "${dest}"; }
     done
 }
 
@@ -180,11 +180,11 @@ install -d "${LIB}"
 install -d "${ETC}"
 
 msg "Copying binary executable files."
-ditto "${CMAKE_BUILD_TYPE}/MacOS" "${MACOS}"
+cp -RL "${CMAKE_BUILD_TYPE}/MacOS" "${MACOS}"
 
 msg "Copying Resources directory."
 #cp AboutThisBuild.txt "${RESOURCES}"
-ditto "${CMAKE_BUILD_TYPE}/Resources" "${RESOURCES}"
+cp -RL "${CMAKE_BUILD_TYPE}/Resources" "${RESOURCES}"
 
 echo "\n--------\n" >> "${RESOURCES}/AboutThisBuild.txt"
 echo "Bundle system: $(sysctl -n machdep.cpu.brand_string)" >> "${RESOURCES}/AboutThisBuild.txt"
@@ -198,14 +198,14 @@ mkdir -p "${RESOURCES}/share/lensfun"
 lensfunversion=$(pkg-config --modversion lensfun | cut -f3 -d'.')
 if [ $lensfunversion = 95 ]
 then
-    ditto ${LOCAL_PREFIX}/share/lensfun/version_2/* "${RESOURCES}/share/lensfun"
+    cp -RL ${LOCAL_PREFIX}/share/lensfun/version_2/* "${RESOURCES}/share/lensfun"
     # Copy liblensfun to Frameworks
-    ditto ${LOCAL_PREFIX}/lib/liblensfun.2.dylib "${CONTENTS}/Frameworks/liblensfun.2.dylib"
+    cp -RL ${LOCAL_PREFIX}/lib/liblensfun.2.dylib "${CONTENTS}/Frameworks/liblensfun.2.dylib"
 
 else
-    ditto ${LOCAL_PREFIX}/share/lensfun/version_1/* "${RESOURCES}/share/lensfun"
+    cp -RL ${LOCAL_PREFIX}/share/lensfun/version_1/* "${RESOURCES}/share/lensfun"
     # Copy liblensfun to Frameworks
-    ditto ${LOCAL_PREFIX}/lib/liblensfun.1.dylib "${CONTENTS}/Frameworks/liblensfun.1.dylib"
+    cp -RL ${LOCAL_PREFIX}/lib/liblensfun.1.dylib "${CONTENTS}/Frameworks/liblensfun.1.dylib"
 fi
 
 # Copy libomp to Frameworks
@@ -234,7 +234,7 @@ msg "Copying configuration files from ${GTK_PREFIX}:"
 cp -RL {"${GDK_PREFIX}/lib","${LIB}"}/gdk-pixbuf-2.0
 msg "Copying library modules from ${GTK_PREFIX}:"
 cp -RL {"${GDK_PREFIX}/lib","${LIB}"}/gdk-pixbuf-2.0
-ditto --arch "${arch}" {"${GTK_PREFIX}/lib","${LIB}"}/gtk-3.0
+cp -RL --arch "${arch}" {"${GTK_PREFIX}/lib","${LIB}"}/gtk-3.0
 msg "Removing static libraries and cache files:"
 find -E "${LIB}" -type f -regex '.*\.(a|la|cache)$' | while read -r; do rm "${REPLY}"; done
 
@@ -247,8 +247,8 @@ rm -r "${LIB}"/gdk-pixbuf-2.0
 
 # GTK+3 themes
 msg "Copy GTK+3 theme and icon resources:"
-ditto {"${LOCAL_PREFIX}","${RESOURCES}"}/share/themes/Mac/gtk-3.0/gtk-keys.css
-ditto {"${LOCAL_PREFIX}","${RESOURCES}"}/share/themes/Default/gtk-3.0/gtk-keys.css
+cp -RL {"${LOCAL_PREFIX}","${RESOURCES}"}/share/themes/Mac/gtk-3.0/gtk-keys.css
+cp -RL {"${LOCAL_PREFIX}","${RESOURCES}"}/share/themes/Default/gtk-3.0/gtk-keys.css
 
 # Adwaita icons
 msg "Copy Adwaita icons"
@@ -288,14 +288,14 @@ ModifyInstallNames 2>/dev/null
 
 # Mime directory
 msg "Copying shared files from ${GTK_PREFIX}:"
-ditto {"${LOCAL_PREFIX}","${RESOURCES}"}/share/mime
+cp -RL {"${LOCAL_PREFIX}","${RESOURCES}"}/share/mime
 
 msg "Installing required application bundle files:"
 PROJECT_SOURCE_DATA_DIR="${PROJECT_SOURCE_DIR}/tools/osx"
-ditto "${PROJECT_SOURCE_DIR}/rtdata/fonts" "${ETC}/fonts"
+cp -RL "${PROJECT_SOURCE_DIR}/rtdata/fonts" "${ETC}/fonts"
 
 # App bundle resources
-ditto "${PROJECT_SOURCE_DATA_DIR}/"{rawtherapee,profile}.icns "${RESOURCES}"
+cp -RL "${PROJECT_SOURCE_DATA_DIR}/"{rawtherapee,profile}.icns "${RESOURCES}"
 
 update-mime-database -V  "${RESOURCES}/share/mime"
 cp -RL "${LOCAL_PREFIX}/share/locale" "${RESOURCES}/share/locale"
@@ -398,7 +398,7 @@ fi
 # Notarize the app
 if [[ -n $NOTARY ]]; then
     msg "Notarizing the application:"
-    ditto -c -k --sequesterRsrc --keepParent "${APP}" "${APP}.zip"
+    cp -RL -c -k --sequesterRsrc --keepParent "${APP}" "${APP}.zip"
     echo "Uploading..."
     sudo xcrun notarytool submit "${APP}.zip" ${NOTARY} --wait
     sudo xcrun stapler staple "${APP}"
