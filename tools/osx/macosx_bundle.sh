@@ -55,16 +55,6 @@ die() {
     exit 1
 }
 
-copy_tree() {
-    local src=$1
-    local dst=$2
-
-    [[ -d "$src" ]] || die "Missing directory: $src"
-    install -d "$dst"
-    ditto "$src" "$dst" ||
-        die "Failed to copy directory: $src -> $dst"
-}
-
 # Copy a resource hierarchy as real files. Package-manager share directories
 # commonly contain relative symlinks into a Cellar or ports tree; preserving
 # those links makes the application bundle non-relocatable and invalidates it
@@ -294,7 +284,7 @@ resolve_file "$lensfun_library_name" \
     "${LOCAL_PREFIX}/lib/${lensfun_library_name}" \
     "${lensfun_libdir}/${lensfun_library_name}"
 lensfun_library="$RESOLVED_FILE"
-copy_tree "$lensfun_data_dir" "${RESOURCES}/share/lensfun"
+copy_tree_dereference "$lensfun_data_dir" "${RESOURCES}/share/lensfun"
 copy_macho "$lensfun_library" "${LIB}/${lensfun_library_name}"
 
 # libomp can be directly linked, nested under lib/ by MacPorts, or keg-only
@@ -441,13 +431,6 @@ msg "Copying shared files from ${GTK_PREFIX}:"
 copy_tree_dereference \
     "${LOCAL_PREFIX}/share/mime" \
     "${RESOURCES}/share/mime"
-
-msg "Installing required application bundle files:"
-if [[ -d "${PROJECT_SOURCE_DIR}/rtdata/fonts" ]]; then
-    copy_tree "${PROJECT_SOURCE_DIR}/rtdata/fonts" "${ETC}/fonts"
-else
-    msg "No rtdata/fonts directory in this source tree; skipping it."
-fi
 
 # App bundle resources
 PROJECT_SOURCE_DATA_DIR="${PROJECT_SOURCE_DIR}/tools/osx"
