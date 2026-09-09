@@ -348,6 +348,7 @@ void Framing::setupEvents()
     EvFramingBorderRed          = m->newEvent(RESIZE, "HISTORY_MSG_FRAMING_BORDER_RED");
     EvFramingBorderGreen        = m->newEvent(RESIZE, "HISTORY_MSG_FRAMING_BORDER_GREEN");
     EvFramingBorderBlue         = m->newEvent(RESIZE, "HISTORY_MSG_FRAMING_BORDER_BLUE");
+    EvFramingAnnotation         = m->newEvent(RESIZE, "HISTORY_MSG_FRAMING_ANNOTATION");
     // clang-format on
 }
 
@@ -506,7 +507,15 @@ void Framing::setupBorderColorsGui()
     colorFrame->add(*colorPreview);
     box->add(*colorFrame);
 
+    Gtk::Label* const annotationLabel = Gtk::manage(new Gtk::Label(M("TP_FRAMING_ANNOTATION")));
+    box->add(*annotationLabel);
+
+    borderAnnotation = Gtk::manage(new Gtk::Entry());
+    borderAnnotation->set_tooltip_text(M("TP_FRAMING_ANNOTATION_TOOLTIP"));
+    box->add(*borderAnnotation);
+
     frame->add(*box);
+
     pack_start(*frame);
 
     updateBorderColorGui();
@@ -514,13 +523,16 @@ void Framing::setupBorderColorsGui()
     redAdj->setAdjusterListener(this);
     greenAdj->setAdjusterListener(this);
     blueAdj->setAdjusterListener(this);
+
+    annotationChanged = borderAnnotation->signal_changed().connect(
+        sigc::mem_fun(*this, &Framing::onAnnotationChanged));
 }
 
 void Framing::read(const rtengine::procparams::ProcParams* pp, const ParamsEdited* pedited)
 {
     DisableListener disableListener(this);
 
-    std::array<ConnectionBlocker, 13> blockers = {
+    std::array<ConnectionBlocker, 14> blockers = {
         ConnectionBlocker(framingMethodChanged),
         ConnectionBlocker(aspectRatioChanged),
         ConnectionBlocker(orientationChanged),
@@ -533,7 +545,8 @@ void Framing::read(const rtengine::procparams::ProcParams* pp, const ParamsEdite
         ConnectionBlocker(minWidth.connection),
         ConnectionBlocker(minHeight.connection),
         ConnectionBlocker(absWidth.connection),
-        ConnectionBlocker(absHeight.connection)
+        ConnectionBlocker(absHeight.connection),
+        ConnectionBlocker(annotationChanged),
     };
 
     BlockAdjusterEvents blockRelative(relativeBorderSize);
@@ -583,6 +596,10 @@ void Framing::readParams(const rtengine::procparams::ProcParams* pp)
     redAdj->setValue(params.borderRed);
     greenAdj->setValue(params.borderGreen);
     blueAdj->setValue(params.borderBlue);
+
+    borderAnnotation->set_text(params.borderAnnotation);
+    borderAnnotation->set_placeholder_text("");
+    annotationEdited = true;
 }
 
 void Framing::readEdited(const ParamsEdited* pedited)
@@ -622,6 +639,11 @@ void Framing::readEdited(const ParamsEdited* pedited)
     redAdj->setEditedState(edits.borderRed ? Edited : UnEdited);
     greenAdj->setEditedState(edits.borderGreen ? Edited : UnEdited);
     blueAdj->setEditedState(edits.borderBlue ? Edited : UnEdited);
+    annotationEdited = edits.borderAnnotation;
+    if (!annotationEdited && batchMode) {
+        borderAnnotation->set_text("");
+        borderAnnotation->set_placeholder_text(M("GENERAL_UNCHANGED"));
+    }
 }
 
 void Framing::write(rtengine::procparams::ProcParams* pp, ParamsEdited* pedited)
@@ -655,6 +677,8 @@ void Framing::writeParams(rtengine::procparams::ProcParams* pp)
     params.borderRed = redAdj->getValue();
     params.borderGreen = greenAdj->getValue();
     params.borderBlue = blueAdj->getValue();
+
+    params.borderAnnotation = borderAnnotation->get_buffer()->get_text();
 }
 
 void Framing::writeEdited(ParamsEdited* pedited)
@@ -684,6 +708,7 @@ void Framing::writeEdited(ParamsEdited* pedited)
     edits.borderRed = redAdj->getEditedState();
     edits.borderGreen = greenAdj->getEditedState();
     edits.borderBlue = blueAdj->getEditedState();
+    edits.borderAnnotation = annotationEdited;
 }
 
 void Framing::setDefaults(const rtengine::procparams::ProcParams* defParams, const ParamsEdited* pedited)
@@ -1089,5 +1114,15 @@ void Framing::onAbsHeightChanged()
     if (listener && (getEnabled() || batchMode)) {
         listener->panelChanged(EvFramingAbsHeight,
                                Glib::ustring::format(absHeight.value->get_value_as_int()));
+    }
+}
+
+void Framing::onAnnotationChanged()
+{
+    annotationEdited = true;
+    borderAnnotation->set_placeholder_text("");
+    if (listener && (getEnabled() || batchMode)) {
+        listener->panelChanged(EvFramingAnnotation,
+                               borderAnnotation->get_buffer()->get_text());
     }
 }

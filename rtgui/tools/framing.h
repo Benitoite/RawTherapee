@@ -73,6 +73,7 @@ public:
     void onMinHeightChanged();
     void onAbsWidthChanged();
     void onAbsHeightChanged();
+    void onAnnotationChanged();
 
 private:
     class AspectRatios;
@@ -148,6 +149,9 @@ private:
     Adjuster* greenAdj;
     Adjuster* blueAdj;
     ColorPreview* colorPreview;
+    Gtk::Entry* borderAnnotation;
+    bool annotationEdited = true;
+    sigc::connection annotationChanged;
 
     // Events
     rtengine::ProcEvent EvFramingEnabled;
@@ -168,6 +172,7 @@ private:
     rtengine::ProcEvent EvFramingBorderRed;
     rtengine::ProcEvent EvFramingBorderGreen;
     rtengine::ProcEvent EvFramingBorderBlue;
+    rtengine::ProcEvent EvFramingAnnotation;
 
     IdleRegister idleRegister;
     std::unique_ptr<AspectRatios> aspectRatioData;

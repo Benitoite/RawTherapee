@@ -493,6 +493,8 @@ endif()
 
 if(WIN32)
     install(DIRECTORY "licenses" DESTINATION "${LICENCEDIR}")
+else()
+    install(FILES "licenses/AnnotationSans_LICENSE" DESTINATION "${LICENCEDIR}/licenses")
 endif()
 
 if(UNIX)
