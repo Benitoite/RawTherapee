@@ -170,6 +170,9 @@ namespace Framing
     DEFINE_KEY(BORDER_GREEN, "BorderGreen");
     DEFINE_KEY(BORDER_BLUE, "BorderBlue");
     DEFINE_KEY(BORDER_ANNOTATION, "BorderAnnotation");
+    DEFINE_KEY(ANNOTATION_FONT_MODE, "AnnotationFontMode");
+    DEFINE_KEY(ANNOTATION_FONT, "AnnotationFont");
+    DEFINE_KEY(ANNOTATION_FONT_SIZE, "AnnotationFontSize");
 
     // Enum mappings
     DEFINE_KEY(FRAMING_METHOD_STANDARD, "Standard");
@@ -251,6 +254,13 @@ void loadFramingParams(
     assignFromKeyfile(keyFile, group, BORDER_GREEN, params.borderGreen, edited.borderGreen);
     assignFromKeyfile(keyFile, group, BORDER_BLUE, params.borderBlue, edited.borderBlue);
     assignFromKeyfile(keyFile, group, BORDER_ANNOTATION, params.borderAnnotation, edited.borderAnnotation);
+    if (keyFile.has_key(group, ANNOTATION_FONT_MODE)
+        && rtengine::parseAnnotationFontMode(keyFile.get_string(group, ANNOTATION_FONT_MODE), params.annotationFontMode)) {
+        edited.annotationFontMode = true;
+    }
+    assignFromKeyfile(keyFile, group, ANNOTATION_FONT, params.annotationFont, edited.annotationFont);
+    assignFromKeyfile(keyFile, group, ANNOTATION_FONT_SIZE, params.annotationFontSize, edited.annotationFontSize);
+    params.annotationFontSize = rtengine::sanitizeAnnotationFontSize(params.annotationFontSize);
 }
 
 void saveFramingParams(
@@ -265,7 +275,7 @@ void saveFramingParams(
 
     const Glib::ustring group{TOOL_NAME};
 
-    const FramingParamsEdited& edited = pedited->framing;
+    const FramingParamsEdited edited = pedited ? pedited->framing : FramingParamsEdited{};
 
     saveToKeyfile(!pedited || edited.enabled, group, TOOL_ENABLED, params.enabled, keyFile);
 
@@ -315,6 +325,11 @@ void saveFramingParams(
     saveToKeyfile(!pedited || edited.borderGreen, group, BORDER_GREEN, params.borderGreen, keyFile);
     saveToKeyfile(!pedited || edited.borderBlue, group, BORDER_BLUE, params.borderBlue, keyFile);
     saveToKeyfile(!pedited || edited.borderAnnotation, group, BORDER_ANNOTATION, params.borderAnnotation, keyFile);
+    saveToKeyfile(!pedited || edited.annotationFontMode, group, ANNOTATION_FONT_MODE,
+                 Glib::ustring(rtengine::annotationFontModeName(params.annotationFontMode)), keyFile);
+    saveToKeyfile(!pedited || edited.annotationFont, group, ANNOTATION_FONT, params.annotationFont, keyFile);
+    saveToKeyfile(!pedited || edited.annotationFontSize, group, ANNOTATION_FONT_SIZE,
+                 rtengine::sanitizeAnnotationFontSize(params.annotationFontSize), keyFile);
 }
 
 void loadCropGuideParams(
@@ -2421,7 +2436,10 @@ bool FramingParams::operator ==(const FramingParams& other) const
         && borderRed == other.borderRed
         && borderGreen == other.borderGreen
         && borderBlue == other.borderBlue
-        && borderAnnotation == other.borderAnnotation;
+        && borderAnnotation == other.borderAnnotation
+        && annotationFontMode == other.annotationFontMode
+        && annotationFont == other.annotationFont
+        && annotationFontSize == other.annotationFontSize;
 }
 
 bool FramingParams::operator !=(const FramingParams& other) const
@@ -2959,6 +2977,10 @@ void ProcParams::setDefaults()
     resize = {};
 
     framing = {};
+    const auto& annotationDefaults = App::get().options();
+    framing.annotationFontMode = annotationDefaults.annotationFontMode;
+    framing.annotationFont = annotationDefaults.annotationFont;
+    framing.annotationFontSize = rtengine::sanitizeAnnotationFontSize(annotationDefaults.annotationFontSize);
 
     icm = {};
 

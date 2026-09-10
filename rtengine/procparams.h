@@ -32,6 +32,7 @@
 #include "params/threshold.h"
 
 #include "coord.h"
+#include "annotation.h"
 #include "noncopyable.h"
 
 struct ParamsEdited;
@@ -986,6 +987,9 @@ struct FramingParams {
     int borderBlue;
 
     Glib::ustring borderAnnotation;
+    AnnotationFontMode annotationFontMode = AnnotationFontMode::ANNOTATION_SANS;
+    Glib::ustring annotationFont = "Sans";
+    double annotationFontSize = ANNOTATION_FONT_SIZE_DEFAULT;
 
     bool operator ==(const FramingParams& other) const;
     bool operator !=(const FramingParams& other) const;

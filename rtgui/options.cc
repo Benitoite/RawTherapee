@@ -390,6 +390,9 @@ void Options::setDefaults()
     historyPanelWidth = 330;
     fontFamily = "default";
     fontSize = 10;
+    annotationFontMode = rtengine::AnnotationFontMode::ANNOTATION_SANS;
+    annotationFont = "Sans";
+    annotationFontSize = rtengine::ANNOTATION_FONT_SIZE_DEFAULT;
     CPFontFamily = "default";
     CPFontSize = 8;
     lastScale = 5;
@@ -1620,6 +1623,16 @@ void Options::readFromFile(Glib::ustring fname)
                     fontSize = keyFile.get_integer("GUI", "FontSize");
                 }
 
+                if (keyFile.has_key("GUI", "AnnotationFontMode")) {
+                    rtengine::parseAnnotationFontMode(keyFile.get_string("GUI", "AnnotationFontMode"), annotationFontMode);
+                }
+                if (keyFile.has_key("GUI", "AnnotationFont")) {
+                    annotationFont = keyFile.get_string("GUI", "AnnotationFont");
+                }
+                if (keyFile.has_key("GUI", "AnnotationFontSize")) {
+                    annotationFontSize = rtengine::sanitizeAnnotationFontSize(keyFile.get_double("GUI", "AnnotationFontSize"));
+                }
+
                 if (keyFile.has_key("GUI", "CPFontFamily")) {
                     CPFontFamily = keyFile.get_string("GUI", "CPFontFamily");
                 }
@@ -2641,6 +2654,9 @@ void Options::saveToFile(Glib::ustring fname)
         keyFile.set_integer("GUI", "HistoryPanelWidth", historyPanelWidth);
         keyFile.set_string("GUI", "FontFamily", fontFamily);
         keyFile.set_integer("GUI", "FontSize", fontSize);
+        keyFile.set_string("GUI", "AnnotationFontMode", rtengine::annotationFontModeName(annotationFontMode));
+        keyFile.set_string("GUI", "AnnotationFont", annotationFont);
+        keyFile.set_double("GUI", "AnnotationFontSize", rtengine::sanitizeAnnotationFontSize(annotationFontSize));
         keyFile.set_string("GUI", "CPFontFamily", CPFontFamily);
         keyFile.set_integer("GUI", "CPFontSize", CPFontSize);
         keyFile.set_integer("GUI", "LastPreviewScale", lastScale);

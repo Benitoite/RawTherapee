@@ -1338,6 +1338,39 @@ Gtk::Widget* Preferences::getGeneralPanel()
     appearanceGrid->attach(*navGuideColorLbl,   3, 2, 1, 1);
     appearanceGrid->attach(*navGuideColorCB,    4, 2, 1, 1);
 
+    auto* annotationFontLbl = Gtk::manage(new Gtk::Label(M("PREFERENCES_ANNOTATION_FONT")));
+    setExpandAlignProperties(annotationFontLbl, false, false, Gtk::ALIGN_START, Gtk::ALIGN_CENTER);
+    annotationFontModeCB = Gtk::manage(new Gtk::ComboBoxText());
+    annotationFontModeCB->append("AnnotationSans", M("ANNOTATION_FONT_SANS"));
+    annotationFontModeCB->append("FilmPlotter", M("ANNOTATION_FONT_PLOTTER"));
+    annotationFontModeCB->append("User", M("ANNOTATION_FONT_USER"));
+    annotationFontModeCB->set_tooltip_text(M("PREFERENCES_ANNOTATION_FONT_TOOLTIP"));
+
+    annotationFontFB = Gtk::manage(new Gtk::FontButton());
+    annotationFontFB->set_title(M("PREFERENCES_ANNOTATION_FONT"));
+    annotationFontFB->set_show_size(false);
+    gtk_font_chooser_set_level(GTK_FONT_CHOOSER(annotationFontFB->gobj()),
+        static_cast<GtkFontChooserLevel>(GTK_FONT_CHOOSER_LEVEL_FAMILY | GTK_FONT_CHOOSER_LEVEL_STYLE));
+    gtk_font_chooser_set_preview_text(GTK_FONT_CHOOSER(annotationFontFB->gobj()),
+                                     "AV To III WWW / Annotation 2026");
+    auto* annotationSizeLbl = Gtk::manage(new Gtk::Label(M("PREFERENCES_ANNOTATION_FONT_SIZE")));
+    setExpandAlignProperties(annotationSizeLbl, false, false, Gtk::ALIGN_START, Gtk::ALIGN_CENTER);
+    annotationFontSizeSB = Gtk::manage(new Gtk::SpinButton());
+    annotationFontSizeSB->set_digits(1);
+    annotationFontSizeSB->set_increments(1.0, 10.0);
+    annotationFontSizeSB->set_range(rtengine::ANNOTATION_FONT_SIZE_MIN, rtengine::ANNOTATION_FONT_SIZE_MAX);
+    annotationFontModeCB->signal_changed().connect([this, annotationSizeLbl]() {
+        const bool userFont = annotationFontModeCB->get_active_id() == "User";
+        annotationFontFB->set_sensitive(userFont);
+        annotationFontSizeSB->set_sensitive(userFont);
+        annotationSizeLbl->set_sensitive(userFont);
+    });
+    appearanceGrid->attach(*annotationFontLbl,    0, 3, 1, 1);
+    appearanceGrid->attach(*annotationFontModeCB, 1, 3, 1, 1);
+    appearanceGrid->attach(*annotationFontFB,     3, 3, 2, 1);
+    appearanceGrid->attach(*annotationSizeLbl,    0, 4, 1, 1);
+    appearanceGrid->attach(*annotationFontSizeSB,  1, 4, 1, 1);
+
     appearanceFrame->add(*appearanceGrid);
     vbGeneral->attach_next_to(*appearanceFrame, *flang, Gtk::POS_BOTTOM, 2, 1);
 
@@ -1909,6 +1942,12 @@ void Preferences::storePreferences()
         moptions.CPFontSize = cpfd.get_size() / Pango::SCALE;
     }
 
+    rtengine::parseAnnotationFontMode(annotationFontModeCB->get_active_id(), moptions.annotationFontMode);
+    Pango::FontDescription annotationDescription(annotationFontFB->get_font_name());
+    annotationDescription.unset_fields(Pango::FONT_MASK_SIZE);
+    moptions.annotationFont = annotationDescription.to_string();
+    moptions.annotationFontSize = rtengine::sanitizeAnnotationFontSize(annotationFontSizeSB->get_value());
+
     const std::vector<ExternalEditorPreferences::EditorInfo> &editors = externalEditors->getEditors();
     moptions.externalEditors.resize(editors.size());
     moptions.externalEditorIndex =
@@ -2203,6 +2242,10 @@ void Preferences::fillPreferences()
     } else {
         colorPickerFontFB->set_font_name (Glib::ustring::compose ("%1, %2", options.CPFontFamily, options.CPFontSize));
     }
+
+    annotationFontFB->set_font_name(moptions.annotationFont);
+    annotationFontSizeSB->set_value(rtengine::sanitizeAnnotationFontSize(moptions.annotationFontSize));
+    annotationFontModeCB->set_active_id(rtengine::annotationFontModeName(moptions.annotationFontMode));
 
     showDateTime->set_active(moptions.fbShowDateTime);
     showBasicExif->set_active(moptions.fbShowBasicExif);

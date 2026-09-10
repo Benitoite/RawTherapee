@@ -26,6 +26,7 @@
 #include "widgets/basic/adjuster.h"
 
 #include "rtengine/procevents.h"
+#include "rtengine/annotation.h"
 
 #include <memory>
 
@@ -76,6 +77,8 @@ public:
     void onAnnotationChanged();
 
 private:
+    void onUseDefaultAnnotationFont();
+    void updateAnnotationFontLabel();
     class AspectRatios;
 
     // Helper struct for repeated patterns
@@ -152,6 +155,13 @@ private:
     Gtk::Entry* borderAnnotation;
     bool annotationEdited = true;
     sigc::connection annotationChanged;
+    Gtk::Label* annotationFontLabel;
+    rtengine::AnnotationFontMode annotationFontMode = rtengine::AnnotationFontMode::ANNOTATION_SANS;
+    Glib::ustring annotationFont = "Sans";
+    double annotationFontSize = rtengine::ANNOTATION_FONT_SIZE_DEFAULT;
+    bool annotationFontModeEdited = true;
+    bool annotationFontEdited = true;
+    bool annotationFontSizeEdited = true;
 
     // Events
     rtengine::ProcEvent EvFramingEnabled;
@@ -173,6 +183,7 @@ private:
     rtengine::ProcEvent EvFramingBorderGreen;
     rtengine::ProcEvent EvFramingBorderBlue;
     rtengine::ProcEvent EvFramingAnnotation;
+    rtengine::ProcEvent EvFramingAnnotationFont;
 
     IdleRegister idleRegister;
     std::unique_ptr<AspectRatios> aspectRatioData;

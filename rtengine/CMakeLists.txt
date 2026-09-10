@@ -7,6 +7,7 @@ set(PROCPARAM_SRCS
 )
 
 set(RTENGINESOURCEFILES
+    annotation.cc
     alpha.cc
     ahd_demosaic_RT.cc
     amaze_demosaic_RT.cc
@@ -43,6 +44,7 @@ set(RTENGINESOURCEFILES
     fast_demo.cc
     ffmanager.cc
     filmnegativeproc.cc
+    filmplotter.c
     flatcurves.cc
     FTblockDN.cc
     gamutwarning.cc
@@ -205,6 +207,7 @@ target_link_libraries(rtengine
         fmt::fmt
         JPEG::JPEG
         PkgConfig::CAIROMM
+        PkgConfig::PANGOCAIRO
         PkgConfig::EXIV2
         PkgConfig::EXPAT
         PkgConfig::FFTW3F

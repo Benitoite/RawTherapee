@@ -125,6 +125,9 @@ void setAll(FramingParamsEdited& framing, bool v)
     framing.borderBlue = v;
 
     framing.borderAnnotation = v;
+    framing.annotationFontMode = v;
+    framing.annotationFont = v;
+    framing.annotationFontSize = v;
 }
 
 void initFrom(FramingParamsEdited& edits, const ProcParams& params, const ProcParams& otherParams)
@@ -154,6 +157,9 @@ void initFrom(FramingParamsEdited& edits, const ProcParams& params, const ProcPa
     edits.borderBlue &= curr.borderBlue == other.borderBlue;
 
     edits.borderAnnotation &= curr.borderAnnotation == other.borderAnnotation;
+    edits.annotationFontMode &= curr.annotationFontMode == other.annotationFontMode;
+    edits.annotationFont &= curr.annotationFont == other.annotationFont;
+    edits.annotationFontSize &= curr.annotationFontSize == other.annotationFontSize;
 }
 
 void combine(FramingParams& toEdit, const FramingParams& mod, const FramingParamsEdited& edits,
@@ -228,6 +234,15 @@ void combine(FramingParams& toEdit, const FramingParams& mod, const FramingParam
     }
     if (edits.borderAnnotation) {
         toEdit.borderAnnotation = mod.borderAnnotation;
+    }
+    if (edits.annotationFontMode) {
+        toEdit.annotationFontMode = mod.annotationFontMode;
+    }
+    if (edits.annotationFont) {
+        toEdit.annotationFont = mod.annotationFont;
+    }
+    if (edits.annotationFontSize) {
+        toEdit.annotationFontSize = mod.annotationFontSize;
     }
 }
 

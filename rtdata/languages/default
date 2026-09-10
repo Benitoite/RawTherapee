@@ -8,6 +8,9 @@ ABOUT_TAB_LICENSE;License
 ABOUT_TAB_RELEASENOTES;Release Notes
 ABOUT_TAB_SPLASH;Splash
 ADJUSTER_RESET_TO_DEFAULT;<b>Click</b> - reset to default value.\n<b>Ctrl</b>+<b>click</b> - reset to initial value.
+ANNOTATION_FONT_PLOTTER;Film Plotter
+ANNOTATION_FONT_SANS;Annotation Sans
+ANNOTATION_FONT_USER;User font
 BATCH_PROCESSING;Batch Processing
 CURVEEDITOR_AXIS_IN;I:
 CURVEEDITOR_AXIS_LEFT_TAN;LT:
@@ -1454,6 +1457,7 @@ HISTORY_MSG_FRAMING_ABSOLUTE_HEIGHT;Framing - Border Height
 HISTORY_MSG_FRAMING_ABSOLUTE_WIDTH;Framing - Border Width
 HISTORY_MSG_FRAMING_ALLOW_UPSCALING;Framing - Upscaling
 HISTORY_MSG_FRAMING_ANNOTATION;Framing - Annotation
+HISTORY_MSG_FRAMING_ANNOTATION_FONT;Framing - Annotation font
 HISTORY_MSG_FRAMING_ASPECT_RATIO;Framing - Aspect Ratio
 HISTORY_MSG_FRAMING_BASIS;Framing - Basis
 HISTORY_MSG_FRAMING_BORDER_BLUE;Framing - Border (B)
@@ -2056,6 +2060,9 @@ PARTIALPASTE_VIBRANCE;Vibrance
 PARTIALPASTE_VIGNETTING;Vignetting correction
 PARTIALPASTE_WHITEBALANCE;White balance
 PREFERENCES_ADD;Add
+PREFERENCES_ANNOTATION_FONT;Default annotation font
+PREFERENCES_ANNOTATION_FONT_SIZE;User font size (px)
+PREFERENCES_ANNOTATION_FONT_TOOLTIP;Default for new images and profiles without a saved font. To update an open image, use "Use font from Preferences" in Framing. Bitmap fonts have a fixed size; user fonts are measured in exported image pixels.
 PREFERENCES_APPEARANCE;Appearance
 PREFERENCES_APPEARANCE_COLORPICKERFONT;Color picker font
 PREFERENCES_APPEARANCE_CROPMASKCOLOR;Crop mask color
@@ -2886,7 +2893,11 @@ TP_FRAMING_ABSOLUTE_HEIGHT;Border Height
 TP_FRAMING_ABSOLUTE_WIDTH;Border Width
 TP_FRAMING_ALLOW_UPSCALING;Allow upscaling to frame
 TP_FRAMING_ANNOTATION;Annotation
-TP_FRAMING_ANNOTATION_TOOLTIP;Printed in the bottom border on export. Supports ASCII text; requires a bottom border of at least 30 pixels.
+TP_FRAMING_ANNOTATION_FONT;Font: %1
+TP_FRAMING_ANNOTATION_TOOLTIP;Printed in the bottom border on export. Bitmap fonts support ASCII and require at least 30 pixels of bottom border. User fonts support Unicode and require enough border height for the selected font and size.
+TP_FRAMING_ANNOTATION_USE_DEFAULT;Use font from Preferences
+TP_FRAMING_ANNOTATION_USE_DEFAULT_TOOLTIP;Apply the default annotation font and size from Preferences to this image.
+TP_FRAMING_ANNOTATION_USER_FONT;%1 (%2 px)
 TP_FRAMING_ASPECT_RATIO;Aspect Ratio:
 TP_FRAMING_BASIS;Basis:
 TP_FRAMING_BASIS_AUTO;Auto

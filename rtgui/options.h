@@ -30,6 +30,7 @@
 #include <gtkmm/enums.h>
 #endif
 #include "rtengine/rtapp.h"
+#include "rtengine/annotation.h"
 #include "rtengine/settings.h"
 #include <exception>
 
@@ -255,6 +256,9 @@ public:
     int fontSize;                // RT's main font size (units: pt)
     Glib::ustring CPFontFamily;  // ColorPicker font family
     int CPFontSize;              // ColorPicker font size (units: pt)
+    rtengine::AnnotationFontMode annotationFontMode;
+    Glib::ustring annotationFont;
+    double annotationFontSize;  // Exported image pixels, not display points.
     bool fbOnlyRaw;
     bool fbShowDateTime;
     bool fbShowBasicExif;

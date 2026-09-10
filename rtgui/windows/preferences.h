@@ -173,6 +173,9 @@ class Preferences final :
     Gtk::ComboBoxText* themeCBT;
     Gtk::FontButton* mainFontFB;
     Gtk::FontButton* colorPickerFontFB;
+    Gtk::ComboBoxText* annotationFontModeCB;
+    Gtk::FontButton* annotationFontFB;
+    Gtk::SpinButton* annotationFontSizeSB;
     Gtk::ColorButton* cropMaskColorCB;
     Gtk::ColorButton* navGuideColorCB;
 

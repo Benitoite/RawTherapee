@@ -41,6 +41,7 @@ macro(rt_setup_dependencies)
 
     # These should be transitively included from PkgConfig::GTKMM.
     pkg_check_modules(CAIROMM REQUIRED IMPORTED_TARGET cairomm-1.0)
+    pkg_check_modules(PANGOCAIRO REQUIRED IMPORTED_TARGET pangocairo>=1.40)
     pkg_check_modules(GIO REQUIRED IMPORTED_TARGET gio-2.0>=2.48)
     pkg_check_modules(GIOMM REQUIRED IMPORTED_TARGET giomm-2.4>=2.48)
     pkg_check_modules(GLIB2 REQUIRED IMPORTED_TARGET glib-2.0>=2.48)

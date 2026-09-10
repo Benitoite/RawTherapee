@@ -22,6 +22,7 @@
 #include "framing.h"
 
 #include "eventmapper.h"
+#include "options.h"
 #include "paramsedited.h"
 #include "tools/resize.h"
 #include "widgets/basic/colorpreview.h"
@@ -349,6 +350,7 @@ void Framing::setupEvents()
     EvFramingBorderGreen        = m->newEvent(RESIZE, "HISTORY_MSG_FRAMING_BORDER_GREEN");
     EvFramingBorderBlue         = m->newEvent(RESIZE, "HISTORY_MSG_FRAMING_BORDER_BLUE");
     EvFramingAnnotation         = m->newEvent(RESIZE, "HISTORY_MSG_FRAMING_ANNOTATION");
+    EvFramingAnnotationFont     = m->newEvent(RESIZE, "HISTORY_MSG_FRAMING_ANNOTATION_FONT");
     // clang-format on
 }
 
@@ -514,6 +516,14 @@ void Framing::setupBorderColorsGui()
     borderAnnotation->set_tooltip_text(M("TP_FRAMING_ANNOTATION_TOOLTIP"));
     box->add(*borderAnnotation);
 
+    annotationFontLabel = Gtk::manage(new Gtk::Label());
+    annotationFontLabel->set_ellipsize(Pango::ELLIPSIZE_END);
+    box->pack_start(*annotationFontLabel, Gtk::PACK_SHRINK);
+    auto* useDefaultFont = Gtk::manage(new Gtk::Button(M("TP_FRAMING_ANNOTATION_USE_DEFAULT")));
+    useDefaultFont->set_tooltip_text(M("TP_FRAMING_ANNOTATION_USE_DEFAULT_TOOLTIP"));
+    useDefaultFont->signal_clicked().connect(sigc::mem_fun(*this, &Framing::onUseDefaultAnnotationFont));
+    box->pack_start(*useDefaultFont, Gtk::PACK_SHRINK);
+
     frame->add(*box);
 
     pack_start(*frame);
@@ -556,6 +566,7 @@ void Framing::read(const rtengine::procparams::ProcParams* pp, const ParamsEdite
 
     readParams(pp);
     readEdited(pedited);
+    updateAnnotationFontLabel();
 
     updateFramingMethodGui();
     updateBorderSizeGui();
@@ -600,6 +611,10 @@ void Framing::readParams(const rtengine::procparams::ProcParams* pp)
     borderAnnotation->set_text(params.borderAnnotation);
     borderAnnotation->set_placeholder_text("");
     annotationEdited = true;
+    annotationFontMode = params.annotationFontMode;
+    annotationFont = params.annotationFont;
+    annotationFontSize = sanitizeAnnotationFontSize(params.annotationFontSize);
+    annotationFontModeEdited = annotationFontEdited = annotationFontSizeEdited = true;
 }
 
 void Framing::readEdited(const ParamsEdited* pedited)
@@ -640,6 +655,9 @@ void Framing::readEdited(const ParamsEdited* pedited)
     greenAdj->setEditedState(edits.borderGreen ? Edited : UnEdited);
     blueAdj->setEditedState(edits.borderBlue ? Edited : UnEdited);
     annotationEdited = edits.borderAnnotation;
+    annotationFontModeEdited = edits.annotationFontMode;
+    annotationFontEdited = edits.annotationFont;
+    annotationFontSizeEdited = edits.annotationFontSize;
     if (!annotationEdited && batchMode) {
         borderAnnotation->set_text("");
         borderAnnotation->set_placeholder_text(M("GENERAL_UNCHANGED"));
@@ -679,6 +697,9 @@ void Framing::writeParams(rtengine::procparams::ProcParams* pp)
     params.borderBlue = blueAdj->getValue();
 
     params.borderAnnotation = borderAnnotation->get_buffer()->get_text();
+    params.annotationFontMode = annotationFontMode;
+    params.annotationFont = annotationFont;
+    params.annotationFontSize = annotationFontSize;
 }
 
 void Framing::writeEdited(ParamsEdited* pedited)
@@ -709,6 +730,9 @@ void Framing::writeEdited(ParamsEdited* pedited)
     edits.borderGreen = greenAdj->getEditedState();
     edits.borderBlue = blueAdj->getEditedState();
     edits.borderAnnotation = annotationEdited;
+    edits.annotationFontMode = annotationFontModeEdited;
+    edits.annotationFont = annotationFontEdited;
+    edits.annotationFontSize = annotationFontSizeEdited;
 }
 
 void Framing::setDefaults(const rtengine::procparams::ProcParams* defParams, const ParamsEdited* pedited)
@@ -1124,5 +1148,35 @@ void Framing::onAnnotationChanged()
     if (listener && (getEnabled() || batchMode)) {
         listener->panelChanged(EvFramingAnnotation,
                                borderAnnotation->get_buffer()->get_text());
+    }
+}
+
+void Framing::updateAnnotationFontLabel()
+{
+    Glib::ustring description;
+    if (batchMode && (!annotationFontModeEdited
+        || (annotationFontMode == AnnotationFontMode::USER && (!annotationFontEdited || !annotationFontSizeEdited)))) {
+        description = M("GENERAL_UNCHANGED");
+    } else if (annotationFontMode == AnnotationFontMode::FILM_PLOTTER) {
+        description = M("ANNOTATION_FONT_PLOTTER");
+    } else if (annotationFontMode == AnnotationFontMode::USER) {
+        description = Glib::ustring::compose(M("TP_FRAMING_ANNOTATION_USER_FONT"), annotationFont, annotationFontSize);
+    } else {
+        description = M("ANNOTATION_FONT_SANS");
+    }
+    annotationFontLabel->set_text(Glib::ustring::compose(M("TP_FRAMING_ANNOTATION_FONT"), description));
+    annotationFontLabel->set_tooltip_text(annotationFontLabel->get_text());
+}
+
+void Framing::onUseDefaultAnnotationFont()
+{
+    const auto& defaults = App::get().options();
+    annotationFontMode = defaults.annotationFontMode;
+    annotationFont = defaults.annotationFont;
+    annotationFontSize = sanitizeAnnotationFontSize(defaults.annotationFontSize);
+    annotationFontModeEdited = annotationFontEdited = annotationFontSizeEdited = true;
+    updateAnnotationFontLabel();
+    if (listener && (getEnabled() || batchMode)) {
+        listener->panelChanged(EvFramingAnnotationFont, annotationFontLabel->get_text());
     }
 }
