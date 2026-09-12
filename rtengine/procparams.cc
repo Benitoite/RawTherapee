@@ -170,6 +170,7 @@ namespace Framing
     DEFINE_KEY(BORDER_GREEN, "BorderGreen");
     DEFINE_KEY(BORDER_BLUE, "BorderBlue");
     DEFINE_KEY(BORDER_ANNOTATION, "BorderAnnotation");
+    DEFINE_KEY(ANNOTATION_FROM_EXIF, "AnnotationFromExif");
     DEFINE_KEY(ANNOTATION_FONT_MODE, "AnnotationFontMode");
     DEFINE_KEY(ANNOTATION_FONT, "AnnotationFont");
     DEFINE_KEY(ANNOTATION_FONT_SIZE, "AnnotationFontSize");
@@ -254,6 +255,7 @@ void loadFramingParams(
     assignFromKeyfile(keyFile, group, BORDER_GREEN, params.borderGreen, edited.borderGreen);
     assignFromKeyfile(keyFile, group, BORDER_BLUE, params.borderBlue, edited.borderBlue);
     assignFromKeyfile(keyFile, group, BORDER_ANNOTATION, params.borderAnnotation, edited.borderAnnotation);
+    assignFromKeyfile(keyFile, group, ANNOTATION_FROM_EXIF, params.annotationFromExif, edited.annotationFromExif);
     if (keyFile.has_key(group, ANNOTATION_FONT_MODE)
         && rtengine::parseAnnotationFontMode(keyFile.get_string(group, ANNOTATION_FONT_MODE), params.annotationFontMode)) {
         edited.annotationFontMode = true;
@@ -325,6 +327,7 @@ void saveFramingParams(
     saveToKeyfile(!pedited || edited.borderGreen, group, BORDER_GREEN, params.borderGreen, keyFile);
     saveToKeyfile(!pedited || edited.borderBlue, group, BORDER_BLUE, params.borderBlue, keyFile);
     saveToKeyfile(!pedited || edited.borderAnnotation, group, BORDER_ANNOTATION, params.borderAnnotation, keyFile);
+    saveToKeyfile(!pedited || edited.annotationFromExif, group, ANNOTATION_FROM_EXIF, params.annotationFromExif, keyFile);
     saveToKeyfile(!pedited || edited.annotationFontMode, group, ANNOTATION_FONT_MODE,
                  Glib::ustring(rtengine::annotationFontModeName(params.annotationFontMode)), keyFile);
     saveToKeyfile(!pedited || edited.annotationFont, group, ANNOTATION_FONT, params.annotationFont, keyFile);
@@ -2437,6 +2440,7 @@ bool FramingParams::operator ==(const FramingParams& other) const
         && borderGreen == other.borderGreen
         && borderBlue == other.borderBlue
         && borderAnnotation == other.borderAnnotation
+        && annotationFromExif == other.annotationFromExif
         && annotationFontMode == other.annotationFontMode
         && annotationFont == other.annotationFont
         && annotationFontSize == other.annotationFontSize;

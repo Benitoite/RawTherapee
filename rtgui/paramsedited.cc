@@ -125,6 +125,7 @@ void setAll(FramingParamsEdited& framing, bool v)
     framing.borderBlue = v;
 
     framing.borderAnnotation = v;
+    framing.annotationFromExif = v;
     framing.annotationFontMode = v;
     framing.annotationFont = v;
     framing.annotationFontSize = v;
@@ -157,6 +158,7 @@ void initFrom(FramingParamsEdited& edits, const ProcParams& params, const ProcPa
     edits.borderBlue &= curr.borderBlue == other.borderBlue;
 
     edits.borderAnnotation &= curr.borderAnnotation == other.borderAnnotation;
+    edits.annotationFromExif &= curr.annotationFromExif == other.annotationFromExif;
     edits.annotationFontMode &= curr.annotationFontMode == other.annotationFontMode;
     edits.annotationFont &= curr.annotationFont == other.annotationFont;
     edits.annotationFontSize &= curr.annotationFontSize == other.annotationFontSize;
@@ -234,6 +236,9 @@ void combine(FramingParams& toEdit, const FramingParams& mod, const FramingParam
     }
     if (edits.borderAnnotation) {
         toEdit.borderAnnotation = mod.borderAnnotation;
+    }
+    if (edits.annotationFromExif) {
+        toEdit.annotationFromExif = mod.annotationFromExif;
     }
     if (edits.annotationFontMode) {
         toEdit.annotationFontMode = mod.annotationFontMode;

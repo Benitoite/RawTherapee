@@ -284,7 +284,7 @@ enum class BlurType {
     };
     FramingData framing(const FramingArgs& args) const;
     Imagefloat* drawFrame(Imagefloat* rgb, const procparams::FramingParams& params,
-                          const FramingData& dims) const;
+                          const FramingData& dims, const FramesMetaData* metadata) const;
 
     void deconvsharpening(float** luminance, float** buffer, const float* const * blend, int W, int H, const procparams::SharpeningParams &sharpenParam, double Scale);
     void deconvsharpeningloc(float** luminance, float** buffer, int W, int H, float** loctemp, int damp, double radi, int ite, int amo, int contrast, double blurrad, int sk);

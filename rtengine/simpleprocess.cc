@@ -2148,7 +2148,7 @@ private:
         }
 
         if (framingData.enabled) {
-            readyImg = ipf.drawFrame(readyImg, params.framing, framingData);
+            readyImg = ipf.drawFrame(readyImg, params.framing, framingData, imgsrc->getMetaData());
         }
 
         Exiv2Metadata info(imgsrc->getFileName());

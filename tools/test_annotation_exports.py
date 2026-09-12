@@ -11,7 +11,7 @@ from pathlib import Path
 import subprocess
 import tempfile
 
-from PIL import Image, ImageChops
+from PIL import Image, ImageChops, TiffImagePlugin
 
 
 def run(cli, output):
@@ -30,7 +30,7 @@ def run(cli, output):
             encoding="utf-8")
 
     def export(name, mode="AnnotationSans", font="Sans", size=29, text=caption,
-               border=80, color=255, profiles=None):
+               border=80, color=255, profiles=None, from_exif=False, input_path=None):
         if profiles is None:
             profile = output / (name + ".pp3")
             profile.write_text(
@@ -38,6 +38,7 @@ def run(cli, output):
                 "[Framing]\nEnabled=true\nFramingMethod=Standard\nAspectRatio=0\n"
                 f"BorderSizingMethod=FixedSize\nAbsWidth={border}\nAbsHeight={border}\n"
                 f"BorderRed={color}\nBorderGreen={color}\nBorderBlue={color}\nBorderAnnotation={text}\n"
+                + (f"AnnotationFromExif={'true' if from_exif else 'false'}\n" if from_exif is not None else "")
                 + (f"AnnotationFontMode={mode}\nAnnotationFont={font}\nAnnotationFontSize={size}\n"
                    if mode is not None else ""), encoding="utf-8")
             profiles = [profile]
@@ -45,11 +46,13 @@ def run(cli, output):
         args = [str(cli), "-q", "-n", "-Y"]
         for profile in profiles:
             args += ["-p", str(profile)]
-        args += ["-O", str(destination), "-c", str(source)]
+        input_path = input_path or source
+        args += ["-O", str(destination), "-c", str(input_path)]
         with (output / (name + ".log")).open("w") as log:
             subprocess.run(args, check=True, env=env, stdout=log, stderr=subprocess.STDOUT)
         image = Image.open(destination).convert("RGB")
-        assert image.size == (901 + 2 * border, 601 + 2 * border)
+        with Image.open(input_path) as original:
+            assert image.size == (original.width + 2 * border, original.height + 2 * border)
         saved = configparser.ConfigParser(interpolation=None)
         saved.read(str(destination) + ".pp3", encoding="utf-8")
         if mode is not None:
@@ -57,6 +60,8 @@ def run(cli, output):
             assert saved["Framing"]["AnnotationFont"] == font
             assert float(saved["Framing"]["AnnotationFontSize"]) == size
         assert saved["Framing"]["BorderAnnotation"] == text.strip()
+        if from_exif is not None:
+            assert saved["Framing"].getboolean("AnnotationFromExif") == from_exif
         print("Passed export:", name, flush=True)
         return image
 
@@ -108,7 +113,59 @@ def run(cli, output):
     result = export("unknown-mode", mode="User", font="Serif",
                     profiles=[output / "user-serif.png.pp3", partial])
     assert equal(result, user)
-    print("All font modes, preferences, profile round trips, partial profiles, and export bounds passed.", flush=True)
+
+    # Actual EXIF files exercise metadata decoding as well as caption generation.
+    def exif_source(name, make, model, lens, aperture, shutter, iso, focal):
+        exif = Image.Exif()
+        if make:
+            exif[271] = make
+        if model:
+            exif[272] = model
+        rational = TiffImagePlugin.IFDRational
+        photo = {}
+        if lens:
+            photo[42036] = lens
+        if aperture:
+            photo[33437] = rational(aperture)
+        if shutter:
+            photo[33434] = rational(shutter)
+        if iso:
+            photo[34855] = iso
+        if focal:
+            photo[37386] = rational(focal)
+        if photo:
+            exif[34665] = photo
+        path = output / (name + ".jpg")
+        Image.new("RGB", (3601, 601), (116, 136, 153)).save(path, exif=exif)
+        return path
+
+    nikon = exif_source("nikon", "NIKON CORPORATION", "NIKON D7500",
+                        "Sigma 150-600mm F5-6.3 DG OS HSMI C", 7.1, 1 / 6000, 1200, 600)
+    expected = "NIKON D7500 + Sigma 150-600mm F5-6.3 DG OS HSMI C f/7.1 1/6000s ISO 1200 600.00mm"
+    for mode in ("AnnotationSans", "FilmPlotter", "User"):
+        automatic = export("exif-" + mode, mode=mode, from_exif=True, input_path=nikon)
+        manual = export("exif-expected-" + mode, mode=mode, text=expected, input_path=nikon)
+        assert equal(automatic, manual), mode
+        assert not equal(manual, export("exif-blank-" + mode, mode=mode, text="", input_path=nikon))
+
+    # Reusing a saved profile reads the next image's EXIF, not the first caption.
+    canon = exif_source("canon", "Canon", "Canon EOS R5", "RF50mm F1.8 STM", 2.8, 2, 400, 50)
+    saved_auto = output / "exif-User.png.pp3"
+    automatic = export("exif-next-image", mode="User", profiles=[saved_auto], from_exif=True, input_path=canon)
+    expected = "Canon EOS R5 + RF50mm F1.8 STM f/2.8 2s ISO 400 50.00mm"
+    assert equal(automatic, export("exif-next-expected", mode="User", text=expected, input_path=canon))
+    partial.write_text("[Version]\nVersion=353\n[Framing]\nAnnotationFromExif=false\n")
+    manual = export("exif-off", mode="User", profiles=[saved_auto, partial], input_path=canon)
+    assert equal(manual, export("exif-restored-manual", mode="User", input_path=canon))
+
+    # Missing information stays absent; a camera-only image has no fake exposure fields.
+    camera_only = exif_source("camera-only", "NIKON", "D7500", None, None, None, None, None)
+    automatic = export("exif-camera-only", from_exif=True, input_path=camera_only)
+    assert equal(automatic, export("exif-camera-only-expected", text="NIKON D7500", input_path=camera_only))
+    assert equal(export("exif-missing", from_exif=True), blank)
+    # Old profiles without the toggle retain manual annotation behavior.
+    assert equal(export("legacy-manual", from_exif=None), sans)
+    print("All fonts, EXIF captions, preferences, profile round trips, partial profiles, and export bounds passed.", flush=True)
 
 
 def main():

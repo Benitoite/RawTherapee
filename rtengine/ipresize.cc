@@ -1147,7 +1147,7 @@ ImProcFunctions::FramingData ImProcFunctions::framing(const FramingArgs& args) c
 // Draws the border around the input image.
 // It should be called after gamma correction.
 Imagefloat* ImProcFunctions::drawFrame(Imagefloat* rgb, const FramingParams& params,
-                                       const FramingData& dims) const
+                                       const FramingData& dims, const FramesMetaData* metadata) const
 {
     if (rgb->getWidth() > dims.framedWidth || rgb->getHeight() >  dims.framedHeight) {
         return rgb;
@@ -1207,7 +1207,9 @@ Imagefloat* ImProcFunctions::drawFrame(Imagefloat* rgb, const FramingParams& par
     const int fw = framed->getWidth();
     const int fh = framed->getHeight();
     const int bottomBorder = fh - rowOffset - rgb->getHeight();
-    if (!params.borderAnnotation.empty() && bottomBorder > 2) {
+    const std::string annotation = params.annotationFromExif
+        ? annotationFromMetadata(metadata) : params.borderAnnotation.raw();
+    if (!annotation.empty() && bottomBorder > 2) {
         const int lineStride = static_cast<int>(framed->r(1) - framed->r(0));
         const float value = (r + g + b) / 3 > 32768.0f ? 0.0f : 65535.0f;
         float* channels[] = {
@@ -1215,7 +1217,7 @@ Imagefloat* ImProcFunctions::drawFrame(Imagefloat* rgb, const FramingParams& par
             framed->g(fh - bottomBorder),
             framed->b(fh - bottomBorder)
         };
-        drawAnnotation(params.borderAnnotation, params.annotationFontMode,
+        drawAnnotation(annotation, params.annotationFontMode,
                        params.annotationFont, params.annotationFontSize, value,
                        channels, fw, bottomBorder, colOffset + rgb->getWidth(), lineStride);
     }

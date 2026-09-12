@@ -987,6 +987,7 @@ struct FramingParams {
     int borderBlue;
 
     Glib::ustring borderAnnotation;
+    bool annotationFromExif = false;
     AnnotationFontMode annotationFontMode = AnnotationFontMode::ANNOTATION_SANS;
     Glib::ustring annotationFont = "Sans";
     double annotationFontSize = ANNOTATION_FONT_SIZE_DEFAULT;

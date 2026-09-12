@@ -350,6 +350,7 @@ void Framing::setupEvents()
     EvFramingBorderGreen        = m->newEvent(RESIZE, "HISTORY_MSG_FRAMING_BORDER_GREEN");
     EvFramingBorderBlue         = m->newEvent(RESIZE, "HISTORY_MSG_FRAMING_BORDER_BLUE");
     EvFramingAnnotation         = m->newEvent(RESIZE, "HISTORY_MSG_FRAMING_ANNOTATION");
+    EvFramingAnnotationFromExif = m->newEvent(RESIZE, "HISTORY_MSG_FRAMING_ANNOTATION_EXIF");
     EvFramingAnnotationFont     = m->newEvent(RESIZE, "HISTORY_MSG_FRAMING_ANNOTATION_FONT");
     // clang-format on
 }
@@ -512,6 +513,17 @@ void Framing::setupBorderColorsGui()
     Gtk::Label* const annotationLabel = Gtk::manage(new Gtk::Label(M("TP_FRAMING_ANNOTATION")));
     box->add(*annotationLabel);
 
+    auto* exifBox = Gtk::manage(new Gtk::Box(Gtk::ORIENTATION_HORIZONTAL, 4));
+    annotationFromExifLabel = Gtk::manage(new Gtk::Label(M("TP_FRAMING_ANNOTATION_EXIF")));
+    annotationFromExif = Gtk::manage(new Gtk::Switch());
+    annotationFromExif->set_valign(Gtk::ALIGN_CENTER);
+    annotationFromExif->set_tooltip_text(M("TP_FRAMING_ANNOTATION_EXIF_TOOLTIP"));
+    annotationFromExif->get_accessible()->set_name(M("TP_FRAMING_ANNOTATION_EXIF"));
+    annotationFromExifLabel->set_mnemonic_widget(*annotationFromExif);
+    exifBox->pack_start(*annotationFromExifLabel, Gtk::PACK_SHRINK);
+    exifBox->pack_end(*annotationFromExif, Gtk::PACK_SHRINK);
+    box->pack_start(*exifBox, Gtk::PACK_SHRINK);
+
     borderAnnotation = Gtk::manage(new Gtk::Entry());
     borderAnnotation->set_tooltip_text(M("TP_FRAMING_ANNOTATION_TOOLTIP"));
     box->add(*borderAnnotation);
@@ -536,13 +548,15 @@ void Framing::setupBorderColorsGui()
 
     annotationChanged = borderAnnotation->signal_changed().connect(
         sigc::mem_fun(*this, &Framing::onAnnotationChanged));
+    annotationFromExifChanged = annotationFromExif->property_active().signal_changed().connect(
+        sigc::mem_fun(*this, &Framing::onAnnotationFromExifChanged));
 }
 
 void Framing::read(const rtengine::procparams::ProcParams* pp, const ParamsEdited* pedited)
 {
     DisableListener disableListener(this);
 
-    std::array<ConnectionBlocker, 14> blockers = {
+    std::array<ConnectionBlocker, 15> blockers = {
         ConnectionBlocker(framingMethodChanged),
         ConnectionBlocker(aspectRatioChanged),
         ConnectionBlocker(orientationChanged),
@@ -557,6 +571,7 @@ void Framing::read(const rtengine::procparams::ProcParams* pp, const ParamsEdite
         ConnectionBlocker(absWidth.connection),
         ConnectionBlocker(absHeight.connection),
         ConnectionBlocker(annotationChanged),
+        ConnectionBlocker(annotationFromExifChanged),
     };
 
     BlockAdjusterEvents blockRelative(relativeBorderSize);
@@ -566,6 +581,7 @@ void Framing::read(const rtengine::procparams::ProcParams* pp, const ParamsEdite
 
     readParams(pp);
     readEdited(pedited);
+    updateAnnotationText();
     updateAnnotationFontLabel();
 
     updateFramingMethodGui();
@@ -608,8 +624,9 @@ void Framing::readParams(const rtengine::procparams::ProcParams* pp)
     greenAdj->setValue(params.borderGreen);
     blueAdj->setValue(params.borderBlue);
 
-    borderAnnotation->set_text(params.borderAnnotation);
-    borderAnnotation->set_placeholder_text("");
+    manualAnnotation = params.borderAnnotation;
+    annotationFromExif->set_active(params.annotationFromExif);
+    annotationFromExifEdited = true;
     annotationEdited = true;
     annotationFontMode = params.annotationFontMode;
     annotationFont = params.annotationFont;
@@ -655,13 +672,10 @@ void Framing::readEdited(const ParamsEdited* pedited)
     greenAdj->setEditedState(edits.borderGreen ? Edited : UnEdited);
     blueAdj->setEditedState(edits.borderBlue ? Edited : UnEdited);
     annotationEdited = edits.borderAnnotation;
+    annotationFromExifEdited = edits.annotationFromExif;
     annotationFontModeEdited = edits.annotationFontMode;
     annotationFontEdited = edits.annotationFont;
     annotationFontSizeEdited = edits.annotationFontSize;
-    if (!annotationEdited && batchMode) {
-        borderAnnotation->set_text("");
-        borderAnnotation->set_placeholder_text(M("GENERAL_UNCHANGED"));
-    }
 }
 
 void Framing::write(rtengine::procparams::ProcParams* pp, ParamsEdited* pedited)
@@ -696,7 +710,8 @@ void Framing::writeParams(rtengine::procparams::ProcParams* pp)
     params.borderGreen = greenAdj->getValue();
     params.borderBlue = blueAdj->getValue();
 
-    params.borderAnnotation = borderAnnotation->get_buffer()->get_text();
+    params.borderAnnotation = manualAnnotation;
+    params.annotationFromExif = annotationFromExif->get_active();
     params.annotationFontMode = annotationFontMode;
     params.annotationFont = annotationFont;
     params.annotationFontSize = annotationFontSize;
@@ -730,6 +745,7 @@ void Framing::writeEdited(ParamsEdited* pedited)
     edits.borderGreen = greenAdj->getEditedState();
     edits.borderBlue = blueAdj->getEditedState();
     edits.borderAnnotation = annotationEdited;
+    edits.annotationFromExif = annotationFromExifEdited;
     edits.annotationFontMode = annotationFontModeEdited;
     edits.annotationFont = annotationFontEdited;
     edits.annotationFontSize = annotationFontSizeEdited;
@@ -1144,10 +1160,50 @@ void Framing::onAbsHeightChanged()
 void Framing::onAnnotationChanged()
 {
     annotationEdited = true;
+    manualAnnotation = borderAnnotation->get_buffer()->get_text();
     borderAnnotation->set_placeholder_text("");
     if (listener && (getEnabled() || batchMode)) {
         listener->panelChanged(EvFramingAnnotation,
                                borderAnnotation->get_buffer()->get_text());
+    }
+}
+
+void Framing::setMetadata(const FramesMetaData* metadata)
+{
+    exifAnnotation = annotationFromMetadata(metadata);
+    updateAnnotationText();
+}
+
+void Framing::updateAnnotationText()
+{
+    ConnectionBlocker block(annotationChanged);
+    const bool unchanged = batchMode && !annotationFromExifEdited;
+    const bool fromExif = annotationFromExif->get_active();
+    annotationFromExifLabel->set_text(M("TP_FRAMING_ANNOTATION_EXIF")
+        + (unchanged ? " (" + M("GENERAL_UNCHANGED") + ")" : ""));
+    borderAnnotation->set_editable(!fromExif && !unchanged);
+    borderAnnotation->set_placeholder_text("");
+    if (unchanged || (batchMode && !fromExif && !annotationEdited)) {
+        borderAnnotation->set_text("");
+        borderAnnotation->set_placeholder_text(M("GENERAL_UNCHANGED"));
+    } else if (fromExif) {
+        borderAnnotation->set_text(batchMode ? "" : exifAnnotation);
+        borderAnnotation->set_placeholder_text(M(batchMode
+            ? "TP_FRAMING_ANNOTATION_EXIF_BATCH" : "TP_FRAMING_ANNOTATION_EXIF_MISSING"));
+    } else {
+        borderAnnotation->set_text(manualAnnotation);
+    }
+    borderAnnotation->set_tooltip_text(fromExif && !batchMode && !exifAnnotation.empty()
+        ? exifAnnotation : M("TP_FRAMING_ANNOTATION_TOOLTIP"));
+}
+
+void Framing::onAnnotationFromExifChanged()
+{
+    annotationFromExifEdited = true;
+    updateAnnotationText();
+    if (listener && (getEnabled() || batchMode)) {
+        listener->panelChanged(EvFramingAnnotationFromExif,
+            M(annotationFromExif->get_active() ? "GENERAL_ENABLED" : "GENERAL_DISABLED"));
     }
 }
 

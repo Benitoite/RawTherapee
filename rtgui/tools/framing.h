@@ -55,6 +55,7 @@ public:
     void enabledChanged() override;
 
     void update(int originalWidth = 0, int originalHeight = 0);
+    void setMetadata(const rtengine::FramesMetaData* metadata);
     void setAdjusterBehavior(bool addRelativeBorderSize, bool addRed, bool addGreen, bool addBlue);
 
     // AdjusterListener
@@ -77,6 +78,8 @@ public:
     void onAnnotationChanged();
 
 private:
+    void onAnnotationFromExifChanged();
+    void updateAnnotationText();
     void onUseDefaultAnnotationFont();
     void updateAnnotationFontLabel();
     class AspectRatios;
@@ -153,6 +156,12 @@ private:
     Adjuster* blueAdj;
     ColorPreview* colorPreview;
     Gtk::Entry* borderAnnotation;
+    Gtk::Switch* annotationFromExif;
+    Gtk::Label* annotationFromExifLabel;
+    sigc::connection annotationFromExifChanged;
+    bool annotationFromExifEdited = true;
+    Glib::ustring manualAnnotation;
+    Glib::ustring exifAnnotation;
     bool annotationEdited = true;
     sigc::connection annotationChanged;
     Gtk::Label* annotationFontLabel;
@@ -183,6 +192,7 @@ private:
     rtengine::ProcEvent EvFramingBorderGreen;
     rtengine::ProcEvent EvFramingBorderBlue;
     rtengine::ProcEvent EvFramingAnnotation;
+    rtengine::ProcEvent EvFramingAnnotationFromExif;
     rtengine::ProcEvent EvFramingAnnotationFont;
 
     IdleRegister idleRegister;

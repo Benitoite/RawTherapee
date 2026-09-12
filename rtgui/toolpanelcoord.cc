@@ -1389,6 +1389,7 @@ void ToolPanelCoordinator::initImage(rtengine::StagedImageProcessor* ipc_, bool 
     if (ipc) {
         const rtengine::FramesMetaData* pMetaData = ipc->getInitialImage()->getMetaData();
         metadata->setImageData(pMetaData);
+        framing->setMetadata(pMetaData);
 
         ipc->setAutoExpListener(toneCurve);
         ipc->setAutoCamListener(colorappearance);
@@ -1428,6 +1429,7 @@ void ToolPanelCoordinator::initImage(rtengine::StagedImageProcessor* ipc_, bool 
 
 void ToolPanelCoordinator::closeImage()
 {
+    framing->setMetadata(nullptr);
 
     if (ipc) {
         ipc->stopProcessing();

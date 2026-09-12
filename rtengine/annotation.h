@@ -10,6 +10,12 @@
 
 namespace rtengine {
 
+class FramesMetaData;
+
+// A single line in the same order as the editor's image information overlay.
+// Missing fields are omitted; no EXIF produces an empty caption.
+std::string annotationFromMetadata(const FramesMetaData* metadata);
+
 enum class AnnotationFontMode {
     ANNOTATION_SANS,
     FILM_PLOTTER,

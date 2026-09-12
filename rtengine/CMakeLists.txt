@@ -8,6 +8,7 @@ set(PROCPARAM_SRCS
 
 set(RTENGINESOURCEFILES
     annotation.cc
+    annotationmetadata.cc
     alpha.cc
     ahd_demosaic_RT.cc
     amaze_demosaic_RT.cc

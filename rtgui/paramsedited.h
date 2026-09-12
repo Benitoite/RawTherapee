@@ -1445,6 +1445,7 @@ struct FramingParamsEdited {
     bool borderBlue;
 
     bool borderAnnotation;
+    bool annotationFromExif;
     bool annotationFontMode;
     bool annotationFont;
     bool annotationFontSize;
